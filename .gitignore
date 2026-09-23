@@ -1,0 +1,23 @@
+# Unity
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+
+# Visual Studio
+.vs/
+.vscode/
+
+# IDE
+.idea/
+
+# Unity generated files
+MemoryCaptures/
+Recordings/
+
+# OS
+.DS_Store
+Thumbs.db
