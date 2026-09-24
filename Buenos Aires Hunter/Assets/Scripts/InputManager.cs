@@ -1,24 +1,53 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Unity.Netcode;
 
-public class InputManager : MonoBehaviour
+public class InputManager : NetworkBehaviour
 {
-    private InputPersonaje inputPersonaje;
-    private InputPersonaje.MovimientoActions movimiento;
+    private PlayerInput playerInput;
+    private PlayerInput.MovimientoActions movimiento;
+    private PlayerMotor motor;
+    private PlayerMirar mirar;
 
     void Awake()
     {
-        inputPersonaje = new InputPersonaje();
-        movimiento = inputPersonaje.Movimiento;
+        playerInput = new PlayerInput();
+        movimiento = playerInput.Movimiento;
+        motor = GetComponent<PlayerMotor>();
+        mirar = GetComponent<PlayerMirar>();
+        movimiento.Saltar.performed += ctx => motor.Saltar();
     }
 
-    private void OnEnable()
+    public override void OnNetworkSpawn()
     {
-        movimiento.Enable();
+        if (IsOwner)
+        {
+            movimiento.Enable();
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+        else
+        {
+            // Apaga la cámara y el audio de los jugadores remotos
+            mirar.cam.enabled = false;
+            var listener = mirar.cam.GetComponent<AudioListener>();
+            if (listener != null) listener.enabled = false;
+        }
     }
 
-    private void OnDisable()
+    public override void OnNetworkDespawn()
     {
         movimiento.Disable();
+    }
+
+    void FixedUpdate()
+    {
+        if (!IsOwner) return;
+        motor.ProcessMove(movimiento.Movimiento.ReadValue<Vector2>());
+    }
+
+    void LateUpdate()
+    {
+        if (!IsOwner) return;
+        mirar.ProcessMirar(movimiento.Mirar.ReadValue<Vector2>());
     }
 }

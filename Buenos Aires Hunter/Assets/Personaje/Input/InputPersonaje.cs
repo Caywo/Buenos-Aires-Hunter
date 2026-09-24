@@ -72,7 +72,7 @@ using UnityEngine.InputSystem.Utilities;
 /// }
 /// </code>
 /// </example>
-public partial class @InputPersonaje: IInputActionCollection2, IDisposable
+public partial class @PlayerInput: IInputActionCollection2, IDisposable
 {
     /// <summary>
     /// Provides access to the underlying asset instance.
@@ -82,7 +82,7 @@ public partial class @InputPersonaje: IInputActionCollection2, IDisposable
     /// <summary>
     /// Constructs a new instance.
     /// </summary>
-    public @InputPersonaje()
+    public @PlayerInput()
     {
         asset = InputActionAsset.FromJson(@"{
     ""version"": 1,
@@ -94,16 +94,16 @@ public partial class @InputPersonaje: IInputActionCollection2, IDisposable
             ""actions"": [
                 {
                     ""name"": ""Movimiento"",
-                    ""type"": ""Button"",
+                    ""type"": ""Value"",
                     ""id"": ""620a6fed-e2ac-4552-97e3-e8378f414594"",
-                    ""expectedControlType"": """",
+                    ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": false,
+                    ""initialStateCheck"": true,
                     ""priority"": 0
                 },
                 {
-                    ""name"": ""Salto"",
+                    ""name"": ""Saltar"",
                     ""type"": ""Button"",
                     ""id"": ""afbb904a-bfff-468b-bcc0-0688e532cd79"",
                     ""expectedControlType"": """",
@@ -111,53 +111,19 @@ public partial class @InputPersonaje: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""initialStateCheck"": false,
                     ""priority"": 0
+                },
+                {
+                    ""name"": ""Mirar"",
+                    ""type"": ""Value"",
+                    ""id"": ""9fa8cb96-41a2-486f-ac20-ff7a1af657ea"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true,
+                    ""priority"": 0
                 }
             ],
             ""bindings"": [
-                {
-                    ""name"": """",
-                    ""id"": ""dcc7f162-95bf-4361-8538-b91898bf7c90"",
-                    ""path"": ""<Keyboard>/#(W)"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Movimiento"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""3bc9b162-0520-48e9-b80b-a8191b0c3d44"",
-                    ""path"": ""<Keyboard>/#(A)"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Movimiento"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""2b7546e0-7afb-4d82-915b-e411a47736c3"",
-                    ""path"": ""<Keyboard>/#(S)"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Movimiento"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""0bcd1cb7-3bb7-40a5-a778-c76c83143afb"",
-                    ""path"": ""<Keyboard>/#(D)"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Movimiento"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
                 {
                     ""name"": """",
                     ""id"": ""a4225d16-3ddf-4c63-933c-29eb683a3f60"",
@@ -165,7 +131,73 @@ public partial class @InputPersonaje: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Salto"",
+                    ""action"": ""Saltar"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""12766051-236f-4a33-b9ea-04b8187e4f62"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Movimiento"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Up"",
+                    ""id"": ""4b153731-1fcc-478b-a713-06eedb4e103e"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Movimiento"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Down"",
+                    ""id"": ""72761c8e-6d13-456b-b626-0a5e5ca09a10"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Movimiento"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Left"",
+                    ""id"": ""bb2a27c2-f779-49de-8077-b1249a09ee0c"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Movimiento"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Right"",
+                    ""id"": ""b324424b-a49b-49ae-a438-76d9933f22a0"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Movimiento"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ed0f9a98-caab-4aeb-ade2-fb71534a1767"",
+                    ""path"": ""<Mouse>/delta"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Mirar"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -177,12 +209,13 @@ public partial class @InputPersonaje: IInputActionCollection2, IDisposable
         // Movimiento
         m_Movimiento = asset.FindActionMap("Movimiento", throwIfNotFound: true);
         m_Movimiento_Movimiento = m_Movimiento.FindAction("Movimiento", throwIfNotFound: true);
-        m_Movimiento_Salto = m_Movimiento.FindAction("Salto", throwIfNotFound: true);
+        m_Movimiento_Saltar = m_Movimiento.FindAction("Saltar", throwIfNotFound: true);
+        m_Movimiento_Mirar = m_Movimiento.FindAction("Mirar", throwIfNotFound: true);
     }
 
-    ~@InputPersonaje()
+    ~@PlayerInput()
     {
-        UnityEngine.Debug.Assert(!m_Movimiento.enabled, "This will cause a leak and performance issues, InputPersonaje.Movimiento.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Movimiento.enabled, "This will cause a leak and performance issues, PlayerInput.Movimiento.Disable() has not been called.");
     }
 
     /// <summary>
@@ -259,26 +292,31 @@ public partial class @InputPersonaje: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Movimiento;
     private List<IMovimientoActions> m_MovimientoActionsCallbackInterfaces = new List<IMovimientoActions>();
     private readonly InputAction m_Movimiento_Movimiento;
-    private readonly InputAction m_Movimiento_Salto;
+    private readonly InputAction m_Movimiento_Saltar;
+    private readonly InputAction m_Movimiento_Mirar;
     /// <summary>
     /// Provides access to input actions defined in input action map "Movimiento".
     /// </summary>
     public struct MovimientoActions
     {
-        private @InputPersonaje m_Wrapper;
+        private @PlayerInput m_Wrapper;
 
         /// <summary>
         /// Construct a new instance of the input action map wrapper class.
         /// </summary>
-        public MovimientoActions(@InputPersonaje wrapper) { m_Wrapper = wrapper; }
+        public MovimientoActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
         /// <summary>
         /// Provides access to the underlying input action "Movimiento/Movimiento".
         /// </summary>
         public InputAction @Movimiento => m_Wrapper.m_Movimiento_Movimiento;
         /// <summary>
-        /// Provides access to the underlying input action "Movimiento/Salto".
+        /// Provides access to the underlying input action "Movimiento/Saltar".
         /// </summary>
-        public InputAction @Salto => m_Wrapper.m_Movimiento_Salto;
+        public InputAction @Saltar => m_Wrapper.m_Movimiento_Saltar;
+        /// <summary>
+        /// Provides access to the underlying input action "Movimiento/Mirar".
+        /// </summary>
+        public InputAction @Mirar => m_Wrapper.m_Movimiento_Mirar;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -308,9 +346,12 @@ public partial class @InputPersonaje: IInputActionCollection2, IDisposable
             @Movimiento.started += instance.OnMovimiento;
             @Movimiento.performed += instance.OnMovimiento;
             @Movimiento.canceled += instance.OnMovimiento;
-            @Salto.started += instance.OnSalto;
-            @Salto.performed += instance.OnSalto;
-            @Salto.canceled += instance.OnSalto;
+            @Saltar.started += instance.OnSaltar;
+            @Saltar.performed += instance.OnSaltar;
+            @Saltar.canceled += instance.OnSaltar;
+            @Mirar.started += instance.OnMirar;
+            @Mirar.performed += instance.OnMirar;
+            @Mirar.canceled += instance.OnMirar;
         }
 
         /// <summary>
@@ -325,9 +366,12 @@ public partial class @InputPersonaje: IInputActionCollection2, IDisposable
             @Movimiento.started -= instance.OnMovimiento;
             @Movimiento.performed -= instance.OnMovimiento;
             @Movimiento.canceled -= instance.OnMovimiento;
-            @Salto.started -= instance.OnSalto;
-            @Salto.performed -= instance.OnSalto;
-            @Salto.canceled -= instance.OnSalto;
+            @Saltar.started -= instance.OnSaltar;
+            @Saltar.performed -= instance.OnSaltar;
+            @Saltar.canceled -= instance.OnSaltar;
+            @Mirar.started -= instance.OnMirar;
+            @Mirar.performed -= instance.OnMirar;
+            @Mirar.canceled -= instance.OnMirar;
         }
 
         /// <summary>
@@ -376,11 +420,18 @@ public partial class @InputPersonaje: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMovimiento(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "Salto" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Saltar" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnSalto(InputAction.CallbackContext context);
+        void OnSaltar(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Mirar" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnMirar(InputAction.CallbackContext context);
     }
 }
