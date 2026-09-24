@@ -121,6 +121,16 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""initialStateCheck"": true,
                     ""priority"": 0
+                },
+                {
+                    ""name"": ""Disparar"",
+                    ""type"": ""Button"",
+                    ""id"": ""abdc0d24-6fff-42e0-8a65-8d6a516fc947"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
                 }
             ],
             ""bindings"": [
@@ -200,6 +210,17 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""action"": ""Mirar"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c223b3bc-441c-41bd-9da4-34cb67e44751"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Disparar"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -211,6 +232,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_Movimiento_Movimiento = m_Movimiento.FindAction("Movimiento", throwIfNotFound: true);
         m_Movimiento_Saltar = m_Movimiento.FindAction("Saltar", throwIfNotFound: true);
         m_Movimiento_Mirar = m_Movimiento.FindAction("Mirar", throwIfNotFound: true);
+        m_Movimiento_Disparar = m_Movimiento.FindAction("Disparar", throwIfNotFound: true);
     }
 
     ~@PlayerInput()
@@ -294,6 +316,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Movimiento_Movimiento;
     private readonly InputAction m_Movimiento_Saltar;
     private readonly InputAction m_Movimiento_Mirar;
+    private readonly InputAction m_Movimiento_Disparar;
     /// <summary>
     /// Provides access to input actions defined in input action map "Movimiento".
     /// </summary>
@@ -317,6 +340,10 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Movimiento/Mirar".
         /// </summary>
         public InputAction @Mirar => m_Wrapper.m_Movimiento_Mirar;
+        /// <summary>
+        /// Provides access to the underlying input action "Movimiento/Disparar".
+        /// </summary>
+        public InputAction @Disparar => m_Wrapper.m_Movimiento_Disparar;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -352,6 +379,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Mirar.started += instance.OnMirar;
             @Mirar.performed += instance.OnMirar;
             @Mirar.canceled += instance.OnMirar;
+            @Disparar.started += instance.OnDisparar;
+            @Disparar.performed += instance.OnDisparar;
+            @Disparar.canceled += instance.OnDisparar;
         }
 
         /// <summary>
@@ -372,6 +402,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Mirar.started -= instance.OnMirar;
             @Mirar.performed -= instance.OnMirar;
             @Mirar.canceled -= instance.OnMirar;
+            @Disparar.started -= instance.OnDisparar;
+            @Disparar.performed -= instance.OnDisparar;
+            @Disparar.canceled -= instance.OnDisparar;
         }
 
         /// <summary>
@@ -433,5 +466,12 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMirar(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Disparar" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnDisparar(InputAction.CallbackContext context);
     }
 }

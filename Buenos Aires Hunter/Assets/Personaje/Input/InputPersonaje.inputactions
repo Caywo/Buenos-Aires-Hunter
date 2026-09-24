@@ -35,6 +35,16 @@
                     "interactions": "",
                     "initialStateCheck": true,
                     "priority": 0
+                },
+                {
+                    "name": "Disparar",
+                    "type": "Button",
+                    "id": "abdc0d24-6fff-42e0-8a65-8d6a516fc947",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
                 }
             ],
             "bindings": [
@@ -112,6 +122,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Mirar",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c223b3bc-441c-41bd-9da4-34cb67e44751",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Disparar",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

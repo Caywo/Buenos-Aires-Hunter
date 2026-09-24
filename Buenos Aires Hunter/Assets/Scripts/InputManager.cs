@@ -8,6 +8,7 @@ public class InputManager : NetworkBehaviour
     private PlayerInput.MovimientoActions movimiento;
     private PlayerMotor motor;
     private PlayerMirar mirar;
+    private WeaponShoot weapon;
 
     void Awake()
     {
@@ -15,7 +16,10 @@ public class InputManager : NetworkBehaviour
         movimiento = playerInput.Movimiento;
         motor = GetComponent<PlayerMotor>();
         mirar = GetComponent<PlayerMirar>();
+        weapon = GetComponentInChildren<WeaponShoot>();
+
         movimiento.Saltar.performed += ctx => motor.Saltar();
+        movimiento.Disparar.performed += ctx => weapon.Disparar();
     }
 
     public override void OnNetworkSpawn()
@@ -27,7 +31,6 @@ public class InputManager : NetworkBehaviour
         }
         else
         {
-            // Apaga la cámara y el audio de los jugadores remotos
             mirar.cam.enabled = false;
             var listener = mirar.cam.GetComponent<AudioListener>();
             if (listener != null) listener.enabled = false;
