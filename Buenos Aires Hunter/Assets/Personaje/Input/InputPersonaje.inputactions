@@ -140,6 +140,16 @@
                     "interactions": "",
                     "initialStateCheck": false,
                     "priority": 0
+                },
+                {
+                    "name": "Apuntar",
+                    "type": "Button",
+                    "id": "2cb68eaa-eaac-4026-9b2a-56f63c10ffcc",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
                 }
             ],
             "bindings": [
@@ -195,6 +205,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Disparar",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "dd06c97c-a814-4b1e-8c27-3157fb8e321a",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Apuntar",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

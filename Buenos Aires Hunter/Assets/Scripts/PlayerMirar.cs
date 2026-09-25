@@ -9,7 +9,6 @@ public class PlayerMirar : MonoBehaviour
 
     [Header("Recoil")]
     public float recoilReturnSpeed = 6f;
-    public float maxRecoilPitch = 15f; // nuevo: límite de recoil acumulado
     private float recoilX = 0f;
 
     public void ProcessMirar(Vector2 input)
@@ -38,7 +37,7 @@ public class PlayerMirar : MonoBehaviour
     // Método público para que WeaponShoot pida recoil
     public void AddRecoil(float cantidad)
     {
-        recoilX -= cantidad;
-        recoilX = Mathf.Clamp(recoilX, -maxRecoilPitch, maxRecoilPitch);
+        rotacionX -= cantidad; 
+        rotacionX = Mathf.Clamp(rotacionX, -80f, 80f);
     }
 }

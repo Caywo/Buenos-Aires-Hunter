@@ -10,7 +10,7 @@ public class InputManager : NetworkBehaviour
     private PlayerMotor motor;
     private PlayerMirar mirar;
     private PlayerInventory inventario;
-   
+
     void Awake()
     {
         playerInput = new PlayerInput();
@@ -27,6 +27,9 @@ public class InputManager : NetworkBehaviour
         movimiento.Saltar.performed += ctx => motor.Saltar();
 
         inventarioActions.Disparar.performed += ctx => inventario.Disparar();
+
+        inventarioActions.Apuntar.performed += ctx => { Debug.Log("Apuntar: performed"); inventario.SetApuntando(true); };
+        inventarioActions.Apuntar.canceled += ctx => { Debug.Log("Apuntar: canceled"); inventario.SetApuntando(false); };
 
         inventarioActions.Items.performed += ctx =>
         {

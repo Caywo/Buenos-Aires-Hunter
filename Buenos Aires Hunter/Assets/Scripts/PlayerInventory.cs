@@ -94,4 +94,11 @@ public class PlayerInventory : NetworkBehaviour
         if (weaponActual != null) weaponActual.Disparar();
     }
     public int GetCantidad(int indice) => cantidades[indice].Value;
+
+    public void SetApuntando(bool apuntando)
+    {
+        if (!IsOwner) return;
+        if (weaponActual != null) weaponActual.SetAiming(apuntando);
+    }
+
 }
