@@ -5,7 +5,7 @@ public class WeaponShoot : MonoBehaviour
     [Header("Referencias")]
     public Transform slide;
     public Transform weaponHolder;
-    public PlayerMirar mouseLook;
+    public PlayerLook mouseLook;
     public Camera playerCamera;
 
     [Header("Slide (corredera)")]
@@ -41,7 +41,7 @@ public class WeaponShoot : MonoBehaviour
     private Vector3 weaponInitialPos;
     private float nextFireTime = 0f;
 
-    public void Init(Transform weaponHolder, PlayerMirar mouseLook, Camera playerCamera)
+    public void Init(Transform weaponHolder, PlayerLook mouseLook, Camera playerCamera)
     {
         this.weaponHolder = weaponHolder;
         this.mouseLook = mouseLook;

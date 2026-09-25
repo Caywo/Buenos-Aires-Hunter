@@ -19,12 +19,16 @@ public class PlayerInventory : NetworkBehaviour
     private NetworkVariable<int>[] cantidades;
     private GameObject instanciaActual;
     private WeaponShoot weaponActual;
-    private PlayerMirar mirar;
+    private PlayerLook mirar;
     private Camera camaraJugador;
+    private int indiceSube = -1;
+    private NetworkVariable<int> saldoSube = new NetworkVariable<int>(0,
+    NetworkVariableReadPermission.Everyone,
+    NetworkVariableWritePermission.Server);
 
     void Awake()
     {
-        mirar = GetComponent<PlayerMirar>();
+        mirar = GetComponent<PlayerLook>();
         camaraJugador = GetComponentInChildren<Camera>(true);
     }
     public override void OnNetworkSpawn()
@@ -99,6 +103,22 @@ public class PlayerInventory : NetworkBehaviour
     {
         if (!IsOwner) return;
         if (weaponActual != null) weaponActual.SetAiming(apuntando);
+    }
+
+    public void AgregarSaldo(int cantidad)
+    {
+        if (!IsServer) return;
+        saldoSube.Value += cantidad;
+    }
+
+    public bool PagarConSube(int monto)
+    {
+        if (!IsServer) return false;
+        if (indiceActivo.Value != indiceSube) return false; // no tiene la SUBE en mano
+        if (saldoSube.Value < monto) return false;
+
+        saldoSube.Value -= monto;
+        return true;
     }
 
 }

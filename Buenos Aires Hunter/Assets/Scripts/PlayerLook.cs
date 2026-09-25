@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerMirar : MonoBehaviour
+public class PlayerLook : MonoBehaviour
 {
     public Camera cam;
     private float rotacionX = 0f;

@@ -8,7 +8,7 @@ public class InputManager : NetworkBehaviour
     private PlayerInput.MovimientoActions movimiento;
     private PlayerInput.InventarioActions inventarioActions;
     private PlayerMotor motor;
-    private PlayerMirar mirar;
+    private PlayerLook mirar;
     private PlayerInventory inventario;
 
     void Awake()
@@ -17,7 +17,7 @@ public class InputManager : NetworkBehaviour
         movimiento = playerInput.Movimiento;
         inventarioActions = playerInput.Inventario;
         motor = GetComponent<PlayerMotor>();
-        mirar = GetComponent<PlayerMirar>();
+        mirar = GetComponent<PlayerLook>();
         inventario= GetComponent<PlayerInventory>();
 
         if (motor == null) Debug.LogError("InputManager: no se encontró PlayerMotor.", this);
