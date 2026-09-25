@@ -35,8 +35,9 @@ public class PlayerMirar : MonoBehaviour
     }
 
     // Método público para que WeaponShoot pida recoil
-    public void AddRecoil(float amount)
+    public void AddRecoil(float cantidad)
     {
-        recoilX -= amount;
+        rotacionX -= cantidad; 
+        rotacionX = Mathf.Clamp(rotacionX, -80f, 80f);
     }
 }

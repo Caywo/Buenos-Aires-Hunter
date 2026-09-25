@@ -121,16 +121,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""initialStateCheck"": true,
                     ""priority"": 0
-                },
-                {
-                    ""name"": ""Disparar"",
-                    ""type"": ""Button"",
-                    ""id"": ""abdc0d24-6fff-42e0-8a65-8d6a516fc947"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false,
-                    ""priority"": 0
                 }
             ],
             ""bindings"": [
@@ -210,10 +200,82 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""action"": ""Mirar"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""Inventario"",
+            ""id"": ""d858656b-80a3-49de-8793-8c0e15e882b6"",
+            ""actions"": [
+                {
+                    ""name"": ""Items"",
+                    ""type"": ""Button"",
+                    ""id"": ""1245c70f-37ec-4485-aace-eafe9723b3a4"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""Disparar"",
+                    ""type"": ""Button"",
+                    ""id"": ""216935aa-4b15-417b-b81d-cfc2d7e3619e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""19a69386-f48d-4cd1-8c87-4f3644e54408"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Items"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""c223b3bc-441c-41bd-9da4-34cb67e44751"",
+                    ""id"": ""5ccde38c-b0f0-46b3-8a8d-96dab00c830d"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Items"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a1b84104-63ee-46d6-a1d2-eb11ba492714"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Items"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""18738852-2b95-4e71-91ad-e3ca043bdf3c"",
+                    ""path"": ""<Keyboard>/4"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Items"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b91dc6b8-b353-4d8a-9bb7-95a552135e52"",
                     ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -232,12 +294,16 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_Movimiento_Movimiento = m_Movimiento.FindAction("Movimiento", throwIfNotFound: true);
         m_Movimiento_Saltar = m_Movimiento.FindAction("Saltar", throwIfNotFound: true);
         m_Movimiento_Mirar = m_Movimiento.FindAction("Mirar", throwIfNotFound: true);
-        m_Movimiento_Disparar = m_Movimiento.FindAction("Disparar", throwIfNotFound: true);
+        // Inventario
+        m_Inventario = asset.FindActionMap("Inventario", throwIfNotFound: true);
+        m_Inventario_Items = m_Inventario.FindAction("Items", throwIfNotFound: true);
+        m_Inventario_Disparar = m_Inventario.FindAction("Disparar", throwIfNotFound: true);
     }
 
     ~@PlayerInput()
     {
         UnityEngine.Debug.Assert(!m_Movimiento.enabled, "This will cause a leak and performance issues, PlayerInput.Movimiento.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Inventario.enabled, "This will cause a leak and performance issues, PlayerInput.Inventario.Disable() has not been called.");
     }
 
     /// <summary>
@@ -316,7 +382,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Movimiento_Movimiento;
     private readonly InputAction m_Movimiento_Saltar;
     private readonly InputAction m_Movimiento_Mirar;
-    private readonly InputAction m_Movimiento_Disparar;
     /// <summary>
     /// Provides access to input actions defined in input action map "Movimiento".
     /// </summary>
@@ -340,10 +405,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Movimiento/Mirar".
         /// </summary>
         public InputAction @Mirar => m_Wrapper.m_Movimiento_Mirar;
-        /// <summary>
-        /// Provides access to the underlying input action "Movimiento/Disparar".
-        /// </summary>
-        public InputAction @Disparar => m_Wrapper.m_Movimiento_Disparar;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -379,9 +440,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Mirar.started += instance.OnMirar;
             @Mirar.performed += instance.OnMirar;
             @Mirar.canceled += instance.OnMirar;
-            @Disparar.started += instance.OnDisparar;
-            @Disparar.performed += instance.OnDisparar;
-            @Disparar.canceled += instance.OnDisparar;
         }
 
         /// <summary>
@@ -402,9 +460,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Mirar.started -= instance.OnMirar;
             @Mirar.performed -= instance.OnMirar;
             @Mirar.canceled -= instance.OnMirar;
-            @Disparar.started -= instance.OnDisparar;
-            @Disparar.performed -= instance.OnDisparar;
-            @Disparar.canceled -= instance.OnDisparar;
         }
 
         /// <summary>
@@ -438,6 +493,113 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="MovimientoActions" /> instance referencing this action map.
     /// </summary>
     public MovimientoActions @Movimiento => new MovimientoActions(this);
+
+    // Inventario
+    private readonly InputActionMap m_Inventario;
+    private List<IInventarioActions> m_InventarioActionsCallbackInterfaces = new List<IInventarioActions>();
+    private readonly InputAction m_Inventario_Items;
+    private readonly InputAction m_Inventario_Disparar;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Inventario".
+    /// </summary>
+    public struct InventarioActions
+    {
+        private @PlayerInput m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public InventarioActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Inventario/Items".
+        /// </summary>
+        public InputAction @Items => m_Wrapper.m_Inventario_Items;
+        /// <summary>
+        /// Provides access to the underlying input action "Inventario/Disparar".
+        /// </summary>
+        public InputAction @Disparar => m_Wrapper.m_Inventario_Disparar;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Inventario; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="InventarioActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(InventarioActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="InventarioActions" />
+        public void AddCallbacks(IInventarioActions instance)
+        {
+            if (instance == null || m_Wrapper.m_InventarioActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_InventarioActionsCallbackInterfaces.Add(instance);
+            @Items.started += instance.OnItems;
+            @Items.performed += instance.OnItems;
+            @Items.canceled += instance.OnItems;
+            @Disparar.started += instance.OnDisparar;
+            @Disparar.performed += instance.OnDisparar;
+            @Disparar.canceled += instance.OnDisparar;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="InventarioActions" />
+        private void UnregisterCallbacks(IInventarioActions instance)
+        {
+            @Items.started -= instance.OnItems;
+            @Items.performed -= instance.OnItems;
+            @Items.canceled -= instance.OnItems;
+            @Disparar.started -= instance.OnDisparar;
+            @Disparar.performed -= instance.OnDisparar;
+            @Disparar.canceled -= instance.OnDisparar;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="InventarioActions.UnregisterCallbacks(IInventarioActions)" />.
+        /// </summary>
+        /// <seealso cref="InventarioActions.UnregisterCallbacks(IInventarioActions)" />
+        public void RemoveCallbacks(IInventarioActions instance)
+        {
+            if (m_Wrapper.m_InventarioActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="InventarioActions.AddCallbacks(IInventarioActions)" />
+        /// <seealso cref="InventarioActions.RemoveCallbacks(IInventarioActions)" />
+        /// <seealso cref="InventarioActions.UnregisterCallbacks(IInventarioActions)" />
+        public void SetCallbacks(IInventarioActions instance)
+        {
+            foreach (var item in m_Wrapper.m_InventarioActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_InventarioActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="InventarioActions" /> instance referencing this action map.
+    /// </summary>
+    public InventarioActions @Inventario => new InventarioActions(this);
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Movimiento" which allows adding and removing callbacks.
     /// </summary>
@@ -466,6 +628,21 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMirar(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Inventario" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="InventarioActions.AddCallbacks(IInventarioActions)" />
+    /// <seealso cref="InventarioActions.RemoveCallbacks(IInventarioActions)" />
+    public interface IInventarioActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "Items" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnItems(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Disparar" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

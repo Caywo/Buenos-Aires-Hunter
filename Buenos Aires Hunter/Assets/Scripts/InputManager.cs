@@ -6,27 +6,35 @@ public class InputManager : NetworkBehaviour
 {
     private PlayerInput playerInput;
     private PlayerInput.MovimientoActions movimiento;
+    private PlayerInput.InventarioActions inventarioActions;
     private PlayerMotor motor;
     private PlayerMirar mirar;
-    private WeaponShoot weapon;
-
+    private PlayerInventory inventario;
+   
     void Awake()
     {
         playerInput = new PlayerInput();
         movimiento = playerInput.Movimiento;
+        inventarioActions = playerInput.Inventario;
         motor = GetComponent<PlayerMotor>();
         mirar = GetComponent<PlayerMirar>();
-        weapon = GetComponentInChildren<WeaponShoot>(true);
+        inventario= GetComponent<PlayerInventory>();
 
         if (motor == null) Debug.LogError("InputManager: no se encontró PlayerMotor.", this);
         if (mirar == null) Debug.LogError("InputManager: no se encontró PlayerMirar.", this);
-        if (weapon == null) Debug.LogError("InputManager: no se encontró WeaponShoot en los hijos.", this);
+        if (inventario == null) Debug.LogError("InputManager: no se encontró PlayerInventory.", this);
 
         movimiento.Saltar.performed += ctx => motor.Saltar();
-        movimiento.Disparar.performed += ctx =>
+
+        inventarioActions.Disparar.performed += ctx => inventario.Disparar();
+
+        inventarioActions.Items.performed += ctx =>
         {
-            if (weapon != null) weapon.Disparar();
-            else Debug.LogWarning("Se intentó disparar pero 'weapon' es null.");
+            string tecla = ctx.control.name; // "1", "2", "3"
+            if (int.TryParse(tecla, out int numero))
+            {
+                inventario.Equipar(numero - 1); // tecla 1 -> índice 0
+            }
         };
     }
 
@@ -35,6 +43,7 @@ public class InputManager : NetworkBehaviour
         if (IsOwner)
         {
             movimiento.Enable();
+            inventarioActions.Enable(); 
             Cursor.lockState = CursorLockMode.Locked;
         }
         else
@@ -48,6 +57,7 @@ public class InputManager : NetworkBehaviour
     public override void OnNetworkDespawn()
     {
         movimiento.Disable();
+        inventarioActions.Disable();
     }
 
     void FixedUpdate()

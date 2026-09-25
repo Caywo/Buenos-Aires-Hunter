@@ -32,7 +32,12 @@ public class WeaponShoot : MonoBehaviour
     private Vector3 slideInitialPos;
     private Vector3 weaponInitialPos;
     private float nextFireTime = 0f;
-
+    public void Init(Transform weaponHolder, PlayerMirar mouseLook, Camera playerCamera)
+    {
+        this.weaponHolder = weaponHolder;
+        this.mouseLook = mouseLook;
+        this.playerCamera = playerCamera;
+    }
     void Start()
     {
         if (slide != null) slideInitialPos = slide.localPosition;
@@ -51,6 +56,7 @@ public class WeaponShoot : MonoBehaviour
         AnimateSlide();
         AnimateWeaponKick();
     }
+
 
     public void Disparar()
     {
