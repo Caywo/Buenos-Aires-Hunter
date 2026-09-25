@@ -5,7 +5,8 @@ using Unity.Netcode;
 public class EnemyAI : NetworkBehaviour
 {
     [Header("Detección")]
-    [SerializeField] private float detectionRange = 15f;
+[SerializeField] private float detectionRange = 25f;
+[SerializeField] private float loseTargetRange = 40f;
 
     [Header("Movimiento")]
     [SerializeField] private float stoppingDistance = 1.5f;
@@ -18,6 +19,14 @@ public class EnemyAI : NetworkBehaviour
 
     private NavMeshAgent agent;
     private Transform target;
+    private enum EstadoIA
+    {
+        Idle,
+        Perseguir,
+        Atacar
+    }
+
+    private EstadoIA estadoActual = EstadoIA.Idle;
 
     private void Awake()
     {
@@ -37,45 +46,108 @@ public class EnemyAI : NetworkBehaviour
 
     private void Update()
     {
-        
         if (!IsServer)
             return;
 
-        FindTarget();
-
-        if (target != null)
+        switch (estadoActual)
         {
-            float distance = Vector3.Distance(
-                transform.position,
-                target.position
-            );
+            case EstadoIA.Idle:
+                EstadoIdle();
+                break;
 
-            if (distance <= attackRange)
-            {
-                // Está suficientemente cerca para atacar
-                agent.ResetPath();
+            case EstadoIA.Perseguir:
+                EstadoPerseguir();
+                break;
 
-                Atacar();
-            }
-            else if (distance <= detectionRange)
+            case EstadoIA.Atacar:
+                EstadoAtacar();
+                break;
+        }
+    }
+    private void EstadoIdle()
+    {
+        if (target == null)
+        {
+            FindTarget();
+
+            if (target != null)
             {
-                
-                agent.stoppingDistance = stoppingDistance;
-                agent.SetDestination(target.position);
-            }
-            else
-            {
-                
-                agent.ResetPath();
+                estadoActual = EstadoIA.Perseguir;
             }
         }
+    }
+    private void EstadoPerseguir()
+    {
+        if (target == null)
+        {
+            estadoActual = EstadoIA.Idle;
+            return;
+        }
+
+        float distance = Vector3.Distance(
+            transform.position,
+            target.position
+        );
+
+        if (distance > loseTargetRange)
+        {
+            target = null;
+            agent.ResetPath();
+
+            estadoActual = EstadoIA.Idle;
+            return;
+        }
+
+        if (distance <= attackRange)
+        {
+            agent.ResetPath();
+
+            estadoActual = EstadoIA.Atacar;
+            return;
+        }
+
+        agent.stoppingDistance = stoppingDistance;
+        agent.SetDestination(target.position);
+
+        MirarAlObjetivo();
+    }
+    private void EstadoAtacar()
+    {
+        if (target == null)
+        {
+            estadoActual = EstadoIA.Idle;
+            return;
+        }
+
+        float distance = Vector3.Distance(
+            transform.position,
+            target.position
+        );
+
+        if (distance > loseTargetRange)
+        {
+            target = null;
+            estadoActual = EstadoIA.Idle;
+            return;
+        }
+
+        if (distance > attackRange)
+        {
+            estadoActual = EstadoIA.Perseguir;
+            return;
+        }
+
+        agent.ResetPath();
+
+        MirarAlObjetivo();
+        Atacar();
     }
 
     private void FindTarget()
     {
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
 
-        float distanciaMasCercana = Mathf.Infinity;
+        float distanciaMasCercana = detectionRange;
         Transform jugadorMasCercano = null;
 
         foreach (GameObject player in players)
@@ -100,5 +172,23 @@ public class EnemyAI : NetworkBehaviour
             return;
 
         tiempoUltimoAtaque = Time.time;
+
+        Debug.Log("El enemigo ataca");
+    }
+    private void MirarAlObjetivo()
+    {
+        Vector3 direccion = target.position - transform.position;
+        direccion.y = 0f;
+
+        if (direccion != Vector3.zero)
+        {
+            Quaternion rotacionObjetivo = Quaternion.LookRotation(direccion);
+
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                rotacionObjetivo,
+                10f * Time.deltaTime
+            );
+        }
     }
 }
