@@ -17,6 +17,12 @@
 # Unity generated files
 MemoryCaptures/
 Recordings/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.user
+*.userprefs
 
 # OS
 .DS_Store
