@@ -16,10 +16,18 @@ public class InputManager : NetworkBehaviour
         movimiento = playerInput.Movimiento;
         motor = GetComponent<PlayerMotor>();
         mirar = GetComponent<PlayerMirar>();
-        weapon = GetComponentInChildren<WeaponShoot>();
+        weapon = GetComponentInChildren<WeaponShoot>(true);
+
+        if (motor == null) Debug.LogError("InputManager: no se encontró PlayerMotor.", this);
+        if (mirar == null) Debug.LogError("InputManager: no se encontró PlayerMirar.", this);
+        if (weapon == null) Debug.LogError("InputManager: no se encontró WeaponShoot en los hijos.", this);
 
         movimiento.Saltar.performed += ctx => motor.Saltar();
-        movimiento.Disparar.performed += ctx => weapon.Disparar();
+        movimiento.Disparar.performed += ctx =>
+        {
+            if (weapon != null) weapon.Disparar();
+            else Debug.LogWarning("Se intentó disparar pero 'weapon' es null.");
+        };
     }
 
     public override void OnNetworkSpawn()
