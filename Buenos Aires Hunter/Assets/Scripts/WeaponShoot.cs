@@ -5,7 +5,7 @@ public class WeaponShoot : MonoBehaviour
     [Header("Referencias")]
     public Transform slide;
     public Transform weaponHolder;
-    public PlayerMirar mouseLook;
+    public PlayerLook mouseLook;
     public Camera playerCamera;
 
     [Header("Slide (corredera)")]
@@ -25,6 +25,14 @@ public class WeaponShoot : MonoBehaviour
     public float damage = 20f;
     public LayerMask hitMask = ~0;
 
+    [Header("Apuntado (ADS)")]
+    public Transform aimPoint;
+    public float aimSpeed = 10f;
+    public float aimFOV = 40f;
+    private float defaultFOV;
+    private bool isAiming = false;
+    private Vector3 hipFirePosition;
+
     [Header("Sonido")]
     public AudioClip shootSound;
     private AudioSource audioSource;
@@ -33,10 +41,24 @@ public class WeaponShoot : MonoBehaviour
     private Vector3 weaponInitialPos;
     private float nextFireTime = 0f;
 
+    public void Init(Transform weaponHolder, PlayerLook mouseLook, Camera playerCamera)
+    {
+        this.weaponHolder = weaponHolder;
+        this.mouseLook = mouseLook;
+        this.playerCamera = playerCamera;
+
+        defaultFOV = playerCamera.fieldOfView;
+    }
+
     void Start()
     {
         if (slide != null) slideInitialPos = slide.localPosition;
-        if (weaponHolder != null) weaponInitialPos = weaponHolder.localPosition;
+        if (weaponHolder != null)
+        {
+            weaponInitialPos = weaponHolder.localPosition;
+            hipFirePosition = weaponInitialPos;
+        }
+
 
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
@@ -50,7 +72,9 @@ public class WeaponShoot : MonoBehaviour
     {
         AnimateSlide();
         AnimateWeaponKick();
+        AnimateAim();
     }
+
 
     public void Disparar()
     {
@@ -101,4 +125,25 @@ public class WeaponShoot : MonoBehaviour
         if (weaponHolder == null) return;
         weaponHolder.localPosition = Vector3.Lerp(weaponHolder.localPosition, weaponInitialPos, Time.deltaTime * weaponReturnSpeed);
     }
+
+    public void SetAiming(bool aiming)
+    {
+        isAiming = aiming;
+    }
+
+    void AnimateAim()
+    {
+        if (weaponHolder == null || aimPoint == null || playerCamera == null)
+        {
+            Debug.LogWarning($"AnimateAim cortado. weaponHolder null: {weaponHolder == null}, aimPoint null: {aimPoint == null}, playerCamera null: {playerCamera == null}");
+            return;
+        }
+
+        Vector3 targetPos = isAiming ? aimPoint.localPosition : hipFirePosition;
+        weaponInitialPos = Vector3.Lerp(weaponInitialPos, targetPos, Time.deltaTime * aimSpeed);
+
+        float targetFOV = isAiming ? aimFOV : defaultFOV;
+        playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, targetFOV, Time.deltaTime * aimSpeed);
+    }
+
 }

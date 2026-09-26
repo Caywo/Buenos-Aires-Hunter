@@ -35,16 +35,6 @@
                     "interactions": "",
                     "initialStateCheck": true,
                     "priority": 0
-                },
-                {
-                    "name": "Disparar",
-                    "type": "Button",
-                    "id": "abdc0d24-6fff-42e0-8a65-8d6a516fc947",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false,
-                    "priority": 0
                 }
             ],
             "bindings": [
@@ -124,15 +114,108 @@
                     "action": "Mirar",
                     "isComposite": false,
                     "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Inventario",
+            "id": "d858656b-80a3-49de-8793-8c0e15e882b6",
+            "actions": [
+                {
+                    "name": "Items",
+                    "type": "Button",
+                    "id": "1245c70f-37ec-4485-aace-eafe9723b3a4",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
+                },
+                {
+                    "name": "Disparar",
+                    "type": "Button",
+                    "id": "216935aa-4b15-417b-b81d-cfc2d7e3619e",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
+                },
+                {
+                    "name": "Apuntar",
+                    "type": "Button",
+                    "id": "2cb68eaa-eaac-4026-9b2a-56f63c10ffcc",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "19a69386-f48d-4cd1-8c87-4f3644e54408",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Items",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "c223b3bc-441c-41bd-9da4-34cb67e44751",
+                    "id": "5ccde38c-b0f0-46b3-8a8d-96dab00c830d",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Items",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a1b84104-63ee-46d6-a1d2-eb11ba492714",
+                    "path": "<Keyboard>/3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Items",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "18738852-2b95-4e71-91ad-e3ca043bdf3c",
+                    "path": "<Keyboard>/4",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Items",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b91dc6b8-b353-4d8a-9bb7-95a552135e52",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Disparar",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "dd06c97c-a814-4b1e-8c27-3157fb8e321a",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Apuntar",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

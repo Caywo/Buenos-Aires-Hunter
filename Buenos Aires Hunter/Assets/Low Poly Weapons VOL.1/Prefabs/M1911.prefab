@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4994603078994462}
   - component: {fileID: 33021587213863086}
   - component: {fileID: 23697610053470764}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Hammer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,7 +99,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4314784194266678}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: CINEMA_4D_Editor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 4414921361581812}
   - component: {fileID: 33504219924516634}
   - component: {fileID: 23749735145796272}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Trigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -220,7 +220,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4952727429218122}
-  m_Layer: 0
+  - component: {fileID: 6691475421798544339}
+  m_Layer: 3
   m_Name: M1911
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -242,8 +243,40 @@ Transform:
   m_Children:
   - {fileID: 4314784194266678}
   - {fileID: 4827498857130004}
+  - {fileID: 5190227550732621536}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6691475421798544339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1694449805434718}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd54fc1f11b2cc242992ac3a8dda7e4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponShoot
+  slide: {fileID: 4940302572560388}
+  weaponHolder: {fileID: 0}
+  mouseLook: {fileID: 0}
+  playerCamera: {fileID: 0}
+  slideRecoilOffset: {x: 0, y: 0, z: 0.05}
+  slideReturnSpeed: 10
+  weaponKickBack: 0.05
+  weaponReturnSpeed: 8
+  cameraRecoilAmount: 0
+  fireRate: 0.15
+  range: 100
+  damage: 20
+  hitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  aimPoint: {fileID: 5190227550732621536}
+  aimSpeed: 10
+  aimFOV: 40
+  shootSound: {fileID: 0}
 --- !u!1 &1748277932983872
 GameObject:
   m_ObjectHideFlags: 0
@@ -255,7 +288,7 @@ GameObject:
   - component: {fileID: 4827498857130004}
   - component: {fileID: 33340791094248084}
   - component: {fileID: 23769447271555568}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: M1911
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -349,7 +382,7 @@ GameObject:
   - component: {fileID: 4940302572560388}
   - component: {fileID: 33682271734350378}
   - component: {fileID: 23508060292273042}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Slide
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -439,7 +472,7 @@ GameObject:
   - component: {fileID: 4387031449159434}
   - component: {fileID: 33331485787548414}
   - component: {fileID: 23719986941454460}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Magazin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -518,3 +551,34 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &7995164115100032620
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5190227550732621536}
+  m_Layer: 3
+  m_Name: AimPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5190227550732621536
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7995164115100032620}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.05, z: 0.2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4952727429218122}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
