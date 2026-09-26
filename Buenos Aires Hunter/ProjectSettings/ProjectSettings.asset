@@ -87,7 +87,7 @@ PlayerSettings:
   androidApplicationEntry: 2
   defaultIsNativeResolution: 1
   macRetinaSupport: 1
-  runInBackground: 0
+  runInBackground: 1
   callOnDisableOnAssetBundleUnload: 1
   muteOtherAudioSources: 0
   Prepare IOS For Recording: 0
@@ -935,11 +935,11 @@ PlayerSettings:
   activeInputHandler: 2
   windowsGamepadBackendHint: 0
   enableDirectStorage: 0
-  cloudProjectId: 18a9fb79-a76d-4f48-ab9c-9c6c37b4e731
+  cloudProjectId: 7cf791cd-3319-444e-8e3f-3fc27837a265
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: Buenos Aires Hunter
-  organizationId: caywo
+  projectName: Buenos Aires Hunter (1)
+  organizationId: luchobeta02
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
