@@ -40,7 +40,6 @@ public class MenuPrincipal : MonoBehaviour
     public async void CrearPartida()
     {
         string joinCode = await NetworkManagerPersistente.Instance.StartHostWithRelayAsync();
-
         if (string.IsNullOrEmpty(joinCode))
         {
             Debug.LogError("No se pudo crear la partida.");

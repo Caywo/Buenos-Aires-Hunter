@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 8cd191652c8afa940ac68d4b41f0a962
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 399114
+  packageName: Silent Trees - Low Poly Pack
+  packageVersion: 1.0
+  assetPath: Assets/Silent_Trees/Shader/VertexColorLitSimple.shader
+  uploadId: 992524
