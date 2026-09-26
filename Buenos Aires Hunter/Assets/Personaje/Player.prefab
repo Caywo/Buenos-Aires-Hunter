@@ -457,7 +457,6 @@ MonoBehaviour:
   - item: {fileID: 11400000, guid: 56711325ed88d614a81506a939dc8d3a, type: 2}
   - item: {fileID: 11400000, guid: 2db320a86796257448900ff2af3b2337, type: 2}
   weaponHolder: {fileID: 3627730883311634322}
-  indiceSube: 4
 --- !u!1 &6413559522627772346
 GameObject:
   m_ObjectHideFlags: 0
@@ -554,7 +553,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6413559522627772346}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!114 &1487579201259329393
 MonoBehaviour:
   m_ObjectHideFlags: 0
