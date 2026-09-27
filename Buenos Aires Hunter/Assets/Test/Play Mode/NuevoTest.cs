@@ -160,6 +160,77 @@ public class PruebaInicialQA
             motor.Saltar();
         });
     }
+    [Test]
+    public void CP_CAM_01_PlayerLookDebeSerAccesible()
+    {
+        GameObject jugador = new GameObject();
+
+        PlayerLook look =
+            jugador.AddComponent<PlayerLook>();
+
+        Assert.IsNotNull(look);
+    }
+    [Test]
+    public void CP_CAM_01_SensibilidadXDebeSerMayorQueCero()
+    {
+        GameObject jugador = new GameObject();
+
+        PlayerLook look =
+            jugador.AddComponent<PlayerLook>();
+
+        Assert.Greater(
+            look.sensibilidadX,
+            0
+        );
+    }
+    [Test]
+    public void CP_CAM_01_SensibilidadYDebeSerMayorQueCero()
+    {
+        GameObject jugador = new GameObject();
+
+        PlayerLook look =
+            jugador.AddComponent<PlayerLook>();
+
+        Assert.Greater(
+            look.sensibilidadY,
+            0
+        );
+    }
+    [Test]
+    public void CP_CAM_01_RecoilReturnSpeedDebeSerMayorQueCero()
+    {
+        GameObject jugador = new GameObject();
+
+        PlayerLook look =
+            jugador.AddComponent<PlayerLook>();
+
+        Assert.Greater(
+            look.recoilReturnSpeed,
+            0
+        );
+    }
+    [UnityTest]
+    public IEnumerator CP_CAM_01_ProcessMirarNoDebeGenerarExcepcion()
+    {
+        GameObject jugador = new GameObject();
+
+        Camera cam =
+            new GameObject().AddComponent<Camera>();
+
+        PlayerLook look =
+            jugador.AddComponent<PlayerLook>();
+
+        look.cam = cam;
+
+        yield return null;
+
+        Assert.DoesNotThrow(() =>
+        {
+            look.ProcessMirar(
+                new Vector2(1, 1)
+            );
+        });
+    }
 
 
 }
