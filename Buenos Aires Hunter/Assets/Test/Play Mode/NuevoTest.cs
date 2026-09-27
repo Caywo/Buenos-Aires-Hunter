@@ -231,6 +231,95 @@ public class PruebaInicialQA
             );
         });
     }
+    [Test]
+    public void CP_COMB_01_WeaponShootDebeSerAccesible()
+    {
+        GameObject arma = new GameObject();
+
+        WeaponShoot weapon =
+            arma.AddComponent<WeaponShoot>();
+
+        Assert.IsNotNull(weapon);
+    }
+    [Test]
+    public void CP_COMB_01_FireRateDebeSerMayorQueCero()
+    {
+        GameObject arma = new GameObject();
+
+        WeaponShoot weapon =
+            arma.AddComponent<WeaponShoot>();
+
+        Assert.Greater(
+            weapon.fireRate,
+            0
+        );
+    }
+    [Test]
+    public void CP_COMB_01_RangoDebeSerMayorQueCero()
+    {
+        GameObject arma = new GameObject();
+
+        WeaponShoot weapon =
+            arma.AddComponent<WeaponShoot>();
+
+        Assert.Greater(
+            weapon.range,
+            0
+        );
+    }
+    [Test]
+    public void CP_COMB_01_DanioDebeSerMayorQueCero()
+    {
+        GameObject arma = new GameObject();
+
+        WeaponShoot weapon =
+            arma.AddComponent<WeaponShoot>();
+
+        Assert.Greater(
+            weapon.damage,
+            0
+        );
+    }
+    [Test]
+    public void CP_COMB_02_AimSpeedDebeSerMayorQueCero()
+    {
+        GameObject arma = new GameObject();
+
+        WeaponShoot weapon =
+            arma.AddComponent<WeaponShoot>();
+
+        Assert.Greater(
+            weapon.aimSpeed,
+            0
+        );
+    }
+    [Test]
+    public void CP_COMB_02_AimFOVDebeSerMayorQueCero()
+    {
+        GameObject arma = new GameObject();
+
+        WeaponShoot weapon =
+            arma.AddComponent<WeaponShoot>();
+
+        Assert.Greater(
+            weapon.aimFOV,
+            0
+        );
+    }
+    [Test]
+    public void CP_COMB_02_SetAimingNoDebeGenerarExcepcion()
+    {
+        GameObject arma = new GameObject();
+
+        WeaponShoot weapon =
+            arma.AddComponent<WeaponShoot>();
+
+        Assert.DoesNotThrow(() =>
+        {
+            weapon.SetAiming(true);
+        });
+    }
+
 
 
 }

@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Player\PlayerMotor.cs" />
+    <Compile Include="Assets\Scripts\Player\WeaponShoot.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerLook.cs" />
   </ItemGroup>
   <ItemGroup>
