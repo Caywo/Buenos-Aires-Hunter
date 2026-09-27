@@ -49,7 +49,7 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.6.2f1\Editor\Data\Tools\BuildPipeline\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.6.2f1\Editor\Data\Tools\BuildPipeline\Unity.Analyzers.Common\Unity.Analyzers.Common.dll" />
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.6.2f1\Editor\Data\Tools\BuildPipeline\Unity.Analyzers.LongLiving\Unity.Analyzers.LongLiving.dll" />
-    <Analyzer Include="D:\Archivos\UNGS\Laboratorio de Construcción de Software\TP-Principal---Buenos-Aires-Hunter\Buenos Aires Hunter\Library\PackageCache\com.unity.pipeline@ab05e9cd7f74\Runtime\Analyzers\IlInterpreterAnalyzer.dll" />
+    <Analyzer Include="D:\Archivos\UNGS\Laboratorio de Construcción de Software\TP-Principal---Buenos-Aires-Hunter\Buenos Aires Hunter\Library\PackageCache\com.unity.pipeline@62c08c808737\Runtime\Analyzers\IlInterpreterAnalyzer.dll" />
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.6.2f1\Editor\Data\BCLExtensions\TargetingPacks\netstandard2.1\analyzers\dotnet\roslyn4.0\cs\Microsoft.Extensions.Logging.Generators.dll" />
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.6.2f1\Editor\Data\BCLExtensions\TargetingPacks\netstandard2.1\analyzers\dotnet\roslyn4.0\cs\System.Text.Json.SourceGeneration.dll" />
   </ItemGroup>
@@ -737,7 +737,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityPipeline.Microsoft.CodeAnalysis.CSharp">
-      <HintPath>Library\PackageCache\com.unity.pipeline@ab05e9cd7f74\Runtime\Plugins\CodeAnalysis\UnityPipeline.Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+      <HintPath>Library\PackageCache\com.unity.pipeline@62c08c808737\Runtime\Plugins\CodeAnalysis\UnityPipeline.Microsoft.CodeAnalysis.CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="nunit.framework">
@@ -765,11 +765,11 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityPipeline.System.Runtime.CompilerServices.Unsafe">
-      <HintPath>Library\PackageCache\com.unity.pipeline@ab05e9cd7f74\Runtime\Plugins\CodeAnalysis\UnityPipeline.System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <HintPath>Library\PackageCache\com.unity.pipeline@62c08c808737\Runtime\Plugins\CodeAnalysis\UnityPipeline.System.Runtime.CompilerServices.Unsafe.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityPipeline.System.Collections.Immutable">
-      <HintPath>Library\PackageCache\com.unity.pipeline@ab05e9cd7f74\Runtime\Plugins\CodeAnalysis\UnityPipeline.System.Collections.Immutable.dll</HintPath>
+      <HintPath>Library\PackageCache\com.unity.pipeline@62c08c808737\Runtime\Plugins\CodeAnalysis\UnityPipeline.System.Collections.Immutable.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json">
@@ -785,11 +785,11 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityPipeline.System.Reflection.Metadata">
-      <HintPath>Library\PackageCache\com.unity.pipeline@ab05e9cd7f74\Runtime\Plugins\CodeAnalysis\UnityPipeline.System.Reflection.Metadata.dll</HintPath>
+      <HintPath>Library\PackageCache\com.unity.pipeline@62c08c808737\Runtime\Plugins\CodeAnalysis\UnityPipeline.System.Reflection.Metadata.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityPipeline.Microsoft.CodeAnalysis">
-      <HintPath>Library\PackageCache\com.unity.pipeline@ab05e9cd7f74\Runtime\Plugins\CodeAnalysis\UnityPipeline.Microsoft.CodeAnalysis.dll</HintPath>
+      <HintPath>Library\PackageCache\com.unity.pipeline@62c08c808737\Runtime\Plugins\CodeAnalysis\UnityPipeline.Microsoft.CodeAnalysis.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="mscorlib">
@@ -1364,6 +1364,10 @@
       <HintPath>Library\ScriptAssemblies\Unity.Services.QoS.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="glTFast.Editor">
+      <HintPath>Library\ScriptAssemblies\glTFast.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Unity.Rendering.LightTransport.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.Rendering.LightTransport.Editor.dll</HintPath>
       <Private>False</Private>
@@ -1412,10 +1416,6 @@
       <HintPath>Library\ScriptAssemblies\Unity.Pipeline.IlInterpreter.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Unity.AI.Navigation.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.AI.Navigation.Editor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Unity.PathTracing.Runtime">
       <HintPath>Library\ScriptAssemblies\Unity.PathTracing.Runtime.dll</HintPath>
       <Private>False</Private>
@@ -1432,6 +1432,10 @@
       <HintPath>Library\ScriptAssemblies\Unity.Collections.Tests.CoreCLR.PrivateJobNested.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Unity.AI.Navigation.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.AI.Navigation.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Unity.RenderPipelines.Universal.2D.Runtime">
       <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Universal.2D.Runtime.dll</HintPath>
       <Private>False</Private>
@@ -1444,12 +1448,12 @@
       <HintPath>Library\ScriptAssemblies\Unity.VisualScripting.Shared.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Unity.PlasticSCM.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.PlasticSCM.Editor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Unity.Searcher.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.Searcher.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.PlasticSCM.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.PlasticSCM.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.VisualScripting.Core">
@@ -1516,16 +1520,16 @@
       <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Unity.Services.Authentication.PlayerAccounts">
-      <HintPath>Library\ScriptAssemblies\Unity.Services.Authentication.PlayerAccounts.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Unity.PlasticSCM.Editor.Assistant">
       <HintPath>Library\ScriptAssemblies\Unity.PlasticSCM.Editor.Assistant.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary">
       <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.Services.Authentication.PlayerAccounts">
+      <HintPath>Library\ScriptAssemblies\Unity.Services.Authentication.PlayerAccounts.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.Netcode.PackageChecker.Editor">
@@ -1538,6 +1542,10 @@
     </Reference>
     <Reference Include="Unity.GraphAuthoring.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.GraphAuthoring.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="glTFast.dots">
+      <HintPath>Library\ScriptAssemblies\glTFast.dots.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.VisualStudio.Editor">
@@ -1678,6 +1686,10 @@
     </Reference>
     <Reference Include="Unity.InputSystem">
       <HintPath>Library\ScriptAssemblies\Unity.InputSystem.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="glTFast">
+      <HintPath>Library\ScriptAssemblies\glTFast.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.Settings.Editor">

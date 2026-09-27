@@ -140,8 +140,8 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5010564352645875068}
-  m_LocalRotation: {x: -0.05277646, y: -0.015249497, z: 0.0008057447, w: -0.9984896}
-  m_LocalPosition: {x: 0, y: 0, z: -0.057040174}
+  m_LocalRotation: {x: 0.002579497, y: -0.9972386, z: 0.0602169, w: 0.04338831}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -151,7 +151,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.001742753, y: 1.6060495}
+  m_AnchoredPosition: {x: 0, y: 1.7}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!20 &6708299775747530592
@@ -335,7 +335,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 131308231
+  GlobalObjectIdHash: 1095980501
   InScenePlacedSourceGlobalObjectIdHash: 0
   m_InScenePlacedDisabledByDefault: 0
   DeferredDespawnTick: 0
@@ -457,6 +457,12 @@ MonoBehaviour:
   - item: {fileID: 11400000, guid: 56711325ed88d614a81506a939dc8d3a, type: 2}
   - item: {fileID: 11400000, guid: 2db320a86796257448900ff2af3b2337, type: 2}
   weaponHolder: {fileID: 3627730883311634322}
+  indiceSube: 1
+  saldoSube:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
 --- !u!1 &6413559522627772346
 GameObject:
   m_ObjectHideFlags: 0

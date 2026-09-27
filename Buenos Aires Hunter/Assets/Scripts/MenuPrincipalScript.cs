@@ -9,7 +9,7 @@ public class MenuPrincipal : MonoBehaviour
     [Header("Multijugador (Relay)")]
     [SerializeField] private TMP_InputField joinCodeInput;
     [SerializeField] private TMP_Text joinCodeDisplay;
-    [SerializeField] private string escenaDeJuego = "Escenario1";
+    [SerializeField] private string escenaDeJuego = "MapaExtraccion1";
 
     [Tooltip("Cantidad de jugadores necesarios para arrancar la partida (host incluido).")]
     [SerializeField] private int jugadoresNecesarios = 2;
@@ -27,7 +27,7 @@ public class MenuPrincipal : MonoBehaviour
         NetworkManager.Singleton.StartHost();
 
         NetworkManager.Singleton.SceneManager.LoadScene(
-            "Escenario1",
+            escenaDeJuego,
             LoadSceneMode.Single
         );
     }
