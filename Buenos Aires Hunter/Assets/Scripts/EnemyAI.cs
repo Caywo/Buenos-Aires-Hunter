@@ -7,6 +7,7 @@ public class EnemyAI : NetworkBehaviour
     [Header("Detección")]
 [SerializeField] private float detectionRange = 25f;
 [SerializeField] private float loseTargetRange = 40f;
+[SerializeField] private LayerMask obstacleMask;
 
     [Header("Movimiento")]
     [SerializeField] private float stoppingDistance = 1.5f;
@@ -159,13 +160,33 @@ public class EnemyAI : NetworkBehaviour
 
             if (distancia < distanciaMasCercana)
             {
-                distanciaMasCercana = distancia;
-                jugadorMasCercano = player.transform;
+                if (PuedeVerObjetivo(player.transform))
+                {
+                    distanciaMasCercana = distancia;
+                    jugadorMasCercano = player.transform;
+                }
             }
         }
 
         target = jugadorMasCercano;
     }
+
+    private bool PuedeVerObjetivo(Transform jugador)
+    {
+        Vector3 origen = transform.position + Vector3.up;
+        Vector3 destino = jugador.position + Vector3.up;
+
+        Vector3 direccion = destino - origen;
+        float distancia = direccion.magnitude;
+
+        return !Physics.Raycast(
+            origen,
+            direccion.normalized,
+            distancia,
+            obstacleMask
+        );
+    }
+
     private void Atacar()
     {
         if (Time.time < tiempoUltimoAtaque + attackCooldown)
