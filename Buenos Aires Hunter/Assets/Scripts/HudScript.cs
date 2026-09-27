@@ -10,7 +10,6 @@ public class HudScript : MonoBehaviour
 
     void Update()
     {
-        Debug.Log("HudScript vivo, frame: " + Time.frameCount);
         if (inventarioLocal == null)
         {
             if (NetworkManager.Singleton == null || !NetworkManager.Singleton.IsListening) return;
@@ -24,7 +23,6 @@ public class HudScript : MonoBehaviour
         else
         {
             bool mostrar = inventarioLocal.TieneSubeEquipada;
-            Debug.Log($"mostrar={mostrar}");
             textoSaldo.gameObject.SetActive(mostrar);
 
             if (mostrar)
