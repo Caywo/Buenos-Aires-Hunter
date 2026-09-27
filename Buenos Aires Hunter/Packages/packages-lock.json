@@ -88,6 +88,15 @@
     "com.unity.mathematics": {
       "version": "1.4.0",
       "depth": 1,
+<<<<<<< Updated upstream
+=======
+      "source": "builtin",
+      "dependencies": {}
+    },
+    "com.unity.multiplayer.playmode": {
+      "version": "3.0.0",
+      "depth": 0,
+>>>>>>> Stashed changes
       "source": "builtin",
       "dependencies": {}
     },

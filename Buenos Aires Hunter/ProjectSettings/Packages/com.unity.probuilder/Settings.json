@@ -109,6 +109,7 @@
             {
                 "type": "UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
                 "key": "ShapeBuilder.LastSize.Cube",
+<<<<<<< Updated upstream
                 "value": "{\"m_Value\":{\"x\":-8.322088241577148,\"y\":0.0,\"z\":91.22965240478516}}"
             },
             {
@@ -140,6 +141,9 @@
                 "type": "UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
                 "key": "ShapeBuilder.LastSize.Prism",
                 "value": "{\"m_Value\":{\"x\":1.7694435119628906,\"y\":3.331638813018799,\"z\":5.90447998046875}}"
+=======
+                "value": "{\"m_Value\":{\"x\":-2.337562322616577,\"y\":2.855731248855591,\"z\":2.936702013015747}}"
+>>>>>>> Stashed changes
             },
             {
                 "type": "UnityEngine.Quaternion, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
