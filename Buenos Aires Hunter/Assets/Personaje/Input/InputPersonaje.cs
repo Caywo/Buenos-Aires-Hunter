@@ -236,6 +236,16 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""initialStateCheck"": false,
                     ""priority"": 0
+                },
+                {
+                    ""name"": ""Interactuar"",
+                    ""type"": ""Button"",
+                    ""id"": ""5104a187-e839-4247-95b4-e5274eea3a45"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
                 }
             ],
             ""bindings"": [
@@ -304,6 +314,17 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""action"": ""Apuntar"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bdd1299d-249c-4b4b-bb3c-93469aa535fc"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Interactuar"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -320,6 +341,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_Inventario_Items = m_Inventario.FindAction("Items", throwIfNotFound: true);
         m_Inventario_Disparar = m_Inventario.FindAction("Disparar", throwIfNotFound: true);
         m_Inventario_Apuntar = m_Inventario.FindAction("Apuntar", throwIfNotFound: true);
+        m_Inventario_Interactuar = m_Inventario.FindAction("Interactuar", throwIfNotFound: true);
     }
 
     ~@PlayerInput()
@@ -522,6 +544,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Inventario_Items;
     private readonly InputAction m_Inventario_Disparar;
     private readonly InputAction m_Inventario_Apuntar;
+    private readonly InputAction m_Inventario_Interactuar;
     /// <summary>
     /// Provides access to input actions defined in input action map "Inventario".
     /// </summary>
@@ -545,6 +568,10 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Inventario/Apuntar".
         /// </summary>
         public InputAction @Apuntar => m_Wrapper.m_Inventario_Apuntar;
+        /// <summary>
+        /// Provides access to the underlying input action "Inventario/Interactuar".
+        /// </summary>
+        public InputAction @Interactuar => m_Wrapper.m_Inventario_Interactuar;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -580,6 +607,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Apuntar.started += instance.OnApuntar;
             @Apuntar.performed += instance.OnApuntar;
             @Apuntar.canceled += instance.OnApuntar;
+            @Interactuar.started += instance.OnInteractuar;
+            @Interactuar.performed += instance.OnInteractuar;
+            @Interactuar.canceled += instance.OnInteractuar;
         }
 
         /// <summary>
@@ -600,6 +630,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Apuntar.started -= instance.OnApuntar;
             @Apuntar.performed -= instance.OnApuntar;
             @Apuntar.canceled -= instance.OnApuntar;
+            @Interactuar.started -= instance.OnInteractuar;
+            @Interactuar.performed -= instance.OnInteractuar;
+            @Interactuar.canceled -= instance.OnInteractuar;
         }
 
         /// <summary>
@@ -690,5 +723,12 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnApuntar(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Interactuar" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnInteractuar(InputAction.CallbackContext context);
     }
 }

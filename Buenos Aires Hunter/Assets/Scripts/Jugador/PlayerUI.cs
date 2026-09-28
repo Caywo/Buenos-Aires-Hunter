@@ -2,10 +2,10 @@ using UnityEngine;
 using TMPro;
 using Unity.Netcode;
 
-public class HudScript : MonoBehaviour
+public class PlayerUI : MonoBehaviour
 {
     public TMP_Text textoSaldo;
-
+    public TMP_Text textoInteraccion;
     private PlayerInventory inventarioLocal;
 
     void Update()
@@ -30,5 +30,10 @@ public class HudScript : MonoBehaviour
                 textoSaldo.text = $"$ {inventarioLocal.saldoSube.Value}";
             }
         }
+    }
+    
+    public void ActualizarTexto(string mensajeInteraccion)
+    {
+        textoInteraccion.text = mensajeInteraccion;
     }
 }

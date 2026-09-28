@@ -22,7 +22,7 @@ public class PlayerInventory : NetworkBehaviour
     private PlayerLook mirar;
     private Camera camaraJugador;
     public int indiceSube = -1;
-    public NetworkVariable<int> saldoSube = new NetworkVariable<int>(0,
+    public NetworkVariable<int> saldoSube = new NetworkVariable<int>(-2000,
     NetworkVariableReadPermission.Everyone,
     NetworkVariableWritePermission.Server);
     public bool TieneSubeEquipada => indiceActivo.Value == indiceSube;
