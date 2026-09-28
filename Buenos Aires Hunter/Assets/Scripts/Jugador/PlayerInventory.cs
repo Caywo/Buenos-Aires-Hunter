@@ -21,11 +21,11 @@ public class PlayerInventory : NetworkBehaviour
     private WeaponShoot weaponActual;
     private PlayerLook mirar;
     private Camera camaraJugador;
-    private int indiceSube = -1;
-    private NetworkVariable<int> saldoSube = new NetworkVariable<int>(0,
+    public int indiceSube = -1;
+    public NetworkVariable<int> saldoSube = new NetworkVariable<int>(-2000,
     NetworkVariableReadPermission.Everyone,
     NetworkVariableWritePermission.Server);
-
+    public bool TieneSubeEquipada => indiceActivo.Value == indiceSube;
     void Awake()
     {
         mirar = GetComponent<PlayerLook>();
@@ -115,7 +115,7 @@ public class PlayerInventory : NetworkBehaviour
     {
         if (!IsServer) return false;
         if (indiceActivo.Value != indiceSube) return false; // no tiene la SUBE en mano
-        if (saldoSube.Value < monto) return false;
+        if (saldoSube.Value < -1200) return false; // saldo negativo
 
         saldoSube.Value -= monto;
         return true;

@@ -266,7 +266,7 @@ MonoBehaviour:
   slideReturnSpeed: 10
   weaponKickBack: 0.05
   weaponReturnSpeed: 8
-  cameraRecoilAmount: 0
+  cameraRecoilAmount: 2
   fireRate: 0.15
   range: 100
   damage: 20
