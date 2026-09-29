@@ -26,6 +26,9 @@ public class PlayerInventory : NetworkBehaviour
     NetworkVariableReadPermission.Everyone,
     NetworkVariableWritePermission.Server);
     public bool TieneSubeEquipada => indiceActivo.Value == indiceSube;
+
+    public event System.Action<WeaponShoot> OnArmaCambiada;
+
     void Awake()
     {
         mirar = GetComponent<PlayerLook>();
@@ -97,6 +100,13 @@ public class PlayerInventory : NetworkBehaviour
         if (!IsOwner) return;
         if (weaponActual != null) weaponActual.Disparar();
     }
+
+    public void Recargar()
+    {
+        if (!IsOwner) return;
+        if (weaponActual != null) weaponActual.Recargar();
+    }
+
     public int GetCantidad(int indice) => cantidades[indice].Value;
 
     public void SetApuntando(bool apuntando)
