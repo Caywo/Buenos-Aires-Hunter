@@ -4,11 +4,6 @@ using Unity.Netcode;
 
 public class EnemyAI : NetworkBehaviour
 {
-    [Header("Detección")]
-[SerializeField] private float detectionRange = 25f;
-[SerializeField] private float loseTargetRange = 40f;
-[SerializeField] private LayerMask obstacleMask;
-
     [Header("Movimiento")]
     [SerializeField] private float stoppingDistance = 1.5f;
 
@@ -20,6 +15,7 @@ public class EnemyAI : NetworkBehaviour
 
     private NavMeshAgent agent;
     private Transform target;
+
     private enum EstadoIA
     {
         Idle,
@@ -38,7 +34,6 @@ public class EnemyAI : NetworkBehaviour
     {
         base.OnNetworkSpawn();
 
-        
         if (!IsServer)
         {
             agent.enabled = false;
@@ -65,6 +60,7 @@ public class EnemyAI : NetworkBehaviour
                 break;
         }
     }
+
     private void EstadoIdle()
     {
         if (target == null)
@@ -77,6 +73,7 @@ public class EnemyAI : NetworkBehaviour
             }
         }
     }
+
     private void EstadoPerseguir()
     {
         if (target == null)
@@ -89,15 +86,6 @@ public class EnemyAI : NetworkBehaviour
             transform.position,
             target.position
         );
-
-        if (distance > loseTargetRange)
-        {
-            target = null;
-            agent.ResetPath();
-
-            estadoActual = EstadoIA.Idle;
-            return;
-        }
 
         if (distance <= attackRange)
         {
@@ -112,6 +100,7 @@ public class EnemyAI : NetworkBehaviour
 
         MirarAlObjetivo();
     }
+
     private void EstadoAtacar()
     {
         if (target == null)
@@ -124,13 +113,6 @@ public class EnemyAI : NetworkBehaviour
             transform.position,
             target.position
         );
-
-        if (distance > loseTargetRange)
-        {
-            target = null;
-            estadoActual = EstadoIA.Idle;
-            return;
-        }
 
         if (distance > attackRange)
         {
@@ -148,7 +130,7 @@ public class EnemyAI : NetworkBehaviour
     {
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
 
-        float distanciaMasCercana = detectionRange;
+        float distanciaMasCercana = Mathf.Infinity;
         Transform jugadorMasCercano = null;
 
         foreach (GameObject player in players)
@@ -160,31 +142,12 @@ public class EnemyAI : NetworkBehaviour
 
             if (distancia < distanciaMasCercana)
             {
-                if (PuedeVerObjetivo(player.transform))
-                {
-                    distanciaMasCercana = distancia;
-                    jugadorMasCercano = player.transform;
-                }
+                distanciaMasCercana = distancia;
+                jugadorMasCercano = player.transform;
             }
         }
 
         target = jugadorMasCercano;
-    }
-
-    private bool PuedeVerObjetivo(Transform jugador)
-    {
-        Vector3 origen = transform.position + Vector3.up;
-        Vector3 destino = jugador.position + Vector3.up;
-
-        Vector3 direccion = destino - origen;
-        float distancia = direccion.magnitude;
-
-        return !Physics.Raycast(
-            origen,
-            direccion.normalized,
-            distancia,
-            obstacleMask
-        );
     }
 
     private void Atacar()
@@ -196,6 +159,7 @@ public class EnemyAI : NetworkBehaviour
 
         Debug.Log("El enemigo ataca");
     }
+
     private void MirarAlObjetivo()
     {
         Vector3 direccion = target.position - transform.position;
