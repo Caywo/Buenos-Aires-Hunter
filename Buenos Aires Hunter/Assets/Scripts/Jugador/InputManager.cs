@@ -30,6 +30,7 @@ public class InputManager : NetworkBehaviour
         movimiento.Saltar.performed += ctx => motor.Saltar();
 
         inventarioActions.Disparar.performed += ctx => inventario.Disparar();
+        inventarioActions.Recargar.performed += ctx => inventario.Recargar();
 
         inventarioActions.Apuntar.performed += ctx => { Debug.Log("Apuntar: performed"); inventario.SetApuntando(true); };
         inventarioActions.Apuntar.canceled += ctx => { Debug.Log("Apuntar: canceled"); inventario.SetApuntando(false); };

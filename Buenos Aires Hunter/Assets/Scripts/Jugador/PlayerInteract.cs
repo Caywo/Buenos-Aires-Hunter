@@ -9,7 +9,7 @@ public class PlayerInteract : NetworkBehaviour
     private PlayerInventory inventario;
     private Interactuable objetivo;
     private PlayerUI playerUI;
-
+    private TiendaUI tiendaUI;
     void Start()
     {
         cam = GetComponent<PlayerLook>().cam;
@@ -20,12 +20,10 @@ public class PlayerInteract : NetworkBehaviour
     {
         if (!IsOwner) return;
 
-        if (playerUI == null)
-        {
-            playerUI = FindAnyObjectByType<PlayerUI>();
-            if (playerUI == null) return;
-        }
+        if (playerUI == null) playerUI = FindAnyObjectByType<PlayerUI>();
+        if (tiendaUI == null) tiendaUI = FindAnyObjectByType<TiendaUI>();
         playerUI.ActualizarTexto(string.Empty);
+
         objetivo = null;
 
         Ray ray = new Ray(cam.transform.position, cam.transform.forward);
@@ -44,6 +42,19 @@ public class PlayerInteract : NetworkBehaviour
     public void Interactuar()
     {
         if (!IsOwner || objetivo == null) return;
+
+        if (objetivo is Tienda)
+        {
+            if (!inventario.TieneSubeEquipada)
+            {
+                playerUI.ActualizarTexto("Necesitás la SUBE en mano");
+                return;
+            }
+
+            tiendaUI.AbrirTienda(inventario);
+            return;
+        }
+
         IntentarInteractuarServerRpc(objetivo.NetworkObjectId);
     }
 

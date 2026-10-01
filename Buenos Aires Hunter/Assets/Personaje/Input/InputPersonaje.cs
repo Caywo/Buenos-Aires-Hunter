@@ -246,6 +246,16 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""initialStateCheck"": false,
                     ""priority"": 0
+                },
+                {
+                    ""name"": ""Recargar"",
+                    ""type"": ""Button"",
+                    ""id"": ""5375198f-2b0a-41e2-9cc6-b42a9da37c7f"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
                 }
             ],
             ""bindings"": [
@@ -325,6 +335,17 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""action"": ""Interactuar"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8ef60362-773f-4ba5-8fa2-a30a6b5b3165"",
+                    ""path"": ""<Keyboard>/#(R)"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Recargar"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -342,6 +363,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_Inventario_Disparar = m_Inventario.FindAction("Disparar", throwIfNotFound: true);
         m_Inventario_Apuntar = m_Inventario.FindAction("Apuntar", throwIfNotFound: true);
         m_Inventario_Interactuar = m_Inventario.FindAction("Interactuar", throwIfNotFound: true);
+        m_Inventario_Recargar = m_Inventario.FindAction("Recargar", throwIfNotFound: true);
     }
 
     ~@PlayerInput()
@@ -545,6 +567,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Inventario_Disparar;
     private readonly InputAction m_Inventario_Apuntar;
     private readonly InputAction m_Inventario_Interactuar;
+    private readonly InputAction m_Inventario_Recargar;
     /// <summary>
     /// Provides access to input actions defined in input action map "Inventario".
     /// </summary>
@@ -572,6 +595,10 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Inventario/Interactuar".
         /// </summary>
         public InputAction @Interactuar => m_Wrapper.m_Inventario_Interactuar;
+        /// <summary>
+        /// Provides access to the underlying input action "Inventario/Recargar".
+        /// </summary>
+        public InputAction @Recargar => m_Wrapper.m_Inventario_Recargar;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -610,6 +637,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Interactuar.started += instance.OnInteractuar;
             @Interactuar.performed += instance.OnInteractuar;
             @Interactuar.canceled += instance.OnInteractuar;
+            @Recargar.started += instance.OnRecargar;
+            @Recargar.performed += instance.OnRecargar;
+            @Recargar.canceled += instance.OnRecargar;
         }
 
         /// <summary>
@@ -633,6 +663,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Interactuar.started -= instance.OnInteractuar;
             @Interactuar.performed -= instance.OnInteractuar;
             @Interactuar.canceled -= instance.OnInteractuar;
+            @Recargar.started -= instance.OnRecargar;
+            @Recargar.performed -= instance.OnRecargar;
+            @Recargar.canceled -= instance.OnRecargar;
         }
 
         /// <summary>
@@ -730,5 +763,12 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnInteractuar(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Recargar" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRecargar(InputAction.CallbackContext context);
     }
 }

@@ -37,6 +37,20 @@ public class WeaponShoot : MonoBehaviour
     public AudioClip shootSound;
     private AudioSource audioSource;
 
+    [Header("Munición")]
+    public int magazineSize = 30;
+    public int currentAmmo;
+    public int reserveAmmo = 90;
+
+    [Header("Recarga")]
+    public float reloadTime = 1.8f;
+    public AudioClip reloadSound;
+    public bool isReloading { get; private set; } = false;
+
+    public event System.Action<int, int> OnAmmoChanged; // (currentAmmo, reserveAmmo)
+    public event System.Action OnReloadStart;
+    public event System.Action OnReloadEnd;
+
     private Vector3 slideInitialPos;
     private Vector3 weaponInitialPos;
     private float nextFireTime = 0f;
@@ -59,13 +73,15 @@ public class WeaponShoot : MonoBehaviour
             hipFirePosition = weaponInitialPos;
         }
 
-
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
         {
             audioSource = gameObject.AddComponent<AudioSource>();
             audioSource.playOnAwake = false;
         }
+
+        currentAmmo = magazineSize;
+        NotifyAmmoChanged();
     }
 
     void Update()
@@ -79,10 +95,56 @@ public class WeaponShoot : MonoBehaviour
     public void Disparar()
     {
         if (Time.time < nextFireTime) return;
+        if (!CanShoot()) return;
+
         nextFireTime = Time.time + fireRate;
+        currentAmmo--;
+        NotifyAmmoChanged();
         Shoot();
     }
 
+    public bool CanShoot()
+    {
+        return currentAmmo > 0 && !isReloading;
+    }
+
+    public bool CanReload()
+    {
+        return !isReloading && currentAmmo < magazineSize && reserveAmmo > 0;
+    }
+
+    public void Recargar()
+    {
+        if (!CanReload()) return;
+        StartCoroutine(ReloadRoutine());
+    }
+
+    private System.Collections.IEnumerator ReloadRoutine()
+    {
+        isReloading = true;
+        OnReloadStart?.Invoke();
+
+        if (reloadSound != null)
+            audioSource.PlayOneShot(reloadSound);
+
+        yield return new WaitForSeconds(reloadTime);
+
+        int bulletsNeeded = magazineSize - currentAmmo;
+        int bulletsToLoad = Mathf.Min(bulletsNeeded, reserveAmmo);
+
+        currentAmmo += bulletsToLoad;
+        reserveAmmo -= bulletsToLoad;
+
+        isReloading = false;
+        NotifyAmmoChanged();
+        OnReloadEnd?.Invoke();
+    }
+
+    private void NotifyAmmoChanged()
+    {
+        OnAmmoChanged?.Invoke(currentAmmo, reserveAmmo);
+    }
+    
     void Shoot()
     {
     if (slide != null)

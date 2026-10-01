@@ -26,6 +26,9 @@ public class PlayerInventory : NetworkBehaviour
     NetworkVariableReadPermission.Everyone,
     NetworkVariableWritePermission.Server);
     public bool TieneSubeEquipada => indiceActivo.Value == indiceSube;
+
+    public event System.Action<WeaponShoot> OnArmaCambiada;
+
     void Awake()
     {
         mirar = GetComponent<PlayerLook>();
@@ -97,6 +100,13 @@ public class PlayerInventory : NetworkBehaviour
         if (!IsOwner) return;
         if (weaponActual != null) weaponActual.Disparar();
     }
+
+    public void Recargar()
+    {
+        if (!IsOwner) return;
+        if (weaponActual != null) weaponActual.Recargar();
+    }
+
     public int GetCantidad(int indice) => cantidades[indice].Value;
 
     public void SetApuntando(bool apuntando)
@@ -115,10 +125,15 @@ public class PlayerInventory : NetworkBehaviour
     {
         if (!IsServer) return false;
         if (indiceActivo.Value != indiceSube) return false; // no tiene la SUBE en mano
-        if (saldoSube.Value < -1200) return false; // saldo negativo
+        if (saldoSube.Value - monto < -1200) return false; // saldo negativo
 
         saldoSube.Value -= monto;
         return true;
+    }
+
+    [ServerRpc] public void IntentarPagarServerRpc(int monto)
+    {
+        PagarConSube(monto);
     }
 
 }

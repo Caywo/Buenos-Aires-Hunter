@@ -44,4 +44,6 @@ public class PlayerMotor : MonoBehaviour
             playerVelocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
     }
+
+
 }
