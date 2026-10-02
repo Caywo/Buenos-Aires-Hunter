@@ -10,6 +10,7 @@ public class EnemyAI : NetworkBehaviour
     [Header("Ataque")]
     [SerializeField] private float attackRange = 2f;
     [SerializeField] private float attackCooldown = 1.5f;
+    [SerializeField] private float danoAtaque = 10f;
 
     private float tiempoUltimoAtaque = -Mathf.Infinity;
 
@@ -157,7 +158,15 @@ public class EnemyAI : NetworkBehaviour
 
         tiempoUltimoAtaque = Time.time;
 
-        Debug.Log("El enemigo ataca");
+        IDamageable objetivo = target.GetComponentInParent<IDamageable>();
+
+        if (objetivo == null)
+            return;
+
+        objetivo.TakeDamage(
+            danoAtaque,
+            ReglasCombate.AtacanteNeutral
+        );
     }
 
     private void MirarAlObjetivo()
