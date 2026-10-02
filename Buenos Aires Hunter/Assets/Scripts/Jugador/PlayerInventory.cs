@@ -12,7 +12,7 @@ public class PlayerInventory : NetworkBehaviour
     public ItemSlot[] items;
     public Transform weaponHolder;
 
-    private NetworkVariable<int> indiceActivo = new NetworkVariable<int>(0,
+    private NetworkVariable<int> indiceActivo = new NetworkVariable<int>(-1,
         NetworkVariableReadPermission.Everyone,
         NetworkVariableWritePermission.Owner);
 
@@ -28,17 +28,27 @@ public class PlayerInventory : NetworkBehaviour
     public bool TieneSubeEquipada => indiceActivo.Value == indiceSube;
 
     public event System.Action<WeaponShoot> OnArmaCambiada;
-
+    private MeleeAttack melee;
     void Awake()
     {
         mirar = GetComponent<PlayerLook>();
         camaraJugador = GetComponentInChildren<Camera>(true);
+        melee = GetComponent<MeleeAttack>();
+        melee.Init(camaraJugador);
     }
     public override void OnNetworkSpawn()
     {
         cantidades = new NetworkVariable<int>[items.Length];
         for (int i = 0; i < items.Length; i++)
         {
+            if (items[i].item == null)
+            {
+                cantidades[i] = new NetworkVariable<int>(-1,
+                    NetworkVariableReadPermission.Everyone,
+                    NetworkVariableWritePermission.Server);
+                continue;
+            }
+
             int inicial = items[i].item.esConsumible ? items[i].item.cantidadInicial : -1;
             cantidades[i] = new NetworkVariable<int>(inicial,
                 NetworkVariableReadPermission.Everyone,
@@ -53,14 +63,14 @@ public class PlayerInventory : NetworkBehaviour
     {
         if (!IsOwner) return;
 
-        // Si tocás la misma tecla del arma que ya tenés equipada, la guarda
         if (indice == indiceActivo.Value)
         {
-            indiceActivo.Value = -1;
+            indiceActivo.Value = -1; // tocar el mismo boton de lo que tenes equipado lo desequipa
             return;
         }
 
         if (indice < 0 || indice >= items.Length) return;
+        if (items[indice].item == null) return; // posición vacía, no hay nada que equipar
         if (cantidades[indice].Value == 0) return;
 
         indiceActivo.Value = indice;
@@ -98,7 +108,15 @@ public class PlayerInventory : NetworkBehaviour
     public void Disparar()
     {
         if (!IsOwner) return;
-        if (weaponActual != null) weaponActual.Disparar();
+
+        if (weaponActual != null)
+        {
+            weaponActual.Disparar();
+        }
+        else if (indiceActivo.Value == -1)
+        {
+            melee.Atacar();
+        }
     }
 
     public void Recargar()
