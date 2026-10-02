@@ -20,6 +20,8 @@ public class PlayerInventory : NetworkBehaviour
     private GameObject instanciaActual;
     private WeaponShoot weaponActual;
     private PlayerLook mirar;
+    private PlayerCombat combate;
+    private Health salud;
     private Camera camaraJugador;
     public int indiceSube = -1;
     public NetworkVariable<int> saldoSube = new NetworkVariable<int>(-2000,
@@ -27,13 +29,20 @@ public class PlayerInventory : NetworkBehaviour
     NetworkVariableWritePermission.Server);
     public bool TieneSubeEquipada => indiceActivo.Value == indiceSube;
 
+    // NUEVO: acceso de solo lectura para PlayerCombat / HUD
+    public int IndiceActivo => indiceActivo.Value;
+    public WeaponShoot ArmaActual => weaponActual;
+
     public event System.Action<WeaponShoot> OnArmaCambiada;
 
     void Awake()
     {
         mirar = GetComponent<PlayerLook>();
+        combate = GetComponent<PlayerCombat>();
+        salud = GetComponent<Health>();
         camaraJugador = GetComponentInChildren<Camera>(true);
     }
+
     public override void OnNetworkSpawn()
     {
         cantidades = new NetworkVariable<int>[items.Length];
@@ -52,6 +61,7 @@ public class PlayerInventory : NetworkBehaviour
     public void Equipar(int indice)
     {
         if (!IsOwner) return;
+        if (salud != null && salud.EstaMuerto) return;
 
         // Si tocás la misma tecla del arma que ya tenés equipada, la guarda
         if (indice == indiceActivo.Value)
@@ -80,31 +90,37 @@ public class PlayerInventory : NetworkBehaviour
     private void EquiparVisual(int indice)
     {
         if (instanciaActual != null) Destroy(instanciaActual);
+        instanciaActual = null;
         weaponActual = null;
 
-        if (indice < 0) return; // manos vacías
-
-        var data = items[indice].item;
-        if (data == null || data.prefabEnMano == null) return;
-
-        instanciaActual = Instantiate(data.prefabEnMano, weaponHolder);
-        weaponActual = instanciaActual.GetComponent<WeaponShoot>();
-
-        if (weaponActual != null)
+        if (indice >= 0 && indice < items.Length)
         {
-            weaponActual.Init(weaponHolder, mirar, camaraJugador);
+            var data = items[indice].item;
+            if (data != null && data.prefabEnMano != null)
+            {
+                instanciaActual = Instantiate(data.prefabEnMano, weaponHolder);
+                weaponActual = instanciaActual.GetComponent<WeaponShoot>();
+
+                if (weaponActual != null)
+                    weaponActual.Init(weaponHolder, mirar, camaraJugador, IsOwner);
+            }
         }
+
+        // Ahora sí se dispara el evento (antes se declaraba pero nunca se invocaba)
+        OnArmaCambiada?.Invoke(weaponActual);
     }
-    public void Disparar()
+
+    // El combate real vive en PlayerCombat (validado por el servidor)
+    public void Disparar(bool pulsacionNueva)
     {
-        if (!IsOwner) return;
-        if (weaponActual != null) weaponActual.Disparar();
+        if (!IsOwner || combate == null) return;
+        combate.IntentarDisparar(pulsacionNueva);
     }
 
     public void Recargar()
     {
-        if (!IsOwner) return;
-        if (weaponActual != null) weaponActual.Recargar();
+        if (!IsOwner || combate == null) return;
+        combate.IntentarRecargar();
     }
 
     public int GetCantidad(int indice) => cantidades[indice].Value;

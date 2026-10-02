@@ -11,6 +11,7 @@ public class InputManager : NetworkBehaviour
     private PlayerLook mirar;
     private PlayerInventory inventario;
     private PlayerInteract interactuar;
+    private Health salud;
 
     void Awake()
     {
@@ -21,19 +22,21 @@ public class InputManager : NetworkBehaviour
         mirar = GetComponent<PlayerLook>();
         inventario = GetComponent<PlayerInventory>();
         interactuar = GetComponent<PlayerInteract>();
-        inventarioActions.Interactuar.performed += ctx => interactuar.Interactuar();
+        salud = GetComponent<Health>();
+        inventarioActions.Interactuar.performed += ctx => { if (!salud.EstaMuerto) interactuar.Interactuar(); };
 
         if (motor == null) Debug.LogError("InputManager: no se encontró PlayerMotor.", this);
         if (mirar == null) Debug.LogError("InputManager: no se encontró PlayerMirar.", this);
         if (inventario == null) Debug.LogError("InputManager: no se encontró PlayerInventory.", this);
+        if (salud == null) Debug.LogError("InputManager: no se encontró Health.", this);
 
-        movimiento.Saltar.performed += ctx => motor.Saltar();
+        movimiento.Saltar.performed += ctx => { if (!salud.EstaMuerto) motor.Saltar(); };
 
-        inventarioActions.Disparar.performed += ctx => inventario.Disparar();
+        // El disparo ya NO usa 'performed': se lee con IsPressed() en Update para permitir fuego automático.
         inventarioActions.Recargar.performed += ctx => inventario.Recargar();
 
-        inventarioActions.Apuntar.performed += ctx => { Debug.Log("Apuntar: performed"); inventario.SetApuntando(true); };
-        inventarioActions.Apuntar.canceled += ctx => { Debug.Log("Apuntar: canceled"); inventario.SetApuntando(false); };
+        inventarioActions.Apuntar.performed += ctx => inventario.SetApuntando(true);
+        inventarioActions.Apuntar.canceled += ctx => inventario.SetApuntando(false);
 
         inventarioActions.Items.performed += ctx =>
         {
@@ -50,7 +53,7 @@ public class InputManager : NetworkBehaviour
         if (IsOwner)
         {
             movimiento.Enable();
-            inventarioActions.Enable(); 
+            inventarioActions.Enable();
             Cursor.lockState = CursorLockMode.Locked;
         }
         else
@@ -67,15 +70,27 @@ public class InputManager : NetworkBehaviour
         inventarioActions.Disable();
     }
 
+    void Update()
+    {
+        if (!IsOwner || salud.EstaMuerto) return;
+
+        var disparar = inventarioActions.Disparar;
+        if (disparar.IsPressed())
+        {
+            // 'pulsacionNueva' permite distinguir armas semiautomáticas de automáticas
+            inventario.Disparar(disparar.WasPressedThisFrame());
+        }
+    }
+
     void FixedUpdate()
     {
-        if (!IsOwner) return;
+        if (!IsOwner || salud.EstaMuerto) return;
         motor.ProcessMove(movimiento.Movimiento.ReadValue<Vector2>());
     }
 
     void LateUpdate()
     {
-        if (!IsOwner) return;
+        if (!IsOwner || salud.EstaMuerto) return;
         mirar.ProcessMirar(movimiento.Mirar.ReadValue<Vector2>());
     }
 }

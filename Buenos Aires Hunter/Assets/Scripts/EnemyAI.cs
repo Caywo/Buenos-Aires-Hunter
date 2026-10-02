@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using Unity.Netcode;
 
+[RequireComponent(typeof(Health))]
 public class EnemyAI : NetworkBehaviour
 {
     [Header("Movimiento")]
@@ -12,10 +13,16 @@ public class EnemyAI : NetworkBehaviour
     [SerializeField] private float attackCooldown = 1.5f;
     [SerializeField] private float danoAtaque = 10f;
 
+    [Header("Búsqueda de objetivo")]
+    [SerializeField] private float intervaloBusqueda = 0.5f;
+
     private float tiempoUltimoAtaque = -Mathf.Infinity;
+    private float proximaBusqueda;
 
     private NavMeshAgent agent;
+    private Health salud;          // NUEVO: vida de este enemigo
     private Transform target;
+    private Health targetHealth;   // NUEVO: vida del objetivo
 
     private enum EstadoIA
     {
@@ -29,6 +36,7 @@ public class EnemyAI : NetworkBehaviour
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        salud = GetComponent<Health>();
     }
 
     public override void OnNetworkSpawn()
@@ -38,12 +46,31 @@ public class EnemyAI : NetworkBehaviour
         if (!IsServer)
         {
             agent.enabled = false;
+            return;
         }
+
+        salud.OnMuerto += AlMorir;
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        if (salud != null)
+            salud.OnMuerto -= AlMorir;
+    }
+
+    private void AlMorir(ulong atacanteId)
+    {
+        if (agent.enabled && agent.isOnNavMesh)
+            agent.isStopped = true;
     }
 
     private void Update()
     {
         if (!IsServer)
+            return;
+
+        // Un enemigo muerto no se mueve ni ataca (aunque siga en escena hasta el Despawn)
+        if (salud.EstaMuerto)
             return;
 
         switch (estadoActual)
@@ -62,24 +89,41 @@ public class EnemyAI : NetworkBehaviour
         }
     }
 
+    // NUEVO: el objetivo existe y sigue vivo
+    private bool TargetValido()
+    {
+        return target != null && targetHealth != null && !targetHealth.EstaMuerto;
+    }
+
+    // NUEVO: suelta el objetivo y vuelve a buscar otro
+    private void SoltarTarget()
+    {
+        target = null;
+        targetHealth = null;
+        estadoActual = EstadoIA.Idle;
+    }
+
     private void EstadoIdle()
     {
-        if (target == null)
-        {
-            FindTarget();
+        // NUEVO: no buscar en cada frame
+        if (Time.time < proximaBusqueda)
+            return;
 
-            if (target != null)
-            {
-                estadoActual = EstadoIA.Perseguir;
-            }
+        proximaBusqueda = Time.time + intervaloBusqueda;
+
+        FindTarget();
+
+        if (TargetValido())
+        {
+            estadoActual = EstadoIA.Perseguir;
         }
     }
 
     private void EstadoPerseguir()
     {
-        if (target == null)
+        if (!TargetValido())
         {
-            estadoActual = EstadoIA.Idle;
+            SoltarTarget();
             return;
         }
 
@@ -104,9 +148,9 @@ public class EnemyAI : NetworkBehaviour
 
     private void EstadoAtacar()
     {
-        if (target == null)
+        if (!TargetValido())
         {
-            estadoActual = EstadoIA.Idle;
+            SoltarTarget();
             return;
         }
 
@@ -133,9 +177,15 @@ public class EnemyAI : NetworkBehaviour
 
         float distanciaMasCercana = Mathf.Infinity;
         Transform jugadorMasCercano = null;
+        Health saludMasCercano = null;
 
         foreach (GameObject player in players)
         {
+            // NUEVO: ignorar jugadores muertos
+            Health h = player.GetComponentInParent<Health>();
+            if (h == null || h.EstaMuerto)
+                continue;
+
             float distancia = Vector3.Distance(
                 transform.position,
                 player.transform.position
@@ -145,10 +195,12 @@ public class EnemyAI : NetworkBehaviour
             {
                 distanciaMasCercana = distancia;
                 jugadorMasCercano = player.transform;
+                saludMasCercano = h;
             }
         }
 
         target = jugadorMasCercano;
+        targetHealth = saludMasCercano;
     }
 
     private void Atacar()

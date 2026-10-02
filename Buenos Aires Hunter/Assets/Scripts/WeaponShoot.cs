@@ -1,5 +1,9 @@
 using UnityEngine;
 
+/// <summary>
+/// Datos del arma (los lee el servidor) + feedback visual/sonoro (retroceso, corredera, ADS).
+/// Ya NO dispara ni gestiona munición: eso lo hace PlayerCombat con validación del servidor.
+/// </summary>
 public class WeaponShoot : MonoBehaviour
 {
     [Header("Referencias")]
@@ -19,49 +23,46 @@ public class WeaponShoot : MonoBehaviour
     [Header("Recoil de cámara")]
     public float cameraRecoilAmount = 2f;
 
-    [Header("Disparo")]
+    [Header("Disparo (los valida el servidor)")]
+    public bool automatico = true;
     public float fireRate = 0.15f;
     public float range = 100f;
     public float damage = 20f;
     public LayerMask hitMask = ~0;
 
-    [Header("Apuntado (ADS)")]
-    public Transform aimPoint;
-    public float aimSpeed = 10f;
-    public float aimFOV = 40f;
-    private float defaultFOV;
-    private bool isAiming = false;
-    private Vector3 hipFirePosition;
-
-    [Header("Sonido")]
-    public AudioClip shootSound;
-    private AudioSource audioSource;
-
-    [Header("Munición")]
+    [Header("Munición (valores iniciales)")]
     public int magazineSize = 30;
-    public int currentAmmo;
     public int reserveAmmo = 90;
 
     [Header("Recarga")]
     public float reloadTime = 1.8f;
+
+    [Header("Apuntado (ADS)")]
+    public Transform aimPoint;
+    public float aimSpeed = 10f;
+    public float aimFOV = 40f;
+
+    [Header("Sonido")]
+    public AudioClip shootSound;
     public AudioClip reloadSound;
-    public bool isReloading { get; private set; } = false;
 
-    public event System.Action<int, int> OnAmmoChanged; // (currentAmmo, reserveAmmo)
-    public event System.Action OnReloadStart;
-    public event System.Action OnReloadEnd;
-
+    private float defaultFOV;
+    private bool isAiming = false;
+    private bool esLocal;
+    private Vector3 hipFirePosition;
     private Vector3 slideInitialPos;
     private Vector3 weaponInitialPos;
-    private float nextFireTime = 0f;
+    private AudioSource audioSource;
 
-    public void Init(Transform weaponHolder, PlayerLook mouseLook, Camera playerCamera)
+    public void Init(Transform weaponHolder, PlayerLook mouseLook, Camera playerCamera, bool esLocal)
     {
         this.weaponHolder = weaponHolder;
         this.mouseLook = mouseLook;
         this.playerCamera = playerCamera;
+        this.esLocal = esLocal;
 
-        defaultFOV = playerCamera.fieldOfView;
+        if (playerCamera != null)
+            defaultFOV = playerCamera.fieldOfView;
     }
 
     void Start()
@@ -79,102 +80,39 @@ public class WeaponShoot : MonoBehaviour
             audioSource = gameObject.AddComponent<AudioSource>();
             audioSource.playOnAwake = false;
         }
-
-        currentAmmo = magazineSize;
-        NotifyAmmoChanged();
+        // Tus disparos suenan 2D; los de otros jugadores suenan en 3D
+        audioSource.spatialBlend = esLocal ? 0f : 1f;
     }
 
     void Update()
     {
         AnimateSlide();
         AnimateWeaponKick();
-        AnimateAim();
+        if (esLocal) AnimateAim();
     }
 
-
-    public void Disparar()
+    /// <summary>Feedback de un disparo. conRecoilDeCamara solo para el dueño.</summary>
+    public void PlayShootEffects(bool conRecoilDeCamara)
     {
-        if (Time.time < nextFireTime) return;
-        if (!CanShoot()) return;
+        if (slide != null)
+            slide.localPosition = slideInitialPos + slideRecoilOffset;
 
-        nextFireTime = Time.time + fireRate;
-        currentAmmo--;
-        NotifyAmmoChanged();
-        Shoot();
+        if (weaponHolder != null)
+            weaponHolder.localPosition = weaponInitialPos + new Vector3(0, 0, -weaponKickBack);
+
+        if (conRecoilDeCamara && mouseLook != null)
+            mouseLook.AddRecoil(cameraRecoilAmount);
+
+        if (shootSound != null && audioSource != null)
+            audioSource.PlayOneShot(shootSound);
     }
 
-    public bool CanShoot()
+    public void PlayReloadEffects()
     {
-        return currentAmmo > 0 && !isReloading;
-    }
-
-    public bool CanReload()
-    {
-        return !isReloading && currentAmmo < magazineSize && reserveAmmo > 0;
-    }
-
-    public void Recargar()
-    {
-        if (!CanReload()) return;
-        StartCoroutine(ReloadRoutine());
-    }
-
-    private System.Collections.IEnumerator ReloadRoutine()
-    {
-        isReloading = true;
-        OnReloadStart?.Invoke();
-
-        if (reloadSound != null)
+        if (reloadSound != null && audioSource != null)
             audioSource.PlayOneShot(reloadSound);
-
-        yield return new WaitForSeconds(reloadTime);
-
-        int bulletsNeeded = magazineSize - currentAmmo;
-        int bulletsToLoad = Mathf.Min(bulletsNeeded, reserveAmmo);
-
-        currentAmmo += bulletsToLoad;
-        reserveAmmo -= bulletsToLoad;
-
-        isReloading = false;
-        NotifyAmmoChanged();
-        OnReloadEnd?.Invoke();
+        // TODO: disparar la animación de recarga aquí
     }
-
-    private void NotifyAmmoChanged()
-    {
-        OnAmmoChanged?.Invoke(currentAmmo, reserveAmmo);
-    }
-    
-    void Shoot()
-    {
-    if (slide != null)
-        slide.localPosition = slideInitialPos + slideRecoilOffset;
-
-    if (weaponHolder != null)
-        weaponHolder.localPosition = weaponInitialPos + new Vector3(0, 0, -weaponKickBack);
-
-    if (mouseLook != null)
-        mouseLook.AddRecoil(cameraRecoilAmount);
-
-    if (shootSound != null)
-        audioSource.PlayOneShot(shootSound);
-
-    if (playerCamera == null)
-    {
-        Debug.LogWarning("WeaponShoot: falta asignar Player Camera para el raycast.");
-        return;
-    }
-
-    Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
-    RaycastHit hit;
-
-    if (Physics.Raycast(ray, out hit, range, hitMask))
-    {
-        Debug.Log($"Impacto en: {hit.collider.name}");
-
-        // Sistema de daño pendiente de incorporar más adelante
-    }
-}
 
     void AnimateSlide()
     {
@@ -195,11 +133,7 @@ public class WeaponShoot : MonoBehaviour
 
     void AnimateAim()
     {
-        if (weaponHolder == null || aimPoint == null || playerCamera == null)
-        {
-            Debug.LogWarning($"AnimateAim cortado. weaponHolder null: {weaponHolder == null}, aimPoint null: {aimPoint == null}, playerCamera null: {playerCamera == null}");
-            return;
-        }
+        if (weaponHolder == null || aimPoint == null || playerCamera == null) return;
 
         Vector3 targetPos = isAiming ? aimPoint.localPosition : hipFirePosition;
         weaponInitialPos = Vector3.Lerp(weaponInitialPos, targetPos, Time.deltaTime * aimSpeed);
@@ -207,5 +141,4 @@ public class WeaponShoot : MonoBehaviour
         float targetFOV = isAiming ? aimFOV : defaultFOV;
         playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, targetFOV, Time.deltaTime * aimSpeed);
     }
-
 }
