@@ -24,6 +24,7 @@ public class Health : NetworkBehaviour, IDamageable
     public float VidaActual => vidaActual.Value;
     public float VidaMaxima => vidaMaxima;
     public bool EstaMuerto => muerto.Value;
+    public bool EsJugador => esJugador;
 
     /// <summary>(vidaActual, vidaMaxima). Se dispara en todos los peers.</summary>
     public event Action<float, float> OnVidaCambiada;
