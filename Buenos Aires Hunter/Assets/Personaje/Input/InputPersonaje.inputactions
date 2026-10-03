@@ -170,6 +170,16 @@
                     "interactions": "",
                     "initialStateCheck": false,
                     "priority": 0
+                },
+                {
+                    "name": "CerrarUI",
+                    "type": "Button",
+                    "id": "f8433412-f3f3-46aa-a5ef-ed5c8b35ef27",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
                 }
             ],
             "bindings": [
@@ -258,6 +268,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Recargar",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0b1d3dce-85e7-4297-bd1a-b37479abb394",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CerrarUI",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

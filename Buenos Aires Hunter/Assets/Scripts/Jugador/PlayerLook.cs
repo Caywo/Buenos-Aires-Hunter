@@ -10,9 +10,10 @@ public class PlayerLook : MonoBehaviour
     [Header("Recoil")]
     public float recoilReturnSpeed = 6f;
     private float recoilX = 0f;
-
+    public bool inputBloqueado = false;
     public void ProcessMirar(Vector2 input)
     {
+        if (inputBloqueado) return;
         float mouseX = input.x;
         float mouseY = input.y;
 

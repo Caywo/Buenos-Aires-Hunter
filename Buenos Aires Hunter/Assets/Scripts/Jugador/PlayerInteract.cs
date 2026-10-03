@@ -22,21 +22,30 @@ public class PlayerInteract : NetworkBehaviour
 
         if (playerUI == null) playerUI = FindAnyObjectByType<PlayerUI>();
         if (tiendaUI == null) tiendaUI = FindAnyObjectByType<TiendaUI>();
-        playerUI.ActualizarTexto(string.Empty);
 
         objetivo = null;
 
         Ray ray = new Ray(cam.transform.position, cam.transform.forward);
         Debug.DrawRay(ray.origin, ray.direction * distancia);
         RaycastHit hitInfo;
+
+        string texto = string.Empty;
+
         if (Physics.Raycast(ray, out hitInfo, distancia, mask))
         {
             objetivo = hitInfo.collider.GetComponentInParent<Interactuable>();
             if (objetivo != null)
             {
-                playerUI.ActualizarTexto(objetivo.mensaje);
+                texto = objetivo.mensaje;
+
+                if (objetivo is Tienda && !inventario.TieneSubeEquipada)
+                {
+                    texto = "Necesitás la SUBE en mano";
+                }
             }
         }
+
+        playerUI.ActualizarTexto(texto);
     }
 
     public void Interactuar()

@@ -456,10 +456,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInventory
   ShowTopMostFoldoutHeaderGroup: 1
   items:
-  - item: {fileID: 0}
+  - item: {fileID: 11400000, guid: 56711325ed88d614a81506a939dc8d3a, type: 2}
   - item: {fileID: 11400000, guid: 2db320a86796257448900ff2af3b2337, type: 2}
-  - item: {fileID: 0}
-  - item: {fileID: 0}
   weaponHolder: {fileID: 3627730883311634322}
   indiceSube: 1
   saldoSube:

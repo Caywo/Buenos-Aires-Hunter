@@ -11,7 +11,7 @@ public class InputManager : NetworkBehaviour
     private PlayerLook mirar;
     private PlayerInventory inventario;
     private PlayerInteract interactuar;
-
+    private TiendaUI tiendaUI;
     void Awake()
     {
         playerInput = new PlayerInput();
@@ -42,6 +42,12 @@ public class InputManager : NetworkBehaviour
             {
                 inventario.Equipar(numero - 1); // tecla 1 -> índice 0
             }
+        };
+
+        inventarioActions.CerrarUI.performed += ctx =>
+        {
+            if (tiendaUI == null) tiendaUI = FindAnyObjectByType<TiendaUI>();
+            tiendaUI?.CerrarTienda();
         };
     }
 

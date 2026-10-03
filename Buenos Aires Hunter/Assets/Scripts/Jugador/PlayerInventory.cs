@@ -22,13 +22,14 @@ public class PlayerInventory : NetworkBehaviour
     private PlayerLook mirar;
     private Camera camaraJugador;
     public int indiceSube = -1;
-    public NetworkVariable<int> saldoSube = new NetworkVariable<int>(-2000,
+    public NetworkVariable<int> saldoSube = new NetworkVariable<int>(-1200,
     NetworkVariableReadPermission.Everyone,
     NetworkVariableWritePermission.Server);
     public bool TieneSubeEquipada => indiceActivo.Value == indiceSube;
 
     public event System.Action<WeaponShoot> OnArmaCambiada;
     private MeleeAttack melee;
+    public bool inputBloqueado = false;
     void Awake()
     {
         mirar = GetComponent<PlayerLook>();
@@ -49,7 +50,16 @@ public class PlayerInventory : NetworkBehaviour
                 continue;
             }
 
-            int inicial = items[i].item.esConsumible ? items[i].item.cantidadInicial : -1;
+            int inicial;
+            if (!items[i].item.arrancaDesbloqueado)
+            {
+                inicial = 0; // bloqueado hasta comprarlo
+            }
+            else
+            {
+                inicial = items[i].item.esConsumible ? items[i].item.cantidadInicial : -1;
+            }
+
             cantidades[i] = new NetworkVariable<int>(inicial,
                 NetworkVariableReadPermission.Everyone,
                 NetworkVariableWritePermission.Server);
@@ -61,7 +71,7 @@ public class PlayerInventory : NetworkBehaviour
 
     public void Equipar(int indice)
     {
-        if (!IsOwner) return;
+        if (!IsOwner || inputBloqueado) return;
 
         if (indice == indiceActivo.Value)
         {
@@ -107,7 +117,7 @@ public class PlayerInventory : NetworkBehaviour
     }
     public void Disparar()
     {
-        if (!IsOwner) return;
+        if (!IsOwner || inputBloqueado) return;
 
         if (weaponActual != null)
         {
@@ -154,4 +164,22 @@ public class PlayerInventory : NetworkBehaviour
         PagarConSube(monto);
     }
 
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    public void IntentarComprarRpc(int precio, int indiceSlot)
+    {
+        if (indiceSlot < 0 || indiceSlot >= items.Length) return;
+        if (items[indiceSlot].item == null) return;
+
+        if (!PagarConSube(precio)) return;
+
+        var data = items[indiceSlot].item;
+        if (data.esConsumible)
+        {
+            cantidades[indiceSlot].Value += 1;
+        }
+        else
+        {
+            cantidades[indiceSlot].Value = -1;
+        }
+    }
 }
