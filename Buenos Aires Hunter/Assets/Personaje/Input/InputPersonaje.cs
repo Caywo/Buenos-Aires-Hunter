@@ -256,6 +256,16 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""initialStateCheck"": false,
                     ""priority"": 0
+                },
+                {
+                    ""name"": ""CerrarUI"",
+                    ""type"": ""Button"",
+                    ""id"": ""f8433412-f3f3-46aa-a5ef-ed5c8b35ef27"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
                 }
             ],
             ""bindings"": [
@@ -346,6 +356,17 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""action"": ""Recargar"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0b1d3dce-85e7-4297-bd1a-b37479abb394"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CerrarUI"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -364,6 +385,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_Inventario_Apuntar = m_Inventario.FindAction("Apuntar", throwIfNotFound: true);
         m_Inventario_Interactuar = m_Inventario.FindAction("Interactuar", throwIfNotFound: true);
         m_Inventario_Recargar = m_Inventario.FindAction("Recargar", throwIfNotFound: true);
+        m_Inventario_CerrarUI = m_Inventario.FindAction("CerrarUI", throwIfNotFound: true);
     }
 
     ~@PlayerInput()
@@ -568,6 +590,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Inventario_Apuntar;
     private readonly InputAction m_Inventario_Interactuar;
     private readonly InputAction m_Inventario_Recargar;
+    private readonly InputAction m_Inventario_CerrarUI;
     /// <summary>
     /// Provides access to input actions defined in input action map "Inventario".
     /// </summary>
@@ -599,6 +622,10 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Inventario/Recargar".
         /// </summary>
         public InputAction @Recargar => m_Wrapper.m_Inventario_Recargar;
+        /// <summary>
+        /// Provides access to the underlying input action "Inventario/CerrarUI".
+        /// </summary>
+        public InputAction @CerrarUI => m_Wrapper.m_Inventario_CerrarUI;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -640,6 +667,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Recargar.started += instance.OnRecargar;
             @Recargar.performed += instance.OnRecargar;
             @Recargar.canceled += instance.OnRecargar;
+            @CerrarUI.started += instance.OnCerrarUI;
+            @CerrarUI.performed += instance.OnCerrarUI;
+            @CerrarUI.canceled += instance.OnCerrarUI;
         }
 
         /// <summary>
@@ -666,6 +696,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Recargar.started -= instance.OnRecargar;
             @Recargar.performed -= instance.OnRecargar;
             @Recargar.canceled -= instance.OnRecargar;
+            @CerrarUI.started -= instance.OnCerrarUI;
+            @CerrarUI.performed -= instance.OnCerrarUI;
+            @CerrarUI.canceled -= instance.OnCerrarUI;
         }
 
         /// <summary>
@@ -770,5 +803,12 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnRecargar(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CerrarUI" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCerrarUI(InputAction.CallbackContext context);
     }
 }
