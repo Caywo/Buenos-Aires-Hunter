@@ -20,6 +20,8 @@ public class PlayerInventory : NetworkBehaviour
     private GameObject instanciaActual;
     private WeaponShoot weaponActual;
     private PlayerLook mirar;
+    private PlayerCombat combate;   // NUEVO (combate)
+    private Health salud;           // NUEVO (combate)
     private Camera camaraJugador;
     public int indiceSube = -1;
     public NetworkVariable<int> saldoSube = new NetworkVariable<int>(-1200,
@@ -27,16 +29,24 @@ public class PlayerInventory : NetworkBehaviour
     NetworkVariableWritePermission.Server);
     public bool TieneSubeEquipada => indiceActivo.Value == indiceSube;
 
+    // NUEVO (combate): acceso de solo lectura para PlayerCombat / HUD
+    public int IndiceActivo => indiceActivo.Value;
+    public WeaponShoot ArmaActual => weaponActual;
+
     public event System.Action<WeaponShoot> OnArmaCambiada;
     private MeleeAttack melee;
     public bool inputBloqueado = false;
+
     void Awake()
     {
         mirar = GetComponent<PlayerLook>();
+        combate = GetComponent<PlayerCombat>();
+        salud = GetComponent<Health>();
         camaraJugador = GetComponentInChildren<Camera>(true);
         melee = GetComponent<MeleeAttack>();
         melee.Init(camaraJugador);
     }
+
     public override void OnNetworkSpawn()
     {
         cantidades = new NetworkVariable<int>[items.Length];
@@ -72,6 +82,7 @@ public class PlayerInventory : NetworkBehaviour
     public void Equipar(int indice)
     {
         if (!IsOwner || inputBloqueado) return;
+        if (salud != null && salud.EstaMuerto) return; // NUEVO (combate)
 
         if (indice == indiceActivo.Value)
         {
@@ -100,39 +111,50 @@ public class PlayerInventory : NetworkBehaviour
     private void EquiparVisual(int indice)
     {
         if (instanciaActual != null) Destroy(instanciaActual);
+        instanciaActual = null;
         weaponActual = null;
 
-        if (indice < 0) return; // manos vacías
-
-        var data = items[indice].item;
-        if (data == null || data.prefabEnMano == null) return;
-
-        instanciaActual = Instantiate(data.prefabEnMano, weaponHolder);
-        weaponActual = instanciaActual.GetComponent<WeaponShoot>();
-
-        if (weaponActual != null)
+        if (indice >= 0 && indice < items.Length) // si es -1: manos vacías
         {
-            weaponActual.Init(weaponHolder, mirar, camaraJugador);
+            var data = items[indice].item;
+            if (data != null && data.prefabEnMano != null)
+            {
+                instanciaActual = Instantiate(data.prefabEnMano, weaponHolder);
+                weaponActual = instanciaActual.GetComponent<WeaponShoot>();
+
+                if (weaponActual != null)
+                {
+                    // NUEVO (combate): 4º parámetro esLocal
+                    weaponActual.Init(weaponHolder, mirar, camaraJugador, IsOwner);
+                }
+            }
         }
+
+        // NUEVO (combate): PlayerCombat se entera del cambio (cancela recargas en curso)
+        OnArmaCambiada?.Invoke(weaponActual);
     }
-    public void Disparar()
+
+    // CAMBIO (combate): ahora recibe si es una pulsación nueva (para armas semiautomáticas)
+    // y el disparo real lo valida el servidor en PlayerCombat.
+    public void Disparar(bool pulsacionNueva)
     {
         if (!IsOwner || inputBloqueado) return;
+        if (salud != null && salud.EstaMuerto) return;
 
         if (weaponActual != null)
         {
-            weaponActual.Disparar();
+            if (combate != null) combate.IntentarDisparar(pulsacionNueva);
         }
-        else if (indiceActivo.Value == -1)
+        else if (indiceActivo.Value == -1 && pulsacionNueva)
         {
-            melee.Atacar();
+            melee.Atacar(); // manos vacías: un golpe por click
         }
     }
 
     public void Recargar()
     {
-        if (!IsOwner) return;
-        if (weaponActual != null) weaponActual.Recargar();
+        if (!IsOwner || inputBloqueado) return;
+        if (weaponActual != null && combate != null) combate.IntentarRecargar();
     }
 
     public int GetCantidad(int indice) => cantidades[indice].Value;

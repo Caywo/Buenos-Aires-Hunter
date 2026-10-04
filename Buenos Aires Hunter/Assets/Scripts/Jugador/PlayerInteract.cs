@@ -23,6 +23,10 @@ public class PlayerInteract : NetworkBehaviour
         if (playerUI == null) playerUI = FindAnyObjectByType<PlayerUI>();
         if (tiendaUI == null) tiendaUI = FindAnyObjectByType<TiendaUI>();
 
+        // CAMBIO: el jugador puede existir en una escena sin HUD (ej: el menú principal,
+        // donde se crea al hacer StartHost). Sin PlayerUI no hay nada que actualizar.
+        if (playerUI == null) return;
+
         objetivo = null;
 
         Ray ray = new Ray(cam.transform.position, cam.transform.forward);
@@ -56,10 +60,11 @@ public class PlayerInteract : NetworkBehaviour
         {
             if (!inventario.TieneSubeEquipada)
             {
-                playerUI.ActualizarTexto("Necesitás la SUBE en mano");
+                if (playerUI != null) playerUI.ActualizarTexto("Necesitás la SUBE en mano");
                 return;
             }
 
+            if (tiendaUI == null) return; // CAMBIO: guarda por si la escena no tiene TiendaUI
             tiendaUI.AbrirTienda(inventario);
             return;
         }
