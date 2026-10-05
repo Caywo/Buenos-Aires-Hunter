@@ -27201,11 +27201,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
   ShowTopMostFoldoutHeaderGroup: 1
   enemyPrefab: {fileID: 1324170431698116061, guid: bc4a5e110b682754b882d65eb15df22e, type: 3}
+  tankPrefab: {fileID: 1324170431698116061, guid: 1835945e47b39034e95e4b8f7056fadd, type: 3}
   spawnPoints:
   - {fileID: 1152298788}
   enemigosPrimeraOleada: 3
   enemigosExtraPorOleada: 1
   tiempoEntreOleadas: 5
+  maxEnemigosVivos: 4
+  primeraOleadaTanque: 4
+  maxTanquesVivos: 1
+  distanciaMinimaJugador: 15
 --- !u!114 &1051142818
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -34197,11 +34202,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
   ShowTopMostFoldoutHeaderGroup: 1
   enemyPrefab: {fileID: 1324170431698116061, guid: bc4a5e110b682754b882d65eb15df22e, type: 3}
+  tankPrefab: {fileID: 1324170431698116061, guid: 1835945e47b39034e95e4b8f7056fadd, type: 3}
   spawnPoints:
   - {fileID: 1668767639}
   enemigosPrimeraOleada: 3
   enemigosExtraPorOleada: 1
   tiempoEntreOleadas: 5
+  maxEnemigosVivos: 4
+  primeraOleadaTanque: 4
+  maxTanquesVivos: 1
+  distanciaMinimaJugador: 15
 --- !u!1 &1183594594
 GameObject:
   m_ObjectHideFlags: 0
@@ -55276,11 +55286,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
   ShowTopMostFoldoutHeaderGroup: 1
   enemyPrefab: {fileID: 1324170431698116061, guid: bc4a5e110b682754b882d65eb15df22e, type: 3}
+  tankPrefab: {fileID: 1324170431698116061, guid: 1835945e47b39034e95e4b8f7056fadd, type: 3}
   spawnPoints:
   - {fileID: 357694551}
   enemigosPrimeraOleada: 3
   enemigosExtraPorOleada: 1
   tiempoEntreOleadas: 5
+  maxEnemigosVivos: 4
+  primeraOleadaTanque: 1
+  maxTanquesVivos: 1
+  distanciaMinimaJugador: 15
 --- !u!114 &2134924704
 MonoBehaviour:
   m_ObjectHideFlags: 0

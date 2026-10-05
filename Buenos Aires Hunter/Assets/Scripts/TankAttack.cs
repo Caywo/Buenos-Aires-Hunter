@@ -9,7 +9,7 @@ public class TankAttack : NetworkBehaviour
     [SerializeField] private float distanciaActivacion = 6f;
     [SerializeField] private float tiempoPreparacion = 0.7f;
     [SerializeField] private float velocidadEmbestida = 10f;
-    [SerializeField] private float duracionEmbestida = 1.5f;
+    
 
     [Header("Detección de impacto")]
     [SerializeField] private float radioImpacto = 1.2f;
@@ -147,12 +147,6 @@ public class TankAttack : NetworkBehaviour
 
         if (!embistiendo)
             return;
-
-        // Seguridad para que no embista infinitamente.
-        if (Time.time >= tiempoInicioEmbestida + duracionEmbestida)
-        {
-            TerminarEmbestida();
-        }
     }
 
     private void DetectarEntidades()
