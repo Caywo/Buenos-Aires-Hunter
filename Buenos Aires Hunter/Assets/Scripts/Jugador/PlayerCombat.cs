@@ -31,12 +31,14 @@ public class PlayerCombat : NetworkBehaviour
     private PlayerInventory inventario;
     private Health salud;
     private CharacterController controller;
+    private MeleeAttack melee;
     private Camera cam;
 
     // Solo servidor
     private int[] capacidadCargador;
     private int[] reservaInicial;
     private float proximoDisparoServer;
+    private float proximoMeleeServer;
     private float finRecargaServer;
     private int slotRecargando = -1;
 
@@ -44,6 +46,7 @@ public class PlayerCombat : NetworkBehaviour
     private float proximoDisparoLocal;
 
     private static readonly RaycastHit[] bufferHits = new RaycastHit[16];
+    private static readonly RaycastHit[] bufferLinea = new RaycastHit[16];
 
     public bool Recargando => recargando.Value;
 
@@ -55,6 +58,7 @@ public class PlayerCombat : NetworkBehaviour
         inventario = GetComponent<PlayerInventory>();
         salud = GetComponent<Health>();
         controller = GetComponent<CharacterController>();
+        melee = GetComponent<MeleeAttack>();
     }
 
     public override void OnNetworkSpawn()
@@ -248,14 +252,104 @@ public class PlayerCombat : NetworkBehaviour
 
         if (inventario.ArmaActual != null)
             inventario.ArmaActual.PlayShootEffects(false);
-
-        // TODO: instanciar partículas / decal de impacto en 'punto' orientado por 'normal'
     }
 
     [ClientRpc]
     private void ConfirmarImpactoClientRpc(ClientRpcParams rpcParams = default)
     {
         OnImpactoConfirmado?.Invoke();
+    }
+
+    // ───────────────────────── MELEE (puños) ─────────────────────────
+
+    /// <summary>Lo llama MeleeAttack en el dueño, después de pasar su cooldown local.</summary>
+    public void IntentarMelee(Vector3 origen, Vector3 direccion)
+    {
+        if (!IsOwner || salud.EstaMuerto) return;
+        MeleeServerRpc(origen, direccion);
+    }
+
+    [ServerRpc]
+    private void MeleeServerRpc(Vector3 origen, Vector3 direccion)
+    {
+        Debug.Log("[Melee] El servidor recibió el golpe");
+
+        if (melee == null || salud.EstaMuerto) { Debug.Log("[Melee] Rechazado: sin MeleeAttack o jugador muerto"); return; }
+        if (Time.time < proximoMeleeServer) { Debug.Log("[Melee] Rechazado: cooldown del servidor"); return; }
+
+        // Mismas validaciones básicas que el disparo
+        if ((origen - transform.position).sqrMagnitude > toleranciaOrigen * toleranciaOrigen) { Debug.Log("[Melee] Rechazado: origen demasiado lejos del jugador"); return; }
+        if (direccion.sqrMagnitude < 0.001f) return;
+        direccion.Normalize();
+
+        proximoMeleeServer = Time.time + melee.fireRate * toleranciaCadencia;
+
+        // Busca el objetivo dañable más cercano. El escenario que solo roza la esfera se ignora.
+        if (BuscarObjetivoMelee(origen, direccion, out IDamageable objetivo, out RaycastHit hit))
+        {
+            Debug.Log($"[Melee] Impacto en '{hit.collider.name}', daño {melee.damage}");
+            objetivo.TakeDamage(melee.damage, OwnerClientId);
+            ConfirmarImpactoClientRpc(SoloAlDueno()); // hitmarker
+        }
+    }
+
+    /// <summary>
+    /// Barrido esférico que prioriza objetivos dañables: bancos, paredes laterales o el piso que solo
+    /// rozan la esfera no "tapan" al enemigo. Después verifica que no haya una pared entre la cámara y el objetivo.
+    /// </summary>
+    private bool BuscarObjetivoMelee(Vector3 origen, Vector3 dir, out IDamageable objetivo, out RaycastHit mejor)
+    {
+        objetivo = null;
+        mejor = default;
+
+        // El barrido arranca un poco atrás de la cámara para no fallar con enemigos pegados al jugador
+        Vector3 inicio = origen - dir * melee.radio;
+        float distancia = melee.rango + melee.radio;
+
+        int n = Physics.SphereCastNonAlloc(inicio, melee.radio, dir, bufferHits, distancia, melee.hitMask, QueryTriggerInteraction.Ignore);
+
+        float minDist = float.MaxValue;
+        for (int i = 0; i < n; i++)
+        {
+            RaycastHit h = bufferHits[i];
+            if (h.collider.transform.IsChildOf(transform)) continue; // no pegarse a uno mismo
+
+            IDamageable d = h.collider.GetComponentInParent<IDamageable>();
+            if (d == null) continue; // escenario: se ignora
+
+            if (h.distance < minDist)
+            {
+                minDist = h.distance;
+                mejor = h;
+                objetivo = d;
+            }
+        }
+
+        if (objetivo == null)
+        {
+            Debug.Log("[Melee] No hay ningún objetivo dañable al alcance (revisar Rango, Radio, colliders y Hit Mask)");
+            return false;
+        }
+
+        // Línea de visión: que no haya una pared entre la cámara y el objetivo
+        Vector3 haciaObjetivo = mejor.collider.bounds.center - origen;
+        float distanciaObjetivo = haciaObjetivo.magnitude;
+        if (distanciaObjetivo > 0.001f)
+        {
+            int m = Physics.RaycastNonAlloc(origen, haciaObjetivo / distanciaObjetivo, bufferLinea, distanciaObjetivo, melee.hitMask, QueryTriggerInteraction.Ignore);
+            for (int i = 0; i < m; i++)
+            {
+                Collider c = bufferLinea[i].collider;
+                if (c.transform.IsChildOf(transform)) continue; // uno mismo
+                if (ReferenceEquals(c.GetComponentInParent<IDamageable>(), objetivo)) continue; // el propio objetivo
+
+                Debug.Log($"[Melee] Golpe bloqueado por '{c.name}'");
+                objetivo = null;
+                return false;
+            }
+        }
+
+        return true;
     }
 
     // ───────────────────────── RECARGA ─────────────────────────
@@ -270,6 +364,7 @@ public class PlayerCombat : NetworkBehaviour
         if (arma == null || slot < 0 || slot >= cargador.Count) return;
         if (cargador[slot] >= arma.magazineSize || reserva[slot] <= 0) return;
 
+        arma.PlayReloadEffects(); // predicción: el dueño no espera a la red
         RecargarServerRpc();
     }
 
@@ -311,7 +406,8 @@ public class PlayerCombat : NetworkBehaviour
 
     private void AlCambiarRecargando(bool anterior, bool nuevo)
     {
-        if (nuevo && inventario.ArmaActual != null)
+        // El dueño ya la reprodujo por predicción; los demás la ven cuando llega el estado
+        if (nuevo && !IsOwner && inventario.ArmaActual != null)
             inventario.ArmaActual.PlayReloadEffects();
     }
 
