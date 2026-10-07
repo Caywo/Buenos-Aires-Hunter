@@ -11,5 +11,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/MapaExtraccion1.unity
     guid: 62827d043c8740341a146e29f7c7eab1
+  - enabled: 1
+    path: Assets/Scenes/MapaSupervivencia1.unity
+    guid: ba1906e3ef12ed746a1c1b7f3f67a9ba
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
