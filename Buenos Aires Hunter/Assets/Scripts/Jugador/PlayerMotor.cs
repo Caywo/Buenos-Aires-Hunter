@@ -9,7 +9,7 @@ public class PlayerMotor : MonoBehaviour
     public float speed = 20f;
     public float gravity = -20f;
     public float jumpHeight = 3f;
-
+    public bool inputBloqueado = false;
     void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -17,6 +17,10 @@ public class PlayerMotor : MonoBehaviour
 
     public void ProcessMove(Vector2 input)
     {
+        if (inputBloqueado)
+        {
+            input = Vector2.zero;
+        }
         isGrounded = controller.isGrounded;
 
         Vector3 direccionMovimiento = Vector3.zero;
@@ -44,4 +48,6 @@ public class PlayerMotor : MonoBehaviour
             playerVelocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
     }
+
+
 }

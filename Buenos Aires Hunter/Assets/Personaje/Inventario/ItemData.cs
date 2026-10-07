@@ -9,4 +9,5 @@ public class ItemData : ScriptableObject
 
     public bool esConsumible;
     public int cantidadInicial = 1;
+    public bool arrancaDesbloqueado = false;
 }
