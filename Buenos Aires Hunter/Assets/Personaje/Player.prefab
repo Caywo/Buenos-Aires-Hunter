@@ -501,9 +501,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 450358755d352884bb95c4d50edb6253, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MeleeAttack
-  rango: 1.5
+  rango: 3
   radio: 0.5
-  damage: 25
+  damage: 100
   fireRate: 0.6
   hitMask:
     serializedVersion: 2
