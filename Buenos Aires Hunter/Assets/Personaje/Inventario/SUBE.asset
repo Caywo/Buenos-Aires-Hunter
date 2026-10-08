@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SUBE
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   nombre: SUBE
-  prefabEnMano: {fileID: 3917085639110859467, guid: f9ee62530edecef4c9cf3d55bf421ddb, type: 3}
+  prefabEnMano: {fileID: 394548143934123970, guid: 217e9089eaae2bb4185e617ea528c503, type: 3}
   icono: {fileID: 0}
   esConsumible: 0
   cantidadInicial: 1
