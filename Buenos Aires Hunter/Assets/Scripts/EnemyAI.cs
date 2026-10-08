@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using Unity.Netcode;
 
+[RequireComponent(typeof(Health))]
 public class EnemyAI : NetworkBehaviour
 {
     [Header("Movimiento")]
@@ -9,12 +10,19 @@ public class EnemyAI : NetworkBehaviour
 
     [Header("Ataque")]
     [SerializeField] private float attackRange = 2f;
-    [SerializeField] private float attackCooldown = 1.5f;
+    
+    [Header("Búsqueda de objetivo")]
+    [SerializeField] private float intervaloBusqueda = 0.5f;
 
-    private float tiempoUltimoAtaque = -Mathf.Infinity;
+    private float proximaBusqueda;
 
     private NavMeshAgent agent;
+    private Health salud;          // NUEVO: vida de este enemigo
     private Transform target;
+    private Health targetHealth;   // NUEVO: vida del objetivo
+    private TankAttack ataqueTanque;
+    private NormalAttack ataqueCuerpoACuerpo;
+    private EnemyKnockback knockback;
 
     private enum EstadoIA
     {
@@ -28,6 +36,10 @@ public class EnemyAI : NetworkBehaviour
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        salud = GetComponent<Health>();
+        ataqueTanque = GetComponent<TankAttack>();
+        ataqueCuerpoACuerpo = GetComponent<NormalAttack>();
+        knockback = GetComponent<EnemyKnockback>();
     }
 
     public override void OnNetworkSpawn()
@@ -37,7 +49,22 @@ public class EnemyAI : NetworkBehaviour
         if (!IsServer)
         {
             agent.enabled = false;
+            return;
         }
+
+        salud.OnMuerto += AlMorir;
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        if (salud != null)
+            salud.OnMuerto -= AlMorir;
+    }
+
+    private void AlMorir(ulong atacanteId)
+    {
+        if (agent.enabled && agent.isOnNavMesh)
+            agent.isStopped = true;
     }
 
     private void Update()
@@ -45,6 +72,12 @@ public class EnemyAI : NetworkBehaviour
         if (!IsServer)
             return;
 
+        // Un enemigo muerto no se mueve ni ataca (aunque siga en escena hasta el Despawn)
+        if (salud.EstaMuerto)
+            return;
+
+        if (knockback != null && knockback.EstaSiendoLanzado)
+            return;
         switch (estadoActual)
         {
             case EstadoIA.Idle:
@@ -61,24 +94,41 @@ public class EnemyAI : NetworkBehaviour
         }
     }
 
+    // NUEVO: el objetivo existe y sigue vivo
+    private bool TargetValido()
+    {
+        return target != null && targetHealth != null && !targetHealth.EstaMuerto;
+    }
+
+    // NUEVO: suelta el objetivo y vuelve a buscar otro
+    private void SoltarTarget()
+    {
+        target = null;
+        targetHealth = null;
+        estadoActual = EstadoIA.Idle;
+    }
+
     private void EstadoIdle()
     {
-        if (target == null)
-        {
-            FindTarget();
+        // NUEVO: no buscar en cada frame
+        if (Time.time < proximaBusqueda)
+            return;
 
-            if (target != null)
-            {
-                estadoActual = EstadoIA.Perseguir;
-            }
+        proximaBusqueda = Time.time + intervaloBusqueda;
+
+        FindTarget();
+
+        if (TargetValido())
+        {
+            estadoActual = EstadoIA.Perseguir;
         }
     }
 
     private void EstadoPerseguir()
     {
-        if (target == null)
+        if (!TargetValido())
         {
-            estadoActual = EstadoIA.Idle;
+            SoltarTarget();
             return;
         }
 
@@ -103,27 +153,60 @@ public class EnemyAI : NetworkBehaviour
 
     private void EstadoAtacar()
     {
-        if (target == null)
+        if (!TargetValido())
         {
-            estadoActual = EstadoIA.Idle;
+            SoltarTarget();
             return;
         }
 
-        float distance = Vector3.Distance(
-            transform.position,
-            target.position
-        );
-
-        if (distance > attackRange)
+        // Tanque
+        if (ataqueTanque != null)
         {
-            estadoActual = EstadoIA.Perseguir;
-            return;
+            if (ataqueTanque.EstaOcupado)
+                return;
+
+            float distancia = Vector3.Distance(
+                transform.position,
+                target.position
+            );
+
+            // Si está fuera del rango de embestida,
+            // vuelve a perseguir al jugador.
+            if (distancia > ataqueTanque.DistanciaActivacion)
+            {
+                estadoActual = EstadoIA.Perseguir;
+                return;
+            }
+
+            if (ataqueTanque.PuedeEmbestir(target))
+            {
+                ataqueTanque.IniciarEmbestida(target);
+                return;
+            }
+
+            MirarAlObjetivo();
         }
 
-        agent.ResetPath();
+        // enemigo normal
+        if (ataqueCuerpoACuerpo != null)
+        {
+            float distance = Vector3.Distance(
+                transform.position,
+                target.position
+            );
 
-        MirarAlObjetivo();
-        Atacar();
+            if (distance > attackRange)
+            {
+                estadoActual = EstadoIA.Perseguir;
+                return;
+            }
+
+            agent.ResetPath();
+
+            MirarAlObjetivo();
+
+            ataqueCuerpoACuerpo.Atacar(target);
+        }
     }
 
     private void FindTarget()
@@ -132,9 +215,15 @@ public class EnemyAI : NetworkBehaviour
 
         float distanciaMasCercana = Mathf.Infinity;
         Transform jugadorMasCercano = null;
+        Health saludMasCercano = null;
 
         foreach (GameObject player in players)
         {
+            // NUEVO: ignorar jugadores muertos
+            Health h = player.GetComponentInParent<Health>();
+            if (h == null || h.EstaMuerto)
+                continue;
+
             float distancia = Vector3.Distance(
                 transform.position,
                 player.transform.position
@@ -144,20 +233,12 @@ public class EnemyAI : NetworkBehaviour
             {
                 distanciaMasCercana = distancia;
                 jugadorMasCercano = player.transform;
+                saludMasCercano = h;
             }
         }
 
         target = jugadorMasCercano;
-    }
-
-    private void Atacar()
-    {
-        if (Time.time < tiempoUltimoAtaque + attackCooldown)
-            return;
-
-        tiempoUltimoAtaque = Time.time;
-
-        Debug.Log("El enemigo ataca");
+        targetHealth = saludMasCercano;
     }
 
     private void MirarAlObjetivo()

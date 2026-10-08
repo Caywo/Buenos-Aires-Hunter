@@ -11,6 +11,8 @@ public class InputManager : NetworkBehaviour
     private PlayerLook mirar;
     private PlayerInventory inventario;
     private PlayerInteract interactuar;
+    private Health salud; // NUEVO (combate)
+    private TiendaUI tiendaUI;
 
     void Awake()
     {
@@ -21,19 +23,23 @@ public class InputManager : NetworkBehaviour
         mirar = GetComponent<PlayerLook>();
         inventario = GetComponent<PlayerInventory>();
         interactuar = GetComponent<PlayerInteract>();
-        inventarioActions.Interactuar.performed += ctx => interactuar.Interactuar();
+        salud = GetComponent<Health>();
 
         if (motor == null) Debug.LogError("InputManager: no se encontró PlayerMotor.", this);
         if (mirar == null) Debug.LogError("InputManager: no se encontró PlayerMirar.", this);
         if (inventario == null) Debug.LogError("InputManager: no se encontró PlayerInventory.", this);
+        if (salud == null) Debug.LogError("InputManager: no se encontró Health.", this);
 
-        movimiento.Saltar.performed += ctx => motor.Saltar();
+        inventarioActions.Interactuar.performed += ctx => { if (!salud.EstaMuerto) interactuar.Interactuar(); };
 
-        inventarioActions.Disparar.performed += ctx => inventario.Disparar();
+        movimiento.Saltar.performed += ctx => { if (!salud.EstaMuerto) motor.Saltar(); };
+
+        // CAMBIO (combate): el disparo ya NO usa 'performed'. Se lee con IsPressed() en Update
+        // para permitir fuego automático al mantener el botón.
         inventarioActions.Recargar.performed += ctx => inventario.Recargar();
 
-        inventarioActions.Apuntar.performed += ctx => { Debug.Log("Apuntar: performed"); inventario.SetApuntando(true); };
-        inventarioActions.Apuntar.canceled += ctx => { Debug.Log("Apuntar: canceled"); inventario.SetApuntando(false); };
+        inventarioActions.Apuntar.performed += ctx => inventario.SetApuntando(true);
+        inventarioActions.Apuntar.canceled += ctx => inventario.SetApuntando(false);
 
         inventarioActions.Items.performed += ctx =>
         {
@@ -43,6 +49,12 @@ public class InputManager : NetworkBehaviour
                 inventario.Equipar(numero - 1); // tecla 1 -> índice 0
             }
         };
+
+        inventarioActions.CerrarUI.performed += ctx =>
+        {
+            if (tiendaUI == null) tiendaUI = FindAnyObjectByType<TiendaUI>();
+            tiendaUI?.CerrarTienda();
+        };
     }
 
     public override void OnNetworkSpawn()
@@ -50,7 +62,7 @@ public class InputManager : NetworkBehaviour
         if (IsOwner)
         {
             movimiento.Enable();
-            inventarioActions.Enable(); 
+            inventarioActions.Enable();
             Cursor.lockState = CursorLockMode.Locked;
         }
         else
@@ -67,15 +79,28 @@ public class InputManager : NetworkBehaviour
         inventarioActions.Disable();
     }
 
+    // NUEVO (combate): fuego automático. 'pulsacionNueva' distingue armas semiautomáticas.
+    // Si la tienda está abierta, PlayerInventory.Disparar() lo ignora por inputBloqueado.
+    void Update()
+    {
+        if (!IsOwner || salud.EstaMuerto) return;
+
+        var disparar = inventarioActions.Disparar;
+        if (disparar.IsPressed())
+        {
+            inventario.Disparar(disparar.WasPressedThisFrame());
+        }
+    }
+
     void FixedUpdate()
     {
-        if (!IsOwner) return;
+        if (!IsOwner || salud.EstaMuerto) return;
         motor.ProcessMove(movimiento.Movimiento.ReadValue<Vector2>());
     }
 
     void LateUpdate()
     {
-        if (!IsOwner) return;
+        if (!IsOwner || salud.EstaMuerto) return;
         mirar.ProcessMirar(movimiento.Mirar.ReadValue<Vector2>());
     }
 }

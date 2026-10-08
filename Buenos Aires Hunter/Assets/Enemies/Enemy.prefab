@@ -16,6 +16,9 @@ GameObject:
   - component: {fileID: 8646786863877457074}
   - component: {fileID: 393846340232791622}
   - component: {fileID: 7938549898630998001}
+  - component: {fileID: -1810127468036932324}
+  - component: {fileID: -5609600596832349573}
+  - component: {fileID: -6370152179804689159}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -128,7 +131,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3.5
+  m_Speed: 5
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -226,7 +229,54 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   ShowTopMostFoldoutHeaderGroup: 1
-  detectionRange: 15
   stoppingDistance: 1.5
   attackRange: 2
+  intervaloBusqueda: 0.5
+--- !u!114 &-1810127468036932324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1324170431698116061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43f8284da7fce6648a15cb73ca221c4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Health
+  ShowTopMostFoldoutHeaderGroup: 1
+  vidaMaxima: 100
+  esJugador: 0
+  despawnAlMorir: 1
+  retrasoDespawn: 0.5
+--- !u!114 &-5609600596832349573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1324170431698116061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c66c022ee623a5244b25b0003fbe8985, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NormalAttack
+  ShowTopMostFoldoutHeaderGroup: 1
+  danoAtaque: 10
   attackCooldown: 1.5
+--- !u!114 &-6370152179804689159
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1324170431698116061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7eeeacaa124f1da4593ff5813d929057, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyKnockback
+  ShowTopMostFoldoutHeaderGroup: 1
+  fuerzaHorizontal: 8
+  fuerzaVertical: 5
+  duracion: 0.7

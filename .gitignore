@@ -6,6 +6,13 @@
 [Bb]uilds/
 [Ll]ogs/
 [Uu]ser[Ss]ettings/
+*.csproj
+*.sln
+*.user
+*.userprefs
+*.pidb
+*.booproj
+sysinfo.txt
 
 # Visual Studio
 .vs/

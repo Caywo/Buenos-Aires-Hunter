@@ -5,7 +5,7 @@ public abstract class Interactuable : NetworkBehaviour
 {
     public string mensaje;
     public virtual void Interactuar()
-    {
+    { 
 
     }
 
