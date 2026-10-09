@@ -28,12 +28,6 @@ public class MenuPrincipal : MonoBehaviour
     {
         foreach (var modo in modos)
         {
-            Debug.Log(modo.nombre + " -> panel=" + (modo.panel != null ? modo.panel.name : "NULL") +
-                       " activeInHierarchy=" + (modo.panel != null && modo.panel.activeInHierarchy));
-        }
-
-        foreach (var modo in modos)
-        {
             if (modo.panel != null && modo.panel.activeInHierarchy)
                 return modo;
         }
@@ -93,6 +87,62 @@ public class MenuPrincipal : MonoBehaviour
             Debug.LogError("No se pudo unir a la partida. Revisá el código.");
         }
     }
+
+    // ---------- Continuar partida guardada ----------
+
+    public void ContinuarPartidaUnJugador()
+    {
+        if (!CargarPartida()) return;
+
+        UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+        transport.SetConnectionData("127.0.0.1", 7777);
+
+        NetworkManager.Singleton.StartHost();
+
+        NetworkManager.Singleton.SceneManager.LoadScene(
+            modoElegido.escenaDeJuego,
+            LoadSceneMode.Single
+        );
+    }
+
+    public async void ContinuarPartidaOnline()
+    {
+        if (!CargarPartida()) return;
+
+        string joinCode = await NetworkManagerPersistente.Instance.StartHostWithRelayAsync();
+        if (string.IsNullOrEmpty(joinCode))
+        {
+            Debug.LogError("No se pudo crear la partida.");
+            return;
+        }
+
+        MostrarCodigoYEsperando(joinCode);
+
+        NetworkManager.Singleton.OnClientConnectedCallback += OnJugadorConectado;
+        RevisarSiHayQueArrancar();
+    }
+
+    private bool CargarPartida()
+    {
+        if (SaveManager.Instance == null || !SaveManager.Instance.HayPartidaGuardada())
+        {
+            Debug.LogError("No hay partida guardada.");
+            return false;
+        }
+
+        var save = SaveManager.Instance.CargarPartida();
+
+        modoElegido = new ModoDeJuego
+        {
+            nombre = "Continuar",
+            panel = null,
+            escenaDeJuego = save.escenaSiguiente
+        };
+
+        return true;
+    }
+
+    // ---------------------------------------------------
 
     private ModoDeJuego modoElegido;
 

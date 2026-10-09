@@ -11,6 +11,7 @@ public class PlayerInteract : NetworkBehaviour
     private PlayerUI playerUI;
     private TiendaUI tiendaUI;
     private EnemySpawnerSupervivencia spawner; // para el modo supervivencia
+    private PlayerDownState jugadorCaido;
     void Start()
     {
         cam = GetComponent<PlayerLook>().cam;
@@ -53,6 +54,13 @@ public class PlayerInteract : NetworkBehaviour
                     }
                     if (!inventario.TieneSubeEquipada) texto = "Necesitás la SUBE en mano";
                 }
+                jugadorCaido = hitInfo.collider.GetComponentInParent<PlayerDownState>();
+
+                if (jugadorCaido != null)
+                {
+                    var vidaAjena = jugadorCaido.GetComponent<Health>();
+                    texto = vidaAjena != null && vidaAjena.EstaMuerto ? "Mantené E para revivir" : string.Empty;
+                }
             }
         }
         playerUI.ActualizarTexto(texto);
@@ -79,6 +87,11 @@ public class PlayerInteract : NetworkBehaviour
             }
 
             tiendaUI.AbrirTienda(inventario);
+            return;
+        }
+        if (jugadorCaido != null)
+        {
+            jugadorCaido.IntentarRevivirRpc(OwnerClientId);
             return;
         }
 

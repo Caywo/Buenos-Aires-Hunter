@@ -47,6 +47,22 @@ public class PlayerSpawnManager : MonoBehaviour
         {
             cliente.PlayerObject.transform.position = spawnPoint2.position;
         }
+
+        AplicarDatosGuardadoSiHay(clientId, cliente.PlayerObject);
+    }
+
+    private void AplicarDatosGuardadoSiHay(ulong clientId, NetworkObject jugador)
+    {
+        if (SaveManager.Instance == null) return;
+
+        SaveData save = SaveManager.Instance.CargarPartida();
+        if (save == null) return;
+
+        int indice = clientId == 0 ? 0 : 1;
+        if (indice >= save.jugadores.Length) return;
+
+        var inventario = jugador.GetComponent<PlayerInventory>();
+        inventario?.AplicarDatosGuardado(save.jugadores[indice]);
     }
 
     /// <summary>

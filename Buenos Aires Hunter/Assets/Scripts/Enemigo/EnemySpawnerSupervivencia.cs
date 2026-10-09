@@ -51,7 +51,7 @@ public class EnemySpawnerSupervivencia : NetworkBehaviour
         if (!IsServer)
             return;
 
-        Health.OnCualquierMuerte += AlMorirAlgo;
+        Health.OnCualquierMuerte += AlMorirEnemigo;
         IniciarNuevaRonda();
     }
 
@@ -60,7 +60,7 @@ public class EnemySpawnerSupervivencia : NetworkBehaviour
         if (!IsServer)
             return;
 
-        Health.OnCualquierMuerte -= AlMorirAlgo;
+        Health.OnCualquierMuerte -= AlMorirEnemigo;
     }
 
     private void Update()
@@ -262,7 +262,7 @@ public class EnemySpawnerSupervivencia : NetworkBehaviour
         IniciarNuevaRonda();
     }
 
-    private void AlMorirAlgo(Health health, ulong atacanteId)
+    private void AlMorirEnemigo(Health health, ulong atacanteId)
     {
         if (!IsServer)
             return;

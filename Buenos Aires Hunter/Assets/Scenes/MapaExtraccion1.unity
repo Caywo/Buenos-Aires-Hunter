@@ -2286,6 +2286,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100000, guid: 8dcf1e1a9552d144db500adf60f2b638, type: 3}
       insertIndex: -1
       addedObject: {fileID: 128423700}
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: 8dcf1e1a9552d144db500adf60f2b638, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 128423702}
   m_SourcePrefab: {fileID: 100100000, guid: 8dcf1e1a9552d144db500adf60f2b638, type: 3}
 --- !u!4 &128423698 stripped
 Transform:
@@ -2312,6 +2315,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   mensaje: "\xBFTomarse el palo?"
   precioPasaje: 2000
+  siguienteMapa: Escenario1
 --- !u!114 &128423701
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2339,6 +2343,18 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
+--- !u!114 &128423702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 128423699}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b14573b6688403f468b2fef24bb2f95b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SaveManager
 --- !u!1 &140653126
 GameObject:
   m_ObjectHideFlags: 0
@@ -6310,7 +6326,7 @@ GameObject:
   m_Component:
   - component: {fileID: 357694551}
   m_Layer: 0
-  m_Name: SpawnPoint
+  m_Name: SpawnPoint3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6324,12 +6340,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 357694550}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1.35, y: -3.67, z: -50.890003}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2134924705}
+  m_Father: {fileID: 1180935715}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &364011046
 GameObject:
@@ -27198,7 +27214,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1051142817
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27214,8 +27230,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   enemyPrefab: {fileID: 1324170431698116061, guid: bc4a5e110b682754b882d65eb15df22e, type: 3}
   tankPrefab: {fileID: 1324170431698116061, guid: 1835945e47b39034e95e4b8f7056fadd, type: 3}
-  spawnPoints:
-  - {fileID: 1152298788}
+  spawnPoints: []
   enemigosPrimeraOleada: 3
   enemigosExtraPorOleada: 1
   tiempoEntreOleadas: 5
@@ -27223,6 +27238,7 @@ MonoBehaviour:
   primeraOleadaTanque: 4
   maxTanquesVivos: 1
   distanciaMinimaJugador: 15
+  recompensaPorKill: 100
 --- !u!114 &1051142818
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27237,7 +27253,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
   GlobalObjectIdHash: 722840702
   InScenePlacedSourceGlobalObjectIdHash: 0
-  m_InScenePlacedDisabledByDefault: 0
+  m_InScenePlacedDisabledByDefault: 1
   DeferredDespawnTick: 0
   Ownership: 1
   AlwaysReplicateAsRoot: 0
@@ -27258,12 +27274,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1051142816}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -7.56, y: 0, z: -54.87}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1152298788}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1057903456
@@ -34116,7 +34131,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1152298788}
   m_Layer: 0
-  m_Name: SpawnPoint
+  m_Name: SpawnPoint2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34130,12 +34145,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1152298787}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 8.91, y: 0, z: -48.55}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1051142819}
+  m_Father: {fileID: 1180935715}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1159642796 stripped
 GameObject:
@@ -34303,11 +34318,13 @@ Transform:
   m_GameObject: {fileID: 1180935714}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.37, y: 3.67, z: -14.34}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1668767639}
+  - {fileID: 1152298788}
+  - {fileID: 357694551}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1180935716
@@ -34354,6 +34371,8 @@ MonoBehaviour:
   tankPrefab: {fileID: 1324170431698116061, guid: 1835945e47b39034e95e4b8f7056fadd, type: 3}
   spawnPoints:
   - {fileID: 1668767639}
+  - {fileID: 1152298788}
+  - {fileID: 357694551}
   enemigosPrimeraOleada: 3
   enemigosExtraPorOleada: 1
   tiempoEntreOleadas: 5
@@ -34361,6 +34380,7 @@ MonoBehaviour:
   primeraOleadaTanque: 4
   maxTanquesVivos: 1
   distanciaMinimaJugador: 15
+  recompensaPorKill: 100
 --- !u!1 &1183594594
 GameObject:
   m_ObjectHideFlags: 0
@@ -47066,7 +47086,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1668767639}
   m_Layer: 0
-  m_Name: SpawnPoint
+  m_Name: SpawnPoint1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -47081,7 +47101,7 @@ Transform:
   m_GameObject: {fileID: 1668767638}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.39, y: 0, z: -22.65}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -49549,6 +49569,7 @@ MonoBehaviour:
   barraVida: {fileID: 476654228}
   textoVida: {fileID: 189489018}
   textoMunicion: {fileID: 499022162}
+  textoRonda: {fileID: 0}
   hitMarker: {fileID: 41365239}
   duracionHitMarker: 0.1
 --- !u!114 &1799899434
@@ -55862,7 +55883,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2134924703
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -55887,6 +55908,7 @@ MonoBehaviour:
   primeraOleadaTanque: 1
   maxTanquesVivos: 1
   distanciaMinimaJugador: 15
+  recompensaPorKill: 100
 --- !u!114 &2134924704
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -55901,7 +55923,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
   GlobalObjectIdHash: 176684224
   InScenePlacedSourceGlobalObjectIdHash: 0
-  m_InScenePlacedDisabledByDefault: 0
+  m_InScenePlacedDisabledByDefault: 1
   DeferredDespawnTick: 0
   Ownership: 1
   AlwaysReplicateAsRoot: 0
@@ -55923,11 +55945,10 @@ Transform:
   m_GameObject: {fileID: 2134924702}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.72, y: 0, z: -65.23}
+  m_LocalPosition: {x: 0.71, y: 0, z: -64.46}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 357694551}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2141783255
@@ -56691,5 +56712,5 @@ SceneRoots:
   - {fileID: 83596356}
   - {fileID: 1799899432}
   - {fileID: 1180935715}
-  - {fileID: 1051142819}
   - {fileID: 2134924705}
+  - {fileID: 1051142819}

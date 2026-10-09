@@ -204,4 +204,39 @@ public class PlayerInventory : NetworkBehaviour
             cantidades[indiceSlot].Value = -1;
         }
     }
+
+    // GUARDADO DE JUGADOR
+    public JugadorGuardado ObtenerDatosGuardado()
+    {
+        var lista = new System.Collections.Generic.List<ItemGuardado>();
+
+        for (int i = 0; i < cantidades.Length; i++)
+        {
+            if (cantidades[i].Value != 0) // 0 = bloqueado, no hace falta guardarlo
+            {
+                lista.Add(new ItemGuardado { indiceSlot = i, cantidad = cantidades[i].Value });
+            }
+        }
+
+        return new JugadorGuardado
+        {
+            saldoSube = saldoSube.Value,
+            items = lista.ToArray()
+        };
+    }
+
+    public void AplicarDatosGuardado(JugadorGuardado datos)
+    {
+        if (!IsServer || datos == null) return;
+
+        saldoSube.Value = datos.saldoSube;
+
+        foreach (var item in datos.items)
+        {
+            if (item.indiceSlot >= 0 && item.indiceSlot < cantidades.Length)
+            {
+                cantidades[item.indiceSlot].Value = item.cantidad;
+            }
+        }
+    }
 }
