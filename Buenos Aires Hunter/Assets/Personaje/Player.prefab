@@ -461,8 +461,9 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   items:
   - item: {fileID: 11400000, guid: 56711325ed88d614a81506a939dc8d3a, type: 2}
-  - item: {fileID: 11400000, guid: 2db320a86796257448900ff2af3b2337, type: 2}
-  - item: {fileID: 11400000, guid: 5d4dc6ce41085644b845858e1c6a01ce, type: 2}
+  - item: {fileID: 11400000, guid: 4b37d8a1cd709274282f56749400f30d, type: 2}
+  - item: {fileID: 11400000, guid: cf31fa04949209a44be53b748c18da14, type: 2}
+  - item: {fileID: 11400000, guid: 3fe8fd7f33e97004f971fa08a7de59e8, type: 2}
   weaponHolder: {fileID: 3627730883311634322}
   indiceSube: 1
   saldoSube:
@@ -500,7 +501,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 450358755d352884bb95c4d50edb6253, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MeleeAttack
-  rango: 1.5
+  rango: 3
   radio: 0.5
   damage: 25
   fireRate: 0.6

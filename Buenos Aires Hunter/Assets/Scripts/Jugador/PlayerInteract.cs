@@ -10,6 +10,7 @@ public class PlayerInteract : NetworkBehaviour
     private Interactuable objetivo;
     private PlayerUI playerUI;
     private TiendaUI tiendaUI;
+    private EnemySpawnerSupervivencia spawner; // para el modo supervivencia
     void Start()
     {
         cam = GetComponent<PlayerLook>().cam;
@@ -42,13 +43,18 @@ public class PlayerInteract : NetworkBehaviour
             {
                 texto = objetivo.mensaje;
 
-                if (objetivo is Tienda && !inventario.TieneSubeEquipada)
+                if (objetivo is Tienda)
                 {
-                    texto = "Necesitás la SUBE en mano";
+                    if (spawner == null) spawner = FindAnyObjectByType<EnemySpawnerSupervivencia>();
+
+                    if (spawner != null && !spawner.rondaEnPausa.Value)
+                    {
+                        texto = "La tienda abre en la ronda de descanso";
+                    }
+                    if (!inventario.TieneSubeEquipada) texto = "Necesitás la SUBE en mano";
                 }
             }
         }
-
         playerUI.ActualizarTexto(texto);
     }
 
@@ -58,13 +64,20 @@ public class PlayerInteract : NetworkBehaviour
 
         if (objetivo is Tienda)
         {
-            if (!inventario.TieneSubeEquipada)
+            if (spawner == null) spawner = FindAnyObjectByType<EnemySpawnerSupervivencia>();
+
+            if (spawner != null && !spawner.rondaEnPausa.Value)
             {
-                if (playerUI != null) playerUI.ActualizarTexto("Necesitás la SUBE en mano");
+                playerUI.ActualizarTexto("La tienda abre en la ronda de descanso");
                 return;
             }
 
-            if (tiendaUI == null) return; // CAMBIO: guarda por si la escena no tiene TiendaUI
+            if (!inventario.TieneSubeEquipada)
+            {
+                playerUI.ActualizarTexto("Necesitás la SUBE en mano");
+                return;
+            }
+
             tiendaUI.AbrirTienda(inventario);
             return;
         }

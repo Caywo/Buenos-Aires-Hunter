@@ -24,6 +24,8 @@ public class Health : NetworkBehaviour, IDamageable
     public float VidaActual => vidaActual.Value;
     public float VidaMaxima => vidaMaxima;
     public bool EstaMuerto => muerto.Value;
+
+    /// <summary>True si este Health pertenece a un jugador (sirve para distinguir jugadores de enemigos).</summary>
     public bool EsJugador => esJugador;
 
     /// <summary>(vidaActual, vidaMaxima). Se dispara en todos los peers.</summary>
@@ -69,6 +71,7 @@ public class Health : NetworkBehaviour, IDamageable
             return;
 
         vidaActual.Value = Mathf.Max(0f, vidaActual.Value - dano);
+        Debug.Log($"[Health] {name} recibió {dano} de daño (atacante {atacanteId}). Vida: {vidaActual.Value}/{vidaMaxima}");
 
         if (vidaActual.Value <= 0f)
             Morir(atacanteId);
