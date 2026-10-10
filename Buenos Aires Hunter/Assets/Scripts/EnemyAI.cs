@@ -22,6 +22,7 @@ public class EnemyAI : NetworkBehaviour
     private Health targetHealth;   // NUEVO: vida del objetivo
     private TankAttack ataqueTanque;
     private NormalAttack ataqueCuerpoACuerpo;
+    private RangedAttack ataqueDistancia;
     private EnemyKnockback knockback;
 
     private enum EstadoIA
@@ -40,6 +41,7 @@ public class EnemyAI : NetworkBehaviour
         ataqueTanque = GetComponent<TankAttack>();
         ataqueCuerpoACuerpo = GetComponent<NormalAttack>();
         knockback = GetComponent<EnemyKnockback>();
+        ataqueDistancia = GetComponent<RangedAttack>();
     }
 
     public override void OnNetworkSpawn()
@@ -137,13 +139,20 @@ public class EnemyAI : NetworkBehaviour
             target.position
         );
 
-        if (distance <= attackRange)
+        float rangoActual = ataqueDistancia != null
+            ? ataqueDistancia.DistanciaActivacion
+            : attackRange;
+
+        if (distance <= rangoActual)
         {
             agent.ResetPath();
+            agent.isStopped = true;
 
             estadoActual = EstadoIA.Atacar;
             return;
         }
+
+        agent.isStopped = false;
 
         agent.stoppingDistance = stoppingDistance;
         agent.SetDestination(target.position);
@@ -156,6 +165,27 @@ public class EnemyAI : NetworkBehaviour
         if (!TargetValido())
         {
             SoltarTarget();
+            return;
+        }
+
+        // Enemigo tirador
+        if (ataqueDistancia != null)
+        {
+            float distancia = Vector3.Distance(
+                transform.position,
+                target.position
+            );
+
+            if (distancia > ataqueDistancia.DistanciaActivacion)
+            {
+                ataqueDistancia.CancelarApuntado();
+                estadoActual = EstadoIA.Perseguir;
+                return;
+            }
+            agent.isStopped = true;
+            agent.ResetPath();
+            MirarAlObjetivo();
+            ataqueDistancia.IntentarDisparar(target);
             return;
         }
 
