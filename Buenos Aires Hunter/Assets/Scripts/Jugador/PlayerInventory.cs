@@ -23,6 +23,12 @@ public class PlayerInventory : NetworkBehaviour
     private PlayerCombat combate;   // NUEVO (combate)
     private Health salud;           // NUEVO (combate)
     private Camera camaraJugador;
+
+    // NUEVO (fix apuntado): pose base del weaponHolder y FOV de la cámara. Se guardan una sola vez
+    // para restaurarlos al cambiar de ítem (si no, un arma nueva "hereda" la pose de apuntado).
+    private Vector3 posBaseHolder;
+    private float fovBase;
+
     public int indiceSube = -1;
     public NetworkVariable<int> saldoSube = new NetworkVariable<int>(-1200,
     NetworkVariableReadPermission.Everyone,
@@ -49,6 +55,10 @@ public class PlayerInventory : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        // NUEVO (fix apuntado): capturar la pose base ANTES de equipar nada
+        if (weaponHolder != null) posBaseHolder = weaponHolder.localPosition;
+        if (camaraJugador != null) fovBase = camaraJugador.fieldOfView;
+
         cantidades = new NetworkVariable<int>[items.Length];
         for (int i = 0; i < items.Length; i++)
         {
@@ -110,9 +120,20 @@ public class PlayerInventory : NetworkBehaviour
 
     private void EquiparVisual(int indice)
     {
-        if (instanciaActual != null) Destroy(instanciaActual);
+        if (instanciaActual != null)
+        {
+            instanciaActual.SetActive(false); // NUEVO (fix apuntado): que no vuelva a animar en este frame
+            Destroy(instanciaActual);
+        }
         instanciaActual = null;
         weaponActual = null;
+
+        // NUEVO (fix apuntado): si estabas apuntando, el arma anterior dejó el holder y el FOV en la pose
+        // de apuntado. Se restauran ANTES de crear la nueva arma, que toma esos valores como su pose
+        // "de cadera". También cubre guardar el arma o pasar a un ítem sin arma (SUBE), donde nadie más
+        // restauraría el zoom.
+        if (weaponHolder != null) weaponHolder.localPosition = posBaseHolder;
+        if (IsOwner && camaraJugador != null) camaraJugador.fieldOfView = fovBase;
 
         if (indice >= 0 && indice < items.Length) // si es -1: manos vacías
         {

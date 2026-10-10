@@ -17,4 +17,4 @@ MonoBehaviour:
   icono: {fileID: 0}
   esConsumible: 0
   cantidadInicial: 1
-  arrancaDesbloqueado: 0
+  arrancaDesbloqueado: 1
