@@ -124,4 +124,40 @@ public class Sprint2Tests
         );
     }
 
+    // Verifica la existencia del objeto Horacio utilizado para la interacción con la tienda dentro del escenario.
+    [UnityTest]
+    public IEnumerator CP_NPC_STORE_01_HoracioDebeExistir()
+    {
+        yield return SceneManager.LoadSceneAsync("MapaExtraccion1");
+
+        GameObject horacio =
+            GameObject.Find("Horacio");
+
+        Assert.IsNotNull(
+            horacio,
+            "No se encontró Horacio."
+        );
+    }
+
+    // Verifica que Horacio disponga del componente Tienda utilizado para gestionar la interacción comercial.
+    [UnityTest]
+    public IEnumerator CP_NPC_STORE_01_HoracioDebeTenerComponenteTienda()
+    {
+        yield return SceneManager.LoadSceneAsync("MapaExtraccion1");
+
+        GameObject horacio =
+            GameObject.Find("Horacio");
+
+        Assert.IsNotNull(horacio);
+
+        Tienda tienda =
+            horacio.GetComponent<Tienda>();
+
+        Assert.IsNotNull(
+            tienda,
+            "Horacio no posee componente Tienda."
+        );
+    }
+
+
 }
