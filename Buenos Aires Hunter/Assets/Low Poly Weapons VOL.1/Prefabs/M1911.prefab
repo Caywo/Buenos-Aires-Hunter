@@ -267,16 +267,21 @@ MonoBehaviour:
   weaponKickBack: 0.05
   weaponReturnSpeed: 8
   cameraRecoilAmount: 2
+  automatico: 1
   fireRate: 0.15
   range: 100
   damage: 20
   hitMask:
     serializedVersion: 2
     m_Bits: 4294967295
+  magazineSize: 30
+  reserveAmmo: 90
+  reloadTime: 1.8
   aimPoint: {fileID: 5190227550732621536}
   aimSpeed: 10
   aimFOV: 40
-  shootSound: {fileID: 0}
+  shootSound: {fileID: 8300000, guid: de40e50035bc4064bae49a57df2b6478, type: 3}
+  reloadSound: {fileID: 8300000, guid: 1181931e5c032bd4d9075e280bd71028, type: 3}
 --- !u!1 &1748277932983872
 GameObject:
   m_ObjectHideFlags: 0
