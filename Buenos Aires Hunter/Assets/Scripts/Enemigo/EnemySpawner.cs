@@ -26,6 +26,8 @@ public class EnemySpawner : NetworkBehaviour
 
     [Header("Distancia de seguridad")]
     [SerializeField] private float distanciaMinimaJugador = 15f;
+    [Header("Recompensa")]
+    [SerializeField] private int recompensaPorKill = 100;
 
     private List<NetworkObject> enemigosActuales =
         new List<NetworkObject>();
@@ -50,7 +52,15 @@ public class EnemySpawner : NetworkBehaviour
         if (!IsServer)
             return;
 
+        Health.OnCualquierMuerte += AlMorirEnemigo;
         IniciarNuevaOleada();
+    }
+    public override void OnNetworkDespawn()
+    {
+        if (!IsServer)
+            return;
+
+        Health.OnCualquierMuerte -= AlMorirEnemigo;
     }
 
 
@@ -332,5 +342,31 @@ public class EnemySpawner : NetworkBehaviour
         coroutineOleada = null;
 
         IniciarNuevaOleada();
+    }
+
+    private void AlMorirEnemigo(Health health, ulong atacanteId)
+    {
+        if (!IsServer)
+            return;
+
+        if (health.EsJugador)
+            return;
+
+        DarRecompensaAtacante(atacanteId);
+    }
+
+    private void DarRecompensaAtacante(ulong atacanteId)
+    {
+        if (atacanteId == ReglasCombate.AtacanteNeutral)
+            return;
+
+        if (!NetworkManager.Singleton.ConnectedClients.TryGetValue(atacanteId, out var cliente))
+            return;
+
+        if (cliente.PlayerObject == null)
+            return;
+
+        var inventario = cliente.PlayerObject.GetComponent<PlayerInventory>();
+        inventario?.AgregarSaldo(recompensaPorKill);
     }
 }
