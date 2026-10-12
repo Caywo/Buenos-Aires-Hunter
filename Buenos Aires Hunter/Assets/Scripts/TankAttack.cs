@@ -23,6 +23,7 @@ public class TankAttack : NetworkBehaviour
 
     private NavMeshAgent agent;
     private Animator animator;
+    private Health salud;
     private bool embistiendo;
     private bool preparando;
     private bool yaGolpeoJugador;
@@ -43,10 +44,14 @@ public class TankAttack : NetworkBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponentInChildren<Animator>();
+        salud = GetComponent<Health>();
     }
 
     public bool PuedeEmbestir(Transform target)
     {
+        if (salud == null || salud.EstaMuerto)
+            return false;
+
         if (!IsServer)
             return false;
 
@@ -69,6 +74,9 @@ public class TankAttack : NetworkBehaviour
 
     public void IniciarEmbestida(Transform target)
     {
+        if (salud == null || salud.EstaMuerto)
+            return;
+
         if (!PuedeEmbestir(target))
             return;
 
@@ -107,6 +115,13 @@ public class TankAttack : NetworkBehaviour
     {
         if (!IsServer)
             return;
+
+        if (salud == null || salud.EstaMuerto)
+        {
+            preparando = false;
+            embistiendo = false;
+            return;
+        }
 
         if (preparando)
         {
@@ -285,5 +300,38 @@ public class TankAttack : NetworkBehaviour
             transform.position,
             radioImpacto
         );
+    }
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+
+        if (IsServer && salud != null)
+            salud.OnMuerto += AlMorir;
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        if (salud != null)
+            salud.OnMuerto -= AlMorir;
+
+        base.OnNetworkDespawn();
+    }
+
+    private void AlMorir(ulong atacanteId)
+    {
+        preparando = false;
+        embistiendo = false;
+        objetivo = null;
+
+        if (agent != null && agent.enabled)
+        {
+            if (agent.isOnNavMesh)
+            {
+                agent.isStopped = true;
+                agent.ResetPath();
+            }
+
+            agent.enabled = false;
+        }
     }
 }

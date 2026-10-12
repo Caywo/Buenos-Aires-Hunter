@@ -64,8 +64,8 @@ ModelImporter:
       name: Attack
       takeName: CINEMA_4D_Main
       internalID: -1231011644445013768
-      firstFrame: 185
-      lastFrame: 214
+      firstFrame: 184
+      lastFrame: 212
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -93,7 +93,7 @@ ModelImporter:
       name: walk
       takeName: CINEMA_4D_Main
       internalID: 9033318263922027162
-      firstFrame: 65
+      firstFrame: 61
       lastFrame: 89
       wrapMode: 0
       orientationOffsetY: 0
