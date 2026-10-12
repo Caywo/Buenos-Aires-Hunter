@@ -27220,7 +27220,7 @@ MonoBehaviour:
   enemigosExtraPorOleada: 1
   tiempoEntreOleadas: 5
   maxEnemigosVivos: 4
-  primeraOleadaTanque: 4
+  primeraOleadaTanque: 1
   maxTanquesVivos: 1
   distanciaMinimaJugador: 15
 --- !u!114 &1051142818
@@ -34358,7 +34358,7 @@ MonoBehaviour:
   enemigosExtraPorOleada: 1
   tiempoEntreOleadas: 5
   maxEnemigosVivos: 4
-  primeraOleadaTanque: 4
+  primeraOleadaTanque: 1
   maxTanquesVivos: 1
   distanciaMinimaJugador: 15
 --- !u!1 &1183594594

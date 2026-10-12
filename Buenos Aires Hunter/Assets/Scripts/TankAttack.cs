@@ -22,7 +22,7 @@ public class TankAttack : NetworkBehaviour
     [SerializeField] private float cooldown = 4f;
 
     private NavMeshAgent agent;
-
+    private Animator animator;
     private bool embistiendo;
     private bool preparando;
     private bool yaGolpeoJugador;
@@ -42,6 +42,7 @@ public class TankAttack : NetworkBehaviour
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        animator = GetComponentInChildren<Animator>();
     }
 
     public bool PuedeEmbestir(Transform target)
@@ -89,6 +90,12 @@ public class TankAttack : NetworkBehaviour
         preparando = true;
         tiempoInicioPreparacion = Time.time;
         yaGolpeoJugador = false;
+
+        if (animator != null)
+        {
+            animator.ResetTrigger("Embestir");
+            animator.SetTrigger("Embestir");
+        }
 
         Debug.Log("TANQUE: preparando embestida");
 
@@ -252,6 +259,12 @@ public class TankAttack : NetworkBehaviour
         embistiendo = false;
         preparando = false;
         objetivo = null;
+
+        if (animator != null)
+        {
+            animator.ResetTrigger("Embestir");
+            animator.Play("Walk", 0, 0f);
+        }
 
         proximoAtaque = Time.time + cooldown;
 
