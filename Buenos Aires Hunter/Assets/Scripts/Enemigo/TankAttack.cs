@@ -22,7 +22,8 @@ public class TankAttack : NetworkBehaviour
     [SerializeField] private float cooldown = 4f;
 
     private NavMeshAgent agent;
-
+    private Animator animator;
+    private Health salud;
     private bool embistiendo;
     private bool preparando;
     private bool yaGolpeoJugador;
@@ -42,10 +43,15 @@ public class TankAttack : NetworkBehaviour
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        animator = GetComponentInChildren<Animator>();
+        salud = GetComponent<Health>();
     }
 
     public bool PuedeEmbestir(Transform target)
     {
+        if (salud == null || salud.EstaMuerto)
+            return false;
+
         if (!IsServer)
             return false;
 
@@ -68,6 +74,9 @@ public class TankAttack : NetworkBehaviour
 
     public void IniciarEmbestida(Transform target)
     {
+        if (salud == null || salud.EstaMuerto)
+            return;
+
         if (!PuedeEmbestir(target))
             return;
 
@@ -90,6 +99,13 @@ public class TankAttack : NetworkBehaviour
         tiempoInicioPreparacion = Time.time;
         yaGolpeoJugador = false;
 
+        if (animator != null)
+        {
+            animator.SetBool("Embestiendo", false);
+            animator.ResetTrigger("Embestir");
+            animator.SetTrigger("Embestir");
+        }
+
         Debug.Log("TANQUE: preparando embestida");
 
         agent.isStopped = true;
@@ -100,6 +116,13 @@ public class TankAttack : NetworkBehaviour
     {
         if (!IsServer)
             return;
+
+        if (salud == null || salud.EstaMuerto)
+        {
+            preparando = false;
+            embistiendo = false;
+            return;
+        }
 
         if (preparando)
         {
@@ -121,6 +144,11 @@ public class TankAttack : NetworkBehaviour
             embistiendo = true;
 
             tiempoInicioEmbestida = Time.time;
+
+            if (animator != null)
+            {
+                animator.SetBool("Embestiendo", true);
+            }
 
             Debug.Log("TANQUE: embestida iniciada");
         }
@@ -253,6 +281,12 @@ public class TankAttack : NetworkBehaviour
         preparando = false;
         objetivo = null;
 
+        if (animator != null)
+        {
+            animator.SetBool("Embestiendo", false);
+            animator.ResetTrigger("Embestir");
+        }
+
         proximoAtaque = Time.time + cooldown;
 
         Debug.Log("TANQUE: embestida terminada");
@@ -272,5 +306,38 @@ public class TankAttack : NetworkBehaviour
             transform.position,
             radioImpacto
         );
+    }
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+
+        if (IsServer && salud != null)
+            salud.OnMuerto += AlMorir;
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        if (salud != null)
+            salud.OnMuerto -= AlMorir;
+
+        base.OnNetworkDespawn();
+    }
+
+    private void AlMorir(ulong atacanteId)
+    {
+        preparando = false;
+        embistiendo = false;
+        objetivo = null;
+
+        if (agent != null && agent.enabled)
+        {
+            if (agent.isOnNavMesh)
+            {
+                agent.isStopped = true;
+                agent.ResetPath();
+            }
+
+            agent.enabled = false;
+        }
     }
 }

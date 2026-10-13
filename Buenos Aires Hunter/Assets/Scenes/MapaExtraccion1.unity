@@ -56253,6 +56253,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Horacio
       objectReference: {fileID: 0}
+    - target: {fileID: 1457457195504634089, guid: 6149928d454884c45a833b1caf8a5323, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 3436693931710582653, guid: 6149928d454884c45a833b1caf8a5323, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.21149063
