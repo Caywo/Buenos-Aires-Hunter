@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Unity.Netcode;
+using UnityEngine.Assertions.Must;
 
 public class PlayerUI : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class PlayerUI : MonoBehaviour
     public Slider barraVida;
     public TMP_Text textoVida;
     public TMP_Text textoMunicion;
+    public TMP_Text textoRonda;
     public GameObject hitMarker;
     public float duracionHitMarker = 0.1f;
 
@@ -20,6 +22,7 @@ public class PlayerUI : MonoBehaviour
     private PlayerCombat combateLocal;
     private Health saludLocal;
     private float finHitMarker;
+    private EnemySpawnerSupervivencia spawner;
 
     void Update()
     {
@@ -66,6 +69,29 @@ public class PlayerUI : MonoBehaviour
                 textoMunicion.text = combateLocal.Recargando ? "RECARGANDO..." : $"{cargador} / {reserva}";
             else
                 textoMunicion.text = string.Empty;
+        }
+
+        // Ronda (modo supervivencia)
+        if (textoRonda != null)
+        {
+            if (spawner == null) spawner = FindAnyObjectByType<EnemySpawnerSupervivencia>();
+
+            if (spawner != null)
+            {
+                textoRonda.gameObject.SetActive(true);
+                if (spawner.tiempoRestante.Value > 0f)
+                {
+                    textoRonda.text = "Próxima ronda en " + Mathf.CeilToInt(spawner.tiempoRestante.Value);
+                }
+                else
+                {
+                    textoRonda.text = "Ronda " + spawner.rondaActual.Value;
+                }
+            }
+            else
+            {
+                textoRonda.gameObject.SetActive(false);
+            }
         }
     }
 
