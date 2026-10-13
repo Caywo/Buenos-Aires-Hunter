@@ -101,6 +101,7 @@ public class TankAttack : NetworkBehaviour
 
         if (animator != null)
         {
+            animator.SetBool("Embestiendo", false);
             animator.ResetTrigger("Embestir");
             animator.SetTrigger("Embestir");
         }
@@ -143,6 +144,11 @@ public class TankAttack : NetworkBehaviour
             embistiendo = true;
 
             tiempoInicioEmbestida = Time.time;
+
+            if (animator != null)
+            {
+                animator.SetBool("Embestiendo", true);
+            }
 
             Debug.Log("TANQUE: embestida iniciada");
         }
@@ -277,8 +283,8 @@ public class TankAttack : NetworkBehaviour
 
         if (animator != null)
         {
+            animator.SetBool("Embestiendo", false);
             animator.ResetTrigger("Embestir");
-            animator.Play("Walk", 0, 0f);
         }
 
         proximoAtaque = Time.time + cooldown;
