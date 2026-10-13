@@ -468,6 +468,7 @@ MonoBehaviour:
   - item: {fileID: 11400000, guid: 4b37d8a1cd709274282f56749400f30d, type: 2}
   - item: {fileID: 11400000, guid: cf31fa04949209a44be53b748c18da14, type: 2}
   - item: {fileID: 11400000, guid: 3fe8fd7f33e97004f971fa08a7de59e8, type: 2}
+  - item: {fileID: 11400000, guid: 3fe8fd7f33e97004f971fa08a7de59e8, type: 2}
   weaponHolder: {fileID: 3627730883311634322}
   indiceSube: 1
   saldoSube:
@@ -605,7 +606,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.474
   m_Pitch: 1
   Loop: 0
   Mute: 0
