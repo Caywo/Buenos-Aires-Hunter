@@ -4442,7 +4442,7 @@ MonoBehaviour:
   tiempoEntreRondas: 5
   rondaTienda: 5
   tiempoDeCompra: 20
-  primeraRondaTanque: 4
+  primeraRondaTanque: 1
   maxTanquesVivos: 1
   distanciaMinimaJugador: 15
   recompensaPorKill: 100

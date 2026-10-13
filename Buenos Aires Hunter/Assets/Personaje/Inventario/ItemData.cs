@@ -10,4 +10,7 @@ public class ItemData : ScriptableObject
     public bool esConsumible;
     public int cantidadInicial = 1;
     public bool arrancaDesbloqueado = false;
+
+    public GameObject prefabUso;
+    public bool esWachin = false;
 }
