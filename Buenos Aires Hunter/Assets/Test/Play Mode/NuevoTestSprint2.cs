@@ -115,14 +115,21 @@ public class Sprint2Tests
     {
         yield return SceneManager.LoadSceneAsync("MapaExtraccion1");
 
-        GameObject spawnPoint =
-            GameObject.Find("SpawnPoint");
+        GameObject enemySpawner =
+            GameObject.Find("EnemySpawner");
 
         Assert.IsNotNull(
-            spawnPoint,
-            "No se encontró SpawnPoint."
+            enemySpawner,
+            "No se encontró EnemySpawner."
+        );
+
+        Assert.Greater(
+            enemySpawner.transform.childCount,
+            0,
+            "EnemySpawner no tiene SpawnPoints asociados."
         );
     }
+
 
     // Verifica la existencia del objeto Horacio utilizado para la interacción con la tienda dentro del escenario.
     [UnityTest]
