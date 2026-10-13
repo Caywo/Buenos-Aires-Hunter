@@ -339,7 +339,7 @@ MonoBehaviour:
   radioImpacto: 1.2
   distanciaDeteccionObstaculo: 0.8
   danoEmbestida: 40
-  cooldown: 4
+  cooldown: 1
 --- !u!95 &4748220991439468640
 Animator:
   serializedVersion: 7
@@ -1120,6 +1120,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2621435352973406984}
   - component: {fileID: 4455718916862890545}
+  - component: {fileID: 2567112703704033247}
   m_Layer: 7
   m_Name: mesh_1
   m_TagString: Untagged
@@ -1270,6 +1271,29 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.039830267, y: 0.11678499, z: -0.017277718}
     m_Extent: {x: 1.2655869, y: 0.9919408, z: 1.7242048}
   m_DirtyAABB: 0
+--- !u!136 &2567112703704033247
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3351409891045440190}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 1.3030221
+  m_Height: 3.707455
+  m_Direction: 1
+  m_Center: {x: 0.038173225, y: 1.420896, z: 0.18777213}
 --- !u!1 &3363695904020498921
 GameObject:
   m_ObjectHideFlags: 0
