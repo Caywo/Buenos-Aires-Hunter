@@ -140,7 +140,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5010564352645875068}
-  m_LocalRotation: {x: 0.002579497, y: -0.9972386, z: 0.0602169, w: 0.04338831}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -148,10 +148,10 @@ RectTransform:
   - {fileID: 3627730883311634322}
   - {fileID: 7660771273180725743}
   m_Father: {fileID: 5430290490509041616}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 1.7}
+  m_AnchoredPosition: {x: -0.007, y: 1.736}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!20 &6708299775747530592
@@ -468,7 +468,7 @@ MonoBehaviour:
   - item: {fileID: 11400000, guid: 4b37d8a1cd709274282f56749400f30d, type: 2}
   - item: {fileID: 11400000, guid: cf31fa04949209a44be53b748c18da14, type: 2}
   - item: {fileID: 11400000, guid: 3fe8fd7f33e97004f971fa08a7de59e8, type: 2}
-  - item: {fileID: 11400000, guid: 3fe8fd7f33e97004f971fa08a7de59e8, type: 2}
+  - item: {fileID: 11400000, guid: 1dcd99d8aff12ad46b3a6110390da5d5, type: 2}
   weaponHolder: {fileID: 3627730883311634322}
   indiceSube: 1
   saldoSube:
@@ -477,6 +477,7 @@ MonoBehaviour:
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 0
   inputBloqueado: 0
+  prefabManos: {fileID: 0}
 --- !u!114 &521025633895502380
 MonoBehaviour:
   m_ObjectHideFlags: 0

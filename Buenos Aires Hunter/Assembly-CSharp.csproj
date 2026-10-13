@@ -64,6 +64,7 @@
     <Compile Include="Assets\Scripts\Jugador\PlayerSpawnManager.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark02.cs" />
     <Compile Include="Assets\Scripts\Jugador\PlayerUI.cs" />
+    <Compile Include="Assets\Scripts\WachinAlly.cs" />
     <Compile Include="Assets\Scripts\Jugador\PlayerFootstepController.cs" />
     <Compile Include="Assets\Escenario2\LoafbrrAssets\Bricktown\materials\BrickBuildingColorChange.cs" />
     <Compile Include="Assets\Scripts\Enemigo\TankAttack.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextSelector_B.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\SkewTextExample.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\WarpTextExample.cs" />
+    <Compile Include="Assets\Scripts\EnemyProjectile.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ShaderPropAnimator.cs" />
     <Compile Include="Assets\Scripts\Enemigo\EnemyAI.cs" />
     <Compile Include="Assets\Scripts\NetworkManagerPersistente.cs" />
@@ -111,6 +113,7 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\CameraController.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark03.cs" />
     <Compile Include="Assets\Personaje\Input\InputPersonaje.cs" />
+    <Compile Include="Assets\Scripts\RangedAttack.cs" />
     <Compile Include="Assets\Scripts\IDamageable.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\DropdownSample.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexColorCycler.cs" />

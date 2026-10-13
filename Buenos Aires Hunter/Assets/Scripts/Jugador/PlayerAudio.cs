@@ -15,7 +15,6 @@ public class PlayerAudio : MonoBehaviour
         if (footstepClips.Length == 0 || audioSource == null) return;
         AudioClip clip = footstepClips[Random.Range(0, footstepClips.Length)];
         audioSource.PlayOneShot(clip);
-        Debug.Log("Paso " + Time.time, this);
     }
 
     // Método para reproducir el disparo

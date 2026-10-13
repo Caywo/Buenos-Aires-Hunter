@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Wachin
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   nombre: Wachin
-  prefabEnMano: {fileID: 0}
+  prefabEnMano: {fileID: 6439778853965318530, guid: d2c29c93cc077ab44b9079a4555724e4, type: 3}
   icono: {fileID: 0}
   esConsumible: 1
-  cantidadInicial: 0
+  cantidadInicial: 1
   arrancaDesbloqueado: 0
-  prefabUso: {fileID: 255802000254399953, guid: fc25084942e8e9049a6c401cd319e17e, type: 3}
+  prefabUso: {fileID: 6439778853965318530, guid: 4bfca1857ec17084e872a090fdd4279f, type: 3}
   esWachin: 1
