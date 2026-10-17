@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: -1380922638760629227}
   - component: {fileID: 8752246885059336918}
   - component: {fileID: -8582447344573237357}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: MageEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -131,7 +131,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 731769599
+  GlobalObjectIdHash: 736174204
   InScenePlacedSourceGlobalObjectIdHash: 0
   m_InScenePlacedDisabledByDefault: 0
   DeferredDespawnTick: 0
