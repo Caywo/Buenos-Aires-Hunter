@@ -5392,12 +5392,18 @@ MonoBehaviour:
   - nombre: Extraccion
     panel: {fileID: 935409267}
     escenaDeJuego: Extraccion1
+    joinCodeInput: {fileID: 0}
+    joinCodeDisplay: {fileID: 0}
   - nombre: Supervivencia
     panel: {fileID: 1959256969}
     escenaDeJuego: Supervivencia
+    joinCodeInput: {fileID: 0}
+    joinCodeDisplay: {fileID: 0}
   - nombre: Duelo
     panel: {fileID: 338838352}
-    escenaDeJuego: MapaDuelo
+    escenaDeJuego: Duelo
+    joinCodeInput: {fileID: 1242510385}
+    joinCodeDisplay: {fileID: 984840892}
   jugadoresNecesarios: 2
   joinCodeInput: {fileID: 0}
   joinCodeDisplay: {fileID: 0}

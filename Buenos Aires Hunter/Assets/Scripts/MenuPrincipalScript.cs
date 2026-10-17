@@ -12,6 +12,12 @@ public class MenuPrincipal : MonoBehaviour
         public string nombre;
         public GameObject panel;
         public string escenaDeJuego;
+
+        [Header("Multijugador de este modo (opcional)")]
+        [Tooltip("Campo donde se escribe el código en el panel de ESTE modo. Si queda vacío se usa 'Join Code Input'.")]
+        public TMP_InputField joinCodeInput;
+        [Tooltip("Texto donde se muestra el código y la espera en el panel de ESTE modo. Si queda vacío se usa 'Join Code Display'.")]
+        public TMP_Text joinCodeDisplay;
     }
 
     [Header("Modos de juego")]
@@ -24,7 +30,7 @@ public class MenuPrincipal : MonoBehaviour
     [SerializeField] private TMP_InputField joinCodeInput;
     [SerializeField] private TMP_Text joinCodeDisplay;
 
-    private ModoDeJuego ObtenerModoActual()
+    private ModoDeJuego ObtenerModoActual(bool avisar = true)
     {
         foreach (var modo in modos)
         {
@@ -32,8 +38,19 @@ public class MenuPrincipal : MonoBehaviour
                 return modo;
         }
 
-        Debug.LogError("No hay ningún panel de modo activo.");
+        if (avisar) Debug.LogError("No hay ningún panel de modo activo.");
         return null;
+    }
+
+    // Usa el campo propio del modo; si no tiene, el general (así los modos existentes siguen igual)
+    private TMP_InputField InputDe(ModoDeJuego modo)
+    {
+        return (modo != null && modo.joinCodeInput != null) ? modo.joinCodeInput : joinCodeInput;
+    }
+
+    private TMP_Text DisplayDe(ModoDeJuego modo)
+    {
+        return (modo != null && modo.joinCodeDisplay != null) ? modo.joinCodeDisplay : joinCodeDisplay;
     }
 
     public void UnJugador()
@@ -74,13 +91,15 @@ public class MenuPrincipal : MonoBehaviour
 
     public async void UnirseAPartida()
     {
-        if (joinCodeInput == null || string.IsNullOrWhiteSpace(joinCodeInput.text))
+        TMP_InputField input = InputDe(ObtenerModoActual(false));
+
+        if (input == null || string.IsNullOrWhiteSpace(input.text))
         {
             Debug.LogError("Ingresá un join code antes de unirte.");
             return;
         }
 
-        bool conectado = await NetworkManagerPersistente.Instance.StartClientWithRelayAsync(joinCodeInput.text);
+        bool conectado = await NetworkManagerPersistente.Instance.StartClientWithRelayAsync(input.text);
 
         if (!conectado)
         {
@@ -167,9 +186,11 @@ public class MenuPrincipal : MonoBehaviour
                 LoadSceneMode.Single
             );
         }
-        else if (joinCodeDisplay != null)
+        else
         {
-            joinCodeDisplay.text = $"Código: {ultimoJoinCode} | Esperando jugador... ({conectados}/{jugadoresNecesarios})";
+            TMP_Text display = DisplayDe(modoElegido);
+            if (display != null)
+                display.text = $"Código: {ultimoJoinCode} | Esperando jugador... ({conectados}/{jugadoresNecesarios})";
         }
     }
 
@@ -179,9 +200,10 @@ public class MenuPrincipal : MonoBehaviour
     {
         ultimoJoinCode = joinCode;
 
-        if (joinCodeDisplay != null)
+        TMP_Text display = DisplayDe(modoElegido);
+        if (display != null)
         {
-            joinCodeDisplay.text = $"Código: {joinCode}\nEsperando jugador... (1/{jugadoresNecesarios})";
+            display.text = $"Código: {joinCode}\nEsperando jugador... (1/{jugadoresNecesarios})";
         }
     }
 

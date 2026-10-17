@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
@@ -8,6 +9,7 @@ using Unity.Services.Core;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Vive en el mismo GameObject que el NetworkManager y persiste entre escenas.
@@ -41,6 +43,33 @@ public class NetworkManagerPersistente : MonoBehaviour
     private async void Start()
     {
         await InitializeServicesAsync();
+    }
+
+    /// <summary>
+    /// NUEVO. Apaga la red, espera a que el apagado termine y recién entonces carga la escena
+    /// con el SceneManager de Unity. Hacer Shutdown() justo después del LoadScene de red
+    /// cancelaba la carga. Se ejecuta acá porque este objeto persiste entre escenas.
+    /// </summary>
+    public void VolverAlMenu(string escenaMenu)
+    {
+        StartCoroutine(VolverAlMenuRoutine(escenaMenu));
+    }
+
+    private IEnumerator VolverAlMenuRoutine(string escenaMenu)
+    {
+        NetworkManager nm = NetworkManager.Singleton;
+
+        if (nm != null)
+        {
+            nm.Shutdown();
+            while (nm != null && nm.ShutdownInProgress)
+                yield return null;
+        }
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        SceneManager.LoadScene(escenaMenu, LoadSceneMode.Single);
     }
 
     /// <summary>

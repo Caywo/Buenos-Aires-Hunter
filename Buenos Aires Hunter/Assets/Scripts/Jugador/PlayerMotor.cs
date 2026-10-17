@@ -43,11 +43,16 @@ public class PlayerMotor : MonoBehaviour
 
     public void Saltar()
     {
+        if (inputBloqueado) return; // NUEVO: congelado (tienda, cuenta regresiva del duelo)
         if (isGrounded)
         {
             playerVelocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
     }
 
-
+    /// <summary>NUEVO. Borra la velocidad vertical acumulada (se llama al teletransportar al jugador).</summary>
+    public void ReiniciarVelocidad()
+    {
+        playerVelocity = Vector3.zero;
+    }
 }
