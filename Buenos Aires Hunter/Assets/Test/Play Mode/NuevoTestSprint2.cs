@@ -10,7 +10,7 @@ public class Sprint2Tests
     [UnityTest]
     public IEnumerator CP_HUD_01_HUDDebeExistir()
     {
-        yield return SceneManager.LoadSceneAsync("MapaExtraccion1");
+        yield return SceneManager.LoadSceneAsync("Extraccion1");
 
         GameObject hud = GameObject.Find("HUD");
 
@@ -24,7 +24,7 @@ public class Sprint2Tests
     [UnityTest]
     public IEnumerator CP_HUD_01_TextoSaldoDebeExistir()
     {
-        yield return SceneManager.LoadSceneAsync("MapaExtraccion1");
+        yield return SceneManager.LoadSceneAsync("Extraccion1");
 
         GameObject texto = GameObject.Find("TextSaldo");
 
@@ -38,7 +38,7 @@ public class Sprint2Tests
     [UnityTest]
     public IEnumerator CP_HUD_01_TextoVidaDebeExistir()
     {
-        yield return SceneManager.LoadSceneAsync("MapaExtraccion1");
+        yield return SceneManager.LoadSceneAsync("Extraccion1");
 
         GameObject texto = GameObject.Find("TextoVida");
 
@@ -52,7 +52,7 @@ public class Sprint2Tests
     [UnityTest]
     public IEnumerator CP_HUD_01_TextoMunicionDebeExistir()
     {
-        yield return SceneManager.LoadSceneAsync("MapaExtraccion1");
+        yield return SceneManager.LoadSceneAsync("Extraccion1");
 
         GameObject texto = GameObject.Find("TextoMunicion");
 
@@ -78,7 +78,7 @@ public class Sprint2Tests
     [UnityTest]
     public IEnumerator CP_ENEMY_01_EnemySpawnerDebeExistir()
     {
-        yield return SceneManager.LoadSceneAsync("MapaExtraccion1");
+        yield return SceneManager.LoadSceneAsync("Extraccion1");
 
         GameObject enemySpawner =
             GameObject.Find("EnemySpawner");
@@ -93,7 +93,7 @@ public class Sprint2Tests
     [UnityTest]
     public IEnumerator CP_ENEMY_01_EnemySpawnerDebeTenerComponente()
     {
-        yield return SceneManager.LoadSceneAsync("MapaExtraccion1");
+        yield return SceneManager.LoadSceneAsync("Extraccion1");
 
         GameObject enemySpawner =
             GameObject.Find("EnemySpawner");
@@ -113,7 +113,7 @@ public class Sprint2Tests
     [UnityTest]
     public IEnumerator CP_ENEMY_01_SpawnPointDebeExistir()
     {
-        yield return SceneManager.LoadSceneAsync("MapaExtraccion1");
+        yield return SceneManager.LoadSceneAsync("Extraccion1");
 
         GameObject enemySpawner =
             GameObject.Find("EnemySpawner");
@@ -135,7 +135,7 @@ public class Sprint2Tests
     [UnityTest]
     public IEnumerator CP_NPC_STORE_01_HoracioDebeExistir()
     {
-        yield return SceneManager.LoadSceneAsync("MapaExtraccion1");
+        yield return SceneManager.LoadSceneAsync("Extraccion1");
 
         GameObject horacio =
             GameObject.Find("Horacio");
@@ -150,7 +150,7 @@ public class Sprint2Tests
     [UnityTest]
     public IEnumerator CP_NPC_STORE_01_HoracioDebeTenerComponenteTienda()
     {
-        yield return SceneManager.LoadSceneAsync("MapaExtraccion1");
+        yield return SceneManager.LoadSceneAsync("Extraccion1");
 
         GameObject horacio =
             GameObject.Find("Horacio");

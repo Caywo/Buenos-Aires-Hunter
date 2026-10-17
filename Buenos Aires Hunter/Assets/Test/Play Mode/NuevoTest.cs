@@ -347,24 +347,24 @@ public class PruebaInicialQA
     [UnityTest]
     public IEnumerator CP_FIS_01_ParedInvisibleDebeExistir()
     {
-        yield return SceneManager.LoadSceneAsync("MapaExtraccion1");
+        yield return SceneManager.LoadSceneAsync("Extraccion1");
 
         GameObject pared =
-            GameObject.Find("ParedInvisible");
+            GameObject.Find("Pared");
 
         Assert.IsNotNull(
             pared,
-            "No se encontró ParedInvisible."
+            "No se encontró Pared."
         );
     }
     // Verifica que la pared invisible disponga de un componente Collider.
     [UnityTest]
     public IEnumerator CP_FIS_01_ParedInvisibleDebeTenerCollider()
     {
-        yield return SceneManager.LoadSceneAsync("MapaExtraccion1");
+        yield return SceneManager.LoadSceneAsync("Extraccion1");
 
         GameObject pared =
-            GameObject.Find("ParedInvisible");
+            GameObject.Find("Object_44");
 
         Assert.IsNotNull(pared);
 
@@ -373,17 +373,17 @@ public class PruebaInicialQA
 
         Assert.IsNotNull(
             collider,
-            "ParedInvisible no posee Collider."
+            "Pared no posee Collider."
         );
     }
     // Verifica que la pared invisible funcione como colisión física y no como Trigger.
     [UnityTest]
     public IEnumerator CP_FIS_01_ParedInvisibleNoDebeSerTrigger()
     {
-        yield return SceneManager.LoadSceneAsync("MapaExtraccion1");
+        yield return SceneManager.LoadSceneAsync("Extraccion1");
 
         GameObject pared =
-            GameObject.Find("ParedInvisible");
+            GameObject.Find("Object_44");
 
         Assert.IsNotNull(pared);
 
@@ -394,7 +394,7 @@ public class PruebaInicialQA
 
         Assert.IsFalse(
             collider.isTrigger,
-            "La pared invisible no debería ser trigger."
+            "La pared no debería ser trigger."
         );
     }
 
