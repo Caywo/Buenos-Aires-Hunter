@@ -2178,8 +2178,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ace31ac1e06c33040a56107159f94885, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerUI
-  textoSaldo: {fileID: 0}
-  textoInteraccion: {fileID: 0}
+  textoSaldo: {fileID: 1663388019}
+  textoInteraccion: {fileID: 1963189210}
   barraVida: {fileID: 1538870460}
   textoVida: {fileID: 1029750845}
   textoMunicion: {fileID: 1625493948}
