@@ -7,7 +7,17 @@ public class NormalAttack : NetworkBehaviour
     [SerializeField] private float danoAtaque = 10f;
     [SerializeField] private float attackCooldown = 1.5f;
 
+    [Header("Animación")]
+    [SerializeField] private string triggerAtaque = "Attack";
+
     private float tiempoUltimoAtaque = -Mathf.Infinity;
+
+    private Animator animator;
+
+    private void Awake()
+    {
+        animator = GetComponentInChildren<Animator>();
+    }
 
     public bool PuedeAtacar()
     {
@@ -29,6 +39,11 @@ public class NormalAttack : NetworkBehaviour
             return;
 
         tiempoUltimoAtaque = Time.time;
+
+        if (animator != null)
+        {
+            animator.SetTrigger(triggerAtaque);
+        }
 
         IDamageable damageable =
             objetivo.GetComponentInParent<IDamageable>();

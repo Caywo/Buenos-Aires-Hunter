@@ -1,5 +1,3 @@
-
-
 using UnityEngine;
 using UnityEngine.AI;
 using Unity.Netcode;
@@ -45,6 +43,15 @@ public class EnemyAI : NetworkBehaviour
     private RangedAttack ataqueDistancia;
     private EnemyKnockback knockback;
     private Animator animator;
+
+    private static readonly int VelocidadHash =
+    Animator.StringToHash("Velocidad");
+
+    private static readonly int AttackHash =
+    Animator.StringToHash("Attack");
+
+    private static readonly int DeathHash =
+    Animator.StringToHash("Death");
 
     private enum EstadoIA
     {
@@ -112,8 +119,14 @@ public class EnemyAI : NetworkBehaviour
 
         if (animator != null)
         {
-            animator.ResetTrigger("Embestir");
-            animator.SetTrigger("Death");
+            // Cada tipo de enemigo puede usar parámetros distintos.
+            // No limpiar "Attack" en el tanque: su trigger es "Embestir".
+            if (ataqueTanque != null)
+                animator.ResetTrigger("Embestir");
+            else if (ataqueCuerpoACuerpo != null)
+                animator.ResetTrigger(AttackHash);
+
+            animator.SetTrigger(DeathHash);
         }
     }
 
@@ -124,6 +137,19 @@ public class EnemyAI : NetworkBehaviour
 
         if (knockback != null && knockback.EstaSiendoLanzado)
             return;
+
+        // "Velocidad" se actualiza solo en el enemigo normal cuerpo a cuerpo.
+        // Así no exigimos ese parámetro a los Animator Controllers del tanque
+        // ni del enemigo tirador.
+        if (animator != null &&
+            ataqueTanque == null &&
+            ataqueDistancia == null &&
+            ataqueCuerpoACuerpo != null &&
+            agent != null &&
+            agent.enabled)
+        {
+            animator.SetFloat(VelocidadHash, agent.velocity.magnitude);
+        }
 
         switch (estadoActual)
         {
