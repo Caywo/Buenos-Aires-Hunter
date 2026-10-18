@@ -75,6 +75,9 @@ public class PlayerCombat : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        Debug.Log($"[Jugador] Se creó un jugador en esta instancia. NetworkObjectId={NetworkObjectId}, " +
+                  $"dueño={OwnerClientId}, esMio={IsOwner}, soyServidor={IsServer}");
+
         var look = GetComponent<PlayerLook>();
         cam = look != null ? look.cam : GetComponentInChildren<Camera>(true);
 

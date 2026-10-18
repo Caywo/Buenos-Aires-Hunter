@@ -132,6 +132,15 @@ public class DuelManager : NetworkBehaviour
         if (partidaIniciada) return;
         if (nombreEscena != gameObject.scene.name) return; // solo la carga de ESTA escena
 
+        // Si algún cliente no terminó de cargar (timeout), arrancar sería jugar con uno de los dos a medias
+        if (fallaron != null && fallaron.Count > 0)
+        {
+            Debug.LogError($"[Duelo] {fallaron.Count} cliente(s) no terminaron de cargar la escena a tiempo: se cancela la partida.");
+            partidaIniciada = true; // evita que se reintente
+            VolverAlMenu();
+            return;
+        }
+
         var clientes = NetworkManager.ConnectedClientsList;
         if (clientes.Count < 2)
         {
@@ -144,6 +153,11 @@ public class DuelManager : NetworkBehaviour
             Debug.LogError("[Duelo] Faltan los 2 puntos de aparición en el DuelManager.");
             return;
         }
+
+        Debug.Log($"[Duelo] Carga completa. Conectados: {clientes.Count}. " +
+                  $"Con jugador ya creado: {ContarConJugador(clientes)}.");
+
+        SpawnearJugadoresFaltantes();
 
         partidaIniciada = true;
         flujo = StartCoroutine(FlujoPartida());
@@ -161,6 +175,8 @@ public class DuelManager : NetworkBehaviour
         pvpActivadoPorEsteManager = true;
 
         ConfigurarJugadores();
+
+        yield return new WaitForSeconds(1.5f); // que los clientes terminen de crear a sus jugadores
 
         while (true)
         {
@@ -196,6 +212,41 @@ public class DuelManager : NetworkBehaviour
 
         yield return new WaitForSeconds(pausaFinDePartida);
         VolverAlMenu();
+    }
+
+    // Si los jugadores no se crearon en el menú (modo "crear al cargar la escena"), se crean acá,
+    // cuando todos los clientes ya terminaron de cargar. Así ningún jugador viaja entre escenas.
+    private void SpawnearJugadoresFaltantes()
+    {
+        GameObject prefab = NetworkManagerPersistente.Instance != null
+            ? NetworkManagerPersistente.Instance.PlayerPrefabOriginal
+            : null;
+
+        var clientes = NetworkManager.ConnectedClientsList;
+        for (int i = 0; i < clientes.Count; i++)
+        {
+            if (clientes[i].PlayerObject != null) continue; // ya existe (flujo normal)
+
+            if (prefab == null)
+            {
+                Debug.LogError("[Duelo] No hay prefab de jugador para crear: revisá 'Player Prefab' en el NetworkManager.");
+                return;
+            }
+
+            Debug.Log($"[Duelo] Creando el jugador del cliente {clientes[i].ClientId}.");
+
+            Transform punto = puntosDeAparicion[i % puntosDeAparicion.Length];
+            GameObject jugador = Instantiate(prefab, punto.position, Quaternion.Euler(0f, punto.eulerAngles.y, 0f));
+            jugador.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientes[i].ClientId, true);
+        }
+    }
+
+    private int ContarConJugador(IReadOnlyList<NetworkClient> clientes)
+    {
+        int n = 0;
+        for (int i = 0; i < clientes.Count; i++)
+            if (clientes[i].PlayerObject != null) n++;
+        return n;
     }
 
     private void ConfigurarJugadores()

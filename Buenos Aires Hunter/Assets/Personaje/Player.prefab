@@ -353,7 +353,7 @@ MonoBehaviour:
   m_InScenePlaced: 0
   ActiveSceneSynchronization: 0
   SceneMigrationSynchronization: 1
-  SpawnWithObservers: 0
+  SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
@@ -477,7 +477,6 @@ MonoBehaviour:
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 0
   inputBloqueado: 0
-  prefabManos: {fileID: 0}
 --- !u!114 &521025633895502380
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -28,6 +28,26 @@ public class NetworkManagerPersistente : MonoBehaviour
 
     public bool IsSignedIn => AuthenticationService.Instance != null && AuthenticationService.Instance.IsSignedIn;
 
+    // NUEVO: prefab de jugador configurado en el NetworkManager (se guarda al iniciar)
+    private GameObject playerPrefabOriginal;
+    public GameObject PlayerPrefabOriginal => playerPrefabOriginal;
+
+    /// <summary>
+    /// NUEVO. Llamar ANTES de StartHost. true: el host NO crea jugadores al conectarse; el modo de juego los crea
+    /// cuando la escena de juego ya cargó en todos (evita mover jugadores entre escenas). false: comportamiento normal.
+    /// </summary>
+    public void ConfigurarSpawnDeJugadores(bool alCargarEscena)
+    {
+        var nm = NetworkManager.Singleton;
+        if (nm == null) return;
+
+        nm.NetworkConfig.PlayerPrefab = alCargarEscena ? null : playerPrefabOriginal;
+
+        Debug.Log($"[Spawn] Crear jugadores al cargar la escena: {alCargarEscena}. " +
+                  $"Player Prefab del host: {(nm.NetworkConfig.PlayerPrefab != null ? nm.NetworkConfig.PlayerPrefab.name : "ninguno")}. " +
+                  $"Prefab guardado: {(playerPrefabOriginal != null ? playerPrefabOriginal.name : "NINGUNO")}");
+    }
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -38,6 +58,9 @@ public class NetworkManagerPersistente : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        var nm = GetComponent<NetworkManager>();
+        if (nm != null) playerPrefabOriginal = nm.NetworkConfig.PlayerPrefab;
     }
 
     private async void Start()
