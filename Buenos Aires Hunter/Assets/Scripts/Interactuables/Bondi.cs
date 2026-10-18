@@ -1,23 +1,34 @@
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+
 public class Bondi : Interactuable
 {
-    public int precioPasaje;
-    public string siguienteMapa;
+    [SerializeField] private int precioPasaje = 0;
+    [SerializeField] private string siguienteMapa = "MapaExtraccion2";
+
+    private bool extraccionIniciada;
+
     public override void InteractuarConItem(PlayerInventory jugador)
     {
-        if (!IsServer) return;
+        if (!IsServer || extraccionIniciada || jugador == null)
+            return;
 
-        if (jugador.PagarConSube(precioPasaje))
-        {
-            Debug.Log("Jugador pagó");
+        if (NetworkManager.Singleton == null ||
+            NetworkManager.Singleton.SceneManager == null)
+            return;
+
+        if (!jugador.PagarConSube(precioPasaje))
+            return;
+
+        extraccionIniciada = true;
+
+        if (SaveManager.Instance != null)
             SaveManager.Instance.GuardarPartida(siguienteMapa);
-            NetworkManager.Singleton.SceneManager.LoadScene(siguienteMapa, LoadSceneMode.Single);
-        }
-        else
-        {
-            Debug.Log("Falta saldo o SUBE en mano");
-        }
+
+        NetworkManager.Singleton.SceneManager.LoadScene(
+            siguienteMapa,
+            LoadSceneMode.Single
+        );
     }
 }

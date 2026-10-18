@@ -1,60 +1,120 @@
+
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using Unity.Netcode;
+using Unity.Netcode.Components;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerSpawnManager : MonoBehaviour
 {
     public static PlayerSpawnManager Instance { get; private set; }
 
+    [Header("Puntos de aparición")]
     [SerializeField] private Transform spawnPoint1;
     [SerializeField] private Transform spawnPoint2;
 
     private readonly HashSet<ulong> jugadoresProcesados = new();
+    private bool posicionandoJugadores;
+
+    private NetworkManager networkManager;
 
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         Instance = this;
     }
 
     private void Start()
     {
-        if (NetworkManager.Singleton == null)
+        networkManager = NetworkManager.Singleton;
+
+        if (networkManager == null)
             return;
 
-        NetworkManager.Singleton.OnClientConnectedCallback += AlConectarJugador;
+        networkManager.OnClientConnectedCallback += AlConectarJugador;
 
-        // También contempla jugadores que ya estaban conectados.
-        if (NetworkManager.Singleton.IsServer)
+        if (networkManager.SceneManager != null)
         {
-            foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
-            {
+            networkManager.SceneManager.OnLoadEventCompleted +=
+                AlTerminarCargaEscena;
+        }
+
+        if (networkManager.IsServer)
+        {
+            foreach (ulong clientId in networkManager.ConnectedClientsIds)
                 AlConectarJugador(clientId);
-            }
         }
     }
 
     private void OnDestroy()
     {
+        if (networkManager != null)
+        {
+            networkManager.OnClientConnectedCallback -= AlConectarJugador;
+
+            if (networkManager.SceneManager != null)
+            {
+                networkManager.SceneManager.OnLoadEventCompleted -=
+                    AlTerminarCargaEscena;
+            }
+        }
+
         if (Instance == this)
             Instance = null;
-
-        if (NetworkManager.Singleton != null)
-        {
-            NetworkManager.Singleton.OnClientConnectedCallback -= AlConectarJugador;
-        }
     }
 
     private void AlConectarJugador(ulong clientId)
     {
-        if (NetworkManager.Singleton == null ||
-            !NetworkManager.Singleton.IsServer)
-            return;
-
-        if (!jugadoresProcesados.Add(clientId))
+        if (networkManager == null || !networkManager.IsServer)
             return;
 
         StartCoroutine(EsperarJugadorYUbicarlo(clientId));
+    }
+
+    private void AlTerminarCargaEscena(
+        string nombreEscena,
+        LoadSceneMode modo,
+        List<ulong> clientesCompletados,
+        List<ulong> clientesFallidos)
+    {
+        if (networkManager == null || !networkManager.IsServer)
+            return;
+
+        // Cada carga de escena requiere ubicar a los jugadores de nuevo.
+        jugadoresProcesados.Clear();
+
+        if (!posicionandoJugadores)
+            StartCoroutine(PosicionarTodosLosJugadores());
+    }
+
+    private IEnumerator PosicionarTodosLosJugadores()
+    {
+        posicionandoJugadores = true;
+
+        // Esperar a que los objetos de jugador estén disponibles.
+        yield return null;
+        yield return new WaitForEndOfFrame();
+
+        if (networkManager == null || !networkManager.IsServer)
+        {
+            posicionandoJugadores = false;
+            yield break;
+        }
+
+        foreach (ulong clientId in networkManager.ConnectedClientsIds)
+        {
+            yield return StartCoroutine(
+                EsperarJugadorYUbicarlo(clientId)
+            );
+        }
+
+        posicionandoJugadores = false;
     }
 
     private IEnumerator EsperarJugadorYUbicarlo(ulong clientId)
@@ -63,19 +123,12 @@ public class PlayerSpawnManager : MonoBehaviour
 
         while (tiempoEspera > 0f)
         {
-            if (NetworkManager.Singleton == null ||
-                !NetworkManager.Singleton.IsServer)
-            {
-                jugadoresProcesados.Remove(clientId);
+            if (networkManager == null || !networkManager.IsServer)
                 yield break;
-            }
 
-            if (!NetworkManager.Singleton.ConnectedClients.TryGetValue(
+            if (!networkManager.ConnectedClients.TryGetValue(
                     clientId, out NetworkClient cliente))
-            {
-                jugadoresProcesados.Remove(clientId);
                 yield break;
-            }
 
             if (cliente.PlayerObject != null)
                 break;
@@ -84,14 +137,16 @@ public class PlayerSpawnManager : MonoBehaviour
             yield return null;
         }
 
-        if (NetworkManager.Singleton == null ||
-            !NetworkManager.Singleton.ConnectedClients.TryGetValue(
+        if (networkManager == null ||
+            !networkManager.IsServer ||
+            !networkManager.ConnectedClients.TryGetValue(
                 clientId, out NetworkClient jugadorCliente) ||
             jugadorCliente.PlayerObject == null)
-        {
-            jugadoresProcesados.Remove(clientId);
             yield break;
-        }
+
+        // Evitar procesar dos veces al mismo jugador en una misma carga.
+        if (!jugadoresProcesados.Add(clientId))
+            yield break;
 
         Transform punto = clientId == 0 ? spawnPoint1 : spawnPoint2;
 
@@ -102,6 +157,7 @@ public class PlayerSpawnManager : MonoBehaviour
         }
 
         NetworkObject jugador = jugadorCliente.PlayerObject;
+
         CharacterController controlador =
             jugador.GetComponent<CharacterController>();
 
@@ -115,6 +171,17 @@ public class PlayerSpawnManager : MonoBehaviour
 
         if (controlador != null)
             controlador.enabled = true;
+
+        // Sincronizar el teletransporte si el jugador utiliza NetworkTransform.
+        NetworkTransform networkTransform =
+            jugador.GetComponent<NetworkTransform>();
+
+        if (networkTransform != null)
+            networkTransform.Teleport(
+                punto.position,
+                punto.rotation,
+                jugador.transform.localScale
+            );
 
         AplicarDatosGuardadoSiHay(clientId, jugador);
     }
@@ -146,7 +213,7 @@ public class PlayerSpawnManager : MonoBehaviour
         Transform porDefecto =
             clientId == 0 ? spawnPoint1 : spawnPoint2;
 
-        if (NetworkManager.Singleton == null)
+        if (networkManager == null)
             return porDefecto;
 
         Transform[] puntos = { spawnPoint1, spawnPoint2 };
@@ -161,7 +228,7 @@ public class PlayerSpawnManager : MonoBehaviour
 
             float distanciaMinima = float.MaxValue;
 
-            foreach (var kv in NetworkManager.Singleton.ConnectedClients)
+            foreach (var kv in networkManager.ConnectedClients)
             {
                 if (kv.Key == clientId || kv.Value.PlayerObject == null)
                     continue;
@@ -180,7 +247,8 @@ public class PlayerSpawnManager : MonoBehaviour
                 );
 
                 distanciaMinima = Mathf.Min(
-                    distanciaMinima, distancia);
+                    distanciaMinima, distancia
+                );
             }
 
             if (distanciaMinima > mejorDistancia)
