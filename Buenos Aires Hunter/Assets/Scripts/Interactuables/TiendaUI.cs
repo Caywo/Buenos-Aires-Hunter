@@ -38,4 +38,11 @@ public class TiendaUI : MonoBehaviour
         if (jugadorActual == null) return;
         jugadorActual.IntentarComprarRpc(precio, indice);
     }
+
+    public void ComprarMejoraVelocidad(int precio)
+    {
+        if (jugadorActual == null) return;
+        var mejoras = jugadorActual.GetComponent<PlayerMejoras>();
+        mejoras?.IntentarComprarVelocidadRpc(precio);
+    }
 }
