@@ -164,7 +164,7 @@ MonoBehaviour:
   SynchronizeTransform: 1
   m_InScenePlaced: 0
   ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 0
+  SceneMigrationSynchronization: 1
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
@@ -232,6 +232,12 @@ MonoBehaviour:
   stoppingDistance: 1.5
   attackRange: 2
   intervaloBusqueda: 0.5
+  intervaloActualizacionRuta: 0.35
+  movimientoMinimoObjetivo: 0.75
+  intervaloComprobacionAtasco: 0.5
+  tiempoParaConsiderarAtasco: 1.5
+  velocidadMinimaMovimiento: 0.15
+  distanciaMinimaAvance: 0.1
 --- !u!114 &-1810127468036932324
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -280,3 +286,11 @@ MonoBehaviour:
   fuerzaHorizontal: 8
   fuerzaVertical: 5
   duracion: 0.7
+  gravedad: -20
+  alturaRaycast: 0.5
+  distanciaRaycast: 2
+  radioBusquedaNavMesh: 3
+  capasObstaculos:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  margenColision: 0.05
