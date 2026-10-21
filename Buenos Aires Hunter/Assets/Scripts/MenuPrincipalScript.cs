@@ -20,6 +20,9 @@ public class MenuPrincipal : MonoBehaviour
         [Tooltip("Texto donde se muestra el código y la espera en el panel de ESTE modo. Si queda vacío se usa 'Join Code Display'.")]
         public TMP_Text joinCodeDisplay;
 
+        [Tooltip("Texto donde se muestra el estado de espera en el panel de ESTE modo. Si queda vacío se usa 'Estado Display'.")]
+        public TMP_Text estadoDisplay;
+
         [Header("Jugadores")]
         [Tooltip("Si está tildado, los jugadores NO se crean en el menú: el modo los crea al terminar de cargar la escena (lo usa el duelo).")]
         public bool crearJugadoresAlCargarEscena;
@@ -34,6 +37,7 @@ public class MenuPrincipal : MonoBehaviour
     [Header("Multijugador (Relay)")]
     [SerializeField] private TMP_InputField joinCodeInput;
     [SerializeField] private TMP_Text joinCodeDisplay;
+    [SerializeField] private TMP_Text estadoDisplay;
 
     private ModoDeJuego ObtenerModoActual(bool avisar = true)
     {
@@ -56,6 +60,11 @@ public class MenuPrincipal : MonoBehaviour
     private TMP_Text DisplayDe(ModoDeJuego modo)
     {
         return (modo != null && modo.joinCodeDisplay != null) ? modo.joinCodeDisplay : joinCodeDisplay;
+    }
+
+    private TMP_Text EstadoDe(ModoDeJuego modo)
+    {
+        return (modo != null && modo.estadoDisplay != null) ? modo.estadoDisplay : estadoDisplay;
     }
 
     public void UnJugador()
@@ -239,12 +248,15 @@ public class MenuPrincipal : MonoBehaviour
         }
 
         TMP_Text display = DisplayDe(modoElegido);
-        if (display == null) return;
+        if (display != null) display.text = ultimoJoinCode;
+
+        TMP_Text estado = EstadoDe(modoElegido);
+        if (estado == null) return;
 
         if (conectados >= jugadoresNecesarios)
-            display.text = $"Código: {ultimoJoinCode} | Jugador conectado, sincronizando...";
+            estado.text = "Jugador conectado, sincronizando...";
         else
-            display.text = $"Código: {ultimoJoinCode} | Esperando jugador... ({conectados}/{jugadoresNecesarios})";
+            estado.text = $"Esperando jugador... ({conectados}/{jugadoresNecesarios})";
     }
 
     private bool TodosTienenJugador()
@@ -263,10 +275,11 @@ public class MenuPrincipal : MonoBehaviour
         ultimoJoinCode = joinCode;
 
         TMP_Text display = DisplayDe(modoElegido);
-        if (display != null)
-        {
-            display.text = $"Código: {joinCode}\nEsperando jugador... (1/{jugadoresNecesarios})";
-        }
+        if (display != null) display.text = joinCode;
+
+        TMP_Text estado = EstadoDe(modoElegido);
+        if (estado != null)
+            estado.text = $"Esperando jugador... (1/{jugadoresNecesarios})";
     }
 
     private void OnDestroy()
