@@ -5,6 +5,7 @@ public class TiendaUI : MonoBehaviour
     public GameObject panelTienda;
     private PlayerInventory jugadorActual;
 
+    public bool EstaAbierta => panelTienda.activeSelf;
     public void AbrirTienda(PlayerInventory jugador)
     {
         jugadorActual = jugador;

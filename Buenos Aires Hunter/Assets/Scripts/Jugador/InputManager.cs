@@ -13,6 +13,7 @@ public class InputManager : NetworkBehaviour
     private PlayerInteract interactuar;
     private Health salud; // NUEVO (combate)
     private TiendaUI tiendaUI;
+    private PausaUI pausaUI;
 
     void Awake()
     {
@@ -52,9 +53,29 @@ public class InputManager : NetworkBehaviour
 
         inventarioActions.CerrarUI.performed += ctx =>
         {
-            if (tiendaUI == null) tiendaUI = FindAnyObjectByType<TiendaUI>();
-            tiendaUI?.CerrarTienda();
+            if (tiendaUI == null)
+                tiendaUI = FindAnyObjectByType<TiendaUI>();
+
+            if (pausaUI == null)
+                pausaUI = FindAnyObjectByType<PausaUI>();
+
+            // Prioridad 1: cerrar la tienda si está abierta.
+            if (tiendaUI != null && tiendaUI.EstaAbierta)
+            {
+                tiendaUI.CerrarTienda();
+                return;
+            }
+
+            // Prioridad 2: abrir o cerrar la pausa.
+            if (pausaUI != null)
+            {
+                if (pausaUI.PausaAbierta)
+                    pausaUI.CerrarMenuDePausa();
+                else
+                    pausaUI.AbrirMenuDePausa();
+            }
         };
+
     }
 
     public override void OnNetworkSpawn()
