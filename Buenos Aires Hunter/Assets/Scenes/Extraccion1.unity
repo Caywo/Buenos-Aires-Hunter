@@ -2686,7 +2686,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Bondi
   ShowTopMostFoldoutHeaderGroup: 1
   mensaje: "\xBFTomarse el palo?"
-  precioPasaje: 1200
+  precioPasaje: 0
   siguienteMapa: Extraccion2
 --- !u!114 &128423701
 MonoBehaviour:

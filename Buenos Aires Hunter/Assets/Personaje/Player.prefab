@@ -282,6 +282,7 @@ GameObject:
   - component: {fileID: 5194580247049085147}
   - component: {fileID: 1070948456886115100}
   - component: {fileID: 5888196171528925299}
+  - component: {fileID: -8708946833366736154}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -353,7 +354,7 @@ MonoBehaviour:
   m_InScenePlaced: 0
   ActiveSceneSynchronization: 0
   SceneMigrationSynchronization: 1
-  SpawnWithObservers: 0
+  SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
@@ -691,6 +692,26 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &-8708946833366736154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5264654166265889176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2263321afda624d4abc3035ca6b5db83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerMejoras
+  ShowTopMostFoldoutHeaderGroup: 1
+  precioVelocidad: 5000
+  multiplicadorVelocidad: 1.4
+  tieneMejoraVelocidad:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
 --- !u!1 &6413559522627772346
 GameObject:
   m_ObjectHideFlags: 0

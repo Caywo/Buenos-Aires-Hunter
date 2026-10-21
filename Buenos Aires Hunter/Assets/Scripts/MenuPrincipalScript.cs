@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using Unity.Netcode;
@@ -12,6 +13,19 @@ public class MenuPrincipal : MonoBehaviour
         public string nombre;
         public GameObject panel;
         public string escenaDeJuego;
+
+        [Header("Multijugador de este modo (opcional)")]
+        [Tooltip("Campo donde se escribe el código en el panel de ESTE modo. Si queda vacío se usa 'Join Code Input'.")]
+        public TMP_InputField joinCodeInput;
+        [Tooltip("Texto donde se muestra el código y la espera en el panel de ESTE modo. Si queda vacío se usa 'Join Code Display'.")]
+        public TMP_Text joinCodeDisplay;
+
+        [Tooltip("Texto donde se muestra el estado de espera en el panel de ESTE modo. Si queda vacío se usa 'Estado Display'.")]
+        public TMP_Text estadoDisplay;
+
+        [Header("Jugadores")]
+        [Tooltip("Si está tildado, los jugadores NO se crean en el menú: el modo los crea al terminar de cargar la escena (lo usa el duelo).")]
+        public bool crearJugadoresAlCargarEscena;
     }
 
     [Header("Modos de juego")]
@@ -23,8 +37,9 @@ public class MenuPrincipal : MonoBehaviour
     [Header("Multijugador (Relay)")]
     [SerializeField] private TMP_InputField joinCodeInput;
     [SerializeField] private TMP_Text joinCodeDisplay;
+    [SerializeField] private TMP_Text estadoDisplay;
 
-    private ModoDeJuego ObtenerModoActual()
+    private ModoDeJuego ObtenerModoActual(bool avisar = true)
     {
         foreach (var modo in modos)
         {
@@ -32,8 +47,24 @@ public class MenuPrincipal : MonoBehaviour
                 return modo;
         }
 
-        Debug.LogError("No hay ningún panel de modo activo.");
+        if (avisar) Debug.LogError("No hay ningún panel de modo activo.");
         return null;
+    }
+
+    // Usa el campo propio del modo; si no tiene, el general (así los modos existentes siguen igual)
+    private TMP_InputField InputDe(ModoDeJuego modo)
+    {
+        return (modo != null && modo.joinCodeInput != null) ? modo.joinCodeInput : joinCodeInput;
+    }
+
+    private TMP_Text DisplayDe(ModoDeJuego modo)
+    {
+        return (modo != null && modo.joinCodeDisplay != null) ? modo.joinCodeDisplay : joinCodeDisplay;
+    }
+
+    private TMP_Text EstadoDe(ModoDeJuego modo)
+    {
+        return (modo != null && modo.estadoDisplay != null) ? modo.estadoDisplay : estadoDisplay;
     }
 
     public void UnJugador()
@@ -46,6 +77,7 @@ public class MenuPrincipal : MonoBehaviour
 
         transport.SetConnectionData("127.0.0.1", 7777);
 
+        NetworkManagerPersistente.Instance.ConfigurarSpawnDeJugadores(false);
         NetworkManager.Singleton.StartHost();
 
         NetworkManager.Singleton.SceneManager.LoadScene(
@@ -59,6 +91,8 @@ public class MenuPrincipal : MonoBehaviour
         modoElegido = ObtenerModoActual();
         if (modoElegido == null) return;
 
+        NetworkManagerPersistente.Instance.ConfigurarSpawnDeJugadores(modoElegido.crearJugadoresAlCargarEscena);
+
         string joinCode = await NetworkManagerPersistente.Instance.StartHostWithRelayAsync();
         if (string.IsNullOrEmpty(joinCode))
         {
@@ -68,19 +102,20 @@ public class MenuPrincipal : MonoBehaviour
 
         MostrarCodigoYEsperando(joinCode);
 
-        NetworkManager.Singleton.OnClientConnectedCallback += OnJugadorConectado;
-        RevisarSiHayQueArrancar();
+        EsperarJugadores();
     }
 
     public async void UnirseAPartida()
     {
-        if (joinCodeInput == null || string.IsNullOrWhiteSpace(joinCodeInput.text))
+        TMP_InputField input = InputDe(ObtenerModoActual(false));
+
+        if (input == null || string.IsNullOrWhiteSpace(input.text))
         {
             Debug.LogError("Ingresá un join code antes de unirte.");
             return;
         }
 
-        bool conectado = await NetworkManagerPersistente.Instance.StartClientWithRelayAsync(joinCodeInput.text);
+        bool conectado = await NetworkManagerPersistente.Instance.StartClientWithRelayAsync(input.text);
 
         if (!conectado)
         {
@@ -97,6 +132,7 @@ public class MenuPrincipal : MonoBehaviour
         UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
         transport.SetConnectionData("127.0.0.1", 7777);
 
+        NetworkManagerPersistente.Instance.ConfigurarSpawnDeJugadores(false);
         NetworkManager.Singleton.StartHost();
 
         NetworkManager.Singleton.SceneManager.LoadScene(
@@ -109,6 +145,8 @@ public class MenuPrincipal : MonoBehaviour
     {
         if (!CargarPartida()) return;
 
+        NetworkManagerPersistente.Instance.ConfigurarSpawnDeJugadores(false);
+
         string joinCode = await NetworkManagerPersistente.Instance.StartHostWithRelayAsync();
         if (string.IsNullOrEmpty(joinCode))
         {
@@ -118,8 +156,7 @@ public class MenuPrincipal : MonoBehaviour
 
         MostrarCodigoYEsperando(joinCode);
 
-        NetworkManager.Singleton.OnClientConnectedCallback += OnJugadorConectado;
-        RevisarSiHayQueArrancar();
+        EsperarJugadores();
     }
 
     private bool CargarPartida()
@@ -146,8 +183,42 @@ public class MenuPrincipal : MonoBehaviour
 
     private ModoDeJuego modoElegido;
 
+    // Jugadores remotos que YA terminaron de sincronizar la escena actual (el menú)
+    private readonly HashSet<ulong> clientesSincronizados = new HashSet<ulong>();
+
+    // Escucha quién se conecta (para el texto de espera) y quién terminó de sincronizar (para arrancar)
+    private void EsperarJugadores()
+    {
+        clientesSincronizados.Clear();
+
+        NetworkManager.Singleton.OnClientConnectedCallback += OnJugadorConectado;
+        if (NetworkManager.Singleton.SceneManager != null)
+            NetworkManager.Singleton.SceneManager.OnSynchronizeComplete += OnJugadorSincronizado;
+
+        RevisarSiHayQueArrancar();
+    }
+
+    private void DejarDeEsperar()
+    {
+        if (NetworkManager.Singleton == null) return;
+
+        NetworkManager.Singleton.OnClientConnectedCallback -= OnJugadorConectado;
+        if (NetworkManager.Singleton.SceneManager != null)
+            NetworkManager.Singleton.SceneManager.OnSynchronizeComplete -= OnJugadorSincronizado;
+    }
+
+    // Conectado NO significa listo: solo actualiza el texto de espera
     private void OnJugadorConectado(ulong clientId)
     {
+        RevisarSiHayQueArrancar();
+    }
+
+    // El cliente terminó de sincronizar el menú: recién ahora es seguro cambiar de escena
+    private void OnJugadorSincronizado(ulong clientId)
+    {
+        if (clientId != NetworkManager.Singleton.LocalClientId)
+            clientesSincronizados.Add(clientId);
+
         RevisarSiHayQueArrancar();
     }
 
@@ -158,19 +229,43 @@ public class MenuPrincipal : MonoBehaviour
 
         int conectados = NetworkManager.Singleton.ConnectedClientsList.Count;
 
-        if (conectados >= jugadoresNecesarios)
+        // El host cuenta siempre; los demás, solo cuando ya sincronizaron y siguen conectados
+        int listos = 1;
+        foreach (ulong id in clientesSincronizados)
         {
-            NetworkManager.Singleton.OnClientConnectedCallback -= OnJugadorConectado;
+            if (NetworkManager.Singleton.ConnectedClients.ContainsKey(id)) listos++;
+        }
+
+        if (listos >= jugadoresNecesarios && (modoElegido.crearJugadoresAlCargarEscena || TodosTienenJugador()))
+        {
+            DejarDeEsperar();
 
             NetworkManager.Singleton.SceneManager.LoadScene(
                 modoElegido.escenaDeJuego,
                 LoadSceneMode.Single
             );
+            return;
         }
-        else if (joinCodeDisplay != null)
+
+        TMP_Text display = DisplayDe(modoElegido);
+        if (display != null) display.text = ultimoJoinCode;
+
+        TMP_Text estado = EstadoDe(modoElegido);
+        if (estado == null) return;
+
+        if (conectados >= jugadoresNecesarios)
+            estado.text = "Jugador conectado, sincronizando...";
+        else
+            estado.text = $"Esperando jugador... ({conectados}/{jugadoresNecesarios})";
+    }
+
+    private bool TodosTienenJugador()
+    {
+        foreach (var cliente in NetworkManager.Singleton.ConnectedClientsList)
         {
-            joinCodeDisplay.text = $"Código: {ultimoJoinCode} | Esperando jugador... ({conectados}/{jugadoresNecesarios})";
+            if (cliente.PlayerObject == null) return false;
         }
+        return true;
     }
 
     private string ultimoJoinCode;
@@ -179,17 +274,16 @@ public class MenuPrincipal : MonoBehaviour
     {
         ultimoJoinCode = joinCode;
 
-        if (joinCodeDisplay != null)
-        {
-            joinCodeDisplay.text = $"Código: {joinCode}\nEsperando jugador... (1/{jugadoresNecesarios})";
-        }
+        TMP_Text display = DisplayDe(modoElegido);
+        if (display != null) display.text = joinCode;
+
+        TMP_Text estado = EstadoDe(modoElegido);
+        if (estado != null)
+            estado.text = $"Esperando jugador... (1/{jugadoresNecesarios})";
     }
 
     private void OnDestroy()
     {
-        if (NetworkManager.Singleton != null)
-        {
-            NetworkManager.Singleton.OnClientConnectedCallback -= OnJugadorConectado;
-        }
+        DejarDeEsperar();
     }
 }
