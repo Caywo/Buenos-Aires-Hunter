@@ -13612,12 +13612,21 @@ MonoBehaviour:
   - nombre: Extraccion
     panel: {fileID: 555094878}
     escenaDeJuego: Extraccion1
+    joinCodeInput: {fileID: 0}
+    joinCodeDisplay: {fileID: 0}
+    crearJugadoresAlCargarEscena: 0
   - nombre: Supervivencia
     panel: {fileID: 244630603}
     escenaDeJuego: Supervivencia
+    joinCodeInput: {fileID: 0}
+    joinCodeDisplay: {fileID: 0}
+    crearJugadoresAlCargarEscena: 0
   - nombre: Duelo
     panel: {fileID: 1337654767}
-    escenaDeJuego: MapaDuelo
+    escenaDeJuego: Duelo
+    joinCodeInput: {fileID: 1242510385}
+    joinCodeDisplay: {fileID: 984840892}
+    crearJugadoresAlCargarEscena: 0
   jugadoresNecesarios: 2
   joinCodeInput: {fileID: 1949036976}
   joinCodeDisplay: {fileID: 434375910}
@@ -19874,6 +19883,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   maxConnections: 1
   connectionType: dtls
+  escenaMenuPorDefecto: MenuPrincipal
 --- !u!1 &1782833651
 GameObject:
   m_ObjectHideFlags: 0
@@ -22241,7 +22251,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1959256970
 RectTransform:
   m_ObjectHideFlags: 0

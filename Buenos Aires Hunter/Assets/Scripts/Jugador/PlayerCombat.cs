@@ -50,6 +50,18 @@ public class PlayerCombat : NetworkBehaviour
 
     public bool Recargando => recargando.Value;
 
+    /// <summary>
+    /// SOLO SERVIDOR. Si es false, el servidor rechaza disparos, recargas y golpes
+    /// (cuenta regresiva y pausas entre rondas del duelo). En los demás modos queda en true.
+    /// </summary>
+    public bool CombateHabilitado { get; set; } = true;
+
+    /// <summary>SOLO SERVIDOR. El modo duelo lo apaga: las rondas las controla el DuelManager.</summary>
+    public void ConfigurarRespawnAutomatico(bool valor)
+    {
+        respawnAutomatico = valor;
+    }
+
     /// <summary>Se dispara en el dueño cuando el servidor confirma que su bala impactó algo dañable (hitmarker).</summary>
     public event Action OnImpactoConfirmado;
 
@@ -63,6 +75,9 @@ public class PlayerCombat : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        Debug.Log($"[Jugador] Se creó un jugador en esta instancia. NetworkObjectId={NetworkObjectId}, " +
+                  $"dueño={OwnerClientId}, esMio={IsOwner}, soyServidor={IsServer}");
+
         var look = GetComponent<PlayerLook>();
         cam = look != null ? look.cam : GetComponentInChildren<Camera>(true);
 
@@ -186,12 +201,13 @@ public class PlayerCombat : NetworkBehaviour
     [ServerRpc]
     private void DispararServerRpc(Vector3 origen, Vector3 direccion)
     {
-        if (salud.EstaMuerto || recargando.Value) return;
+        if (!CombateHabilitado || salud.EstaMuerto || recargando.Value) return;
 
         WeaponShoot arma = inventario.ArmaActual;
         int slot = inventario.IndiceActivo;
         if (arma == null || slot < 0 || slot >= cargador.Count) return;
         if (cargador[slot] <= 0) return;
+        if (!inventario.EstaDesbloqueado(slot)) return; // arma no comprada / no permitida
         if (Time.time < proximoDisparoServer) return;
 
         // Anti-trampa básico: el origen debe estar cerca del jugador y la dirección ser válida
@@ -274,7 +290,7 @@ public class PlayerCombat : NetworkBehaviour
     {
         Debug.Log("[Melee] El servidor recibió el golpe");
 
-        if (melee == null || salud.EstaMuerto) { Debug.Log("[Melee] Rechazado: sin MeleeAttack o jugador muerto"); return; }
+        if (melee == null || !CombateHabilitado || salud.EstaMuerto) { Debug.Log("[Melee] Rechazado: sin MeleeAttack, combate deshabilitado o jugador muerto"); return; }
         if (Time.time < proximoMeleeServer) { Debug.Log("[Melee] Rechazado: cooldown del servidor"); return; }
 
         // Mismas validaciones básicas que el disparo
@@ -371,7 +387,7 @@ public class PlayerCombat : NetworkBehaviour
     [ServerRpc]
     private void RecargarServerRpc()
     {
-        if (salud.EstaMuerto || recargando.Value) return;
+        if (!CombateHabilitado || salud.EstaMuerto || recargando.Value) return;
 
         WeaponShoot arma = inventario.ArmaActual;
         int slot = inventario.IndiceActivo;
@@ -455,6 +471,20 @@ public class PlayerCombat : NetworkBehaviour
     }
 
     /// <summary>
+    /// SOLO SERVIDOR. Deja al jugador listo para una ronda del duelo: vivo, con vida y munición completas
+    /// y en el punto indicado. No depende de PlayerSpawnManager.
+    /// </summary>
+    public void PrepararParaRonda(Vector3 posicion, Quaternion rotacion)
+    {
+        if (!IsServer) return;
+
+        CancelarRecarga();
+        RestaurarMunicion();
+        salud.Revivir();
+        TeletransportarA(posicion, rotacion);
+    }
+
+    /// <summary>
     /// SOLO SERVIDOR. Como el jugador usa ClientNetworkTransform (autoridad del dueño) y CharacterController,
     /// el servidor no puede mover al jugador directamente: se lo pide al dueño.
     /// </summary>
@@ -471,6 +501,10 @@ public class PlayerCombat : NetworkBehaviour
 
         if (controller != null) controller.enabled = false;
         transform.SetPositionAndRotation(posicion, rotacion);
+
+        var motor = GetComponent<PlayerMotor>();
+        if (motor != null) motor.ReiniciarVelocidad();
+
         if (controller != null) controller.enabled = !salud.EstaMuerto;
 
         var nt = GetComponent<NetworkTransform>();
