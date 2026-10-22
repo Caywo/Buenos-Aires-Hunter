@@ -127,6 +127,10 @@ public class PlayerInventory : NetworkBehaviour
                 netObj.Spawn();
             }
         }
+        if (cantidades[indice].Value <= 0 && indiceActivo.Value == indice)
+        {
+            indiceActivo.Value = -1;
+        }
     }
 
     private void EquiparVisual(int indice)
