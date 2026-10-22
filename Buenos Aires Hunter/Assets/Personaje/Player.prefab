@@ -478,7 +478,6 @@ MonoBehaviour:
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 0
   inputBloqueado: 0
-  prefabManos: {fileID: 0}
 --- !u!114 &521025633895502380
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -579,7 +578,9 @@ MonoBehaviour:
   footstepClips:
   - {fileID: 8300000, guid: fb18033d8d5f707458dcc0ff00e77e42, type: 3}
   - {fileID: 8300000, guid: 244da31ede234fb4fa7a9d2929247632, type: 3}
-  shootClip: {fileID: 0}
+  punchClip: {fileID: 8300000, guid: 20cead5b2d048364db7c55f3f51bff20, type: 3}
+  footstepVolume: 0.257
+  punchVolume: 0.413
 --- !u!114 &1070948456886115100
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -705,7 +706,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMejoras
   ShowTopMostFoldoutHeaderGroup: 1
-  precioVelocidad: 5000
   multiplicadorVelocidad: 1.4
   tieneMejoraVelocidad:
     UpdateTraits:

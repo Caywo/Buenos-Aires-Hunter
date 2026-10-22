@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 1416068635735276639}
   - component: {fileID: 7869495239849270102}
   - component: {fileID: 5242978991342481566}
+  - component: {fileID: 1505115273562141066}
   m_Layer: 0
   m_Name: Wachin
   m_TagString: Untagged
@@ -187,3 +188,17 @@ MonoBehaviour:
   danoExplosion: 100
   fuerzaKnockback: 10
   tiempoMaximoVida: 20
+--- !u!114 &1505115273562141066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6439778853965318530}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75a2d9e02ba055240865fc25ef9064d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ExplosionAudio
+  explosionClip: {fileID: 8300000, guid: 298a0d897d564ae48a5d19092d047476, type: 3}
+  volume: 0.5
