@@ -47,11 +47,11 @@ public class PruebaInicialQA
         yield return SceneManager.LoadSceneAsync("MenuPrincipal");
 
         GameObject panel =
-        GameObject.Find("CanvasMenuprincipal");
+        GameObject.Find("CanvasMenuPrincipal");
 
         Assert.IsNotNull(
         panel,
-        "No se encontró CanvasMenuprincipal."
+        "No se encontró CanvasMenuPrincipal."
         );
     }
     // Verifica la existencia del botón de inicio de juego.
@@ -61,11 +61,11 @@ public class PruebaInicialQA
         yield return SceneManager.LoadSceneAsync("MenuPrincipal");
 
         GameObject boton =
-            GameObject.Find("BotonJugar");
+            GameObject.Find("BtnJugar");
 
         Assert.IsNotNull(
             boton,
-            "No se encontró BotonJugar."
+            "No se encontró BtnJugar."
         );
     }
     // Verifica que el componente PlayerMotor pueda instanciarse correctamente.
