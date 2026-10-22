@@ -41,6 +41,8 @@ public class MeleeAttack : MonoBehaviour
     /// <summary>Lo llama PlayerInventory (solo dueño) cuando hacés click con las manos vacías.</summary>
     public void Atacar()
     {
+        Debug.Log($"[Melee] Atacar() llamado. Time.time={Time.time}, nextAttackTime={nextAttackTime}");
+
         if (Time.time < nextAttackTime) return;
         if (playerCamera == null || combate == null)
         {

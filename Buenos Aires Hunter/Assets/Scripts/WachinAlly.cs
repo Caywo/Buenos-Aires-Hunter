@@ -52,6 +52,8 @@ public class WachinAlly : NetworkBehaviour
         agent.speed = velocidad;
         agent.stoppingDistance = 0.5f;
 
+        Debug.Log($"[Wachin] Spawneado. isOnNavMesh={agent.isOnNavMesh}, posición={transform.position}");
+
         tiempoSpawn = Time.time;
 
         BuscarObjetivo();

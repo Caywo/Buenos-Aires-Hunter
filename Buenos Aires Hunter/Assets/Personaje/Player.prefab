@@ -447,8 +447,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMirar
   cam: {fileID: 0}
-  sensibilidadX: 10
-  sensibilidadY: 10
+  sensibilidadX: 5
+  sensibilidadY: 5
   recoilReturnSpeed: 6
   inputBloqueado: 0
 --- !u!114 &4829926995818636796
@@ -507,7 +507,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 450358755d352884bb95c4d50edb6253, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MeleeAttack
-  rango: 3
+  rango: 2
   radio: 0.5
   damage: 100
   fireRate: 0.6

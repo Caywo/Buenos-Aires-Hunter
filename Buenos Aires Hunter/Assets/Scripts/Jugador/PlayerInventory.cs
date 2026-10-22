@@ -115,7 +115,18 @@ public class PlayerInventory : NetworkBehaviour
         if (cantidades[indice].Value <= 0) return;
 
         cantidades[indice].Value--;
-        // Acá aplicás el efecto real (curar, tirar la granada, etc.)
+
+        if (data.prefabUso != null)
+        {
+            Vector3 posicion = transform.position + transform.forward * 1.5f;
+            GameObject instancia = Instantiate(data.prefabUso, posicion, Quaternion.identity);
+
+            NetworkObject netObj = instancia.GetComponent<NetworkObject>();
+            if (netObj != null)
+            {
+                netObj.Spawn();
+            }
+        }
     }
 
     private void EquiparVisual(int indice)
@@ -168,7 +179,11 @@ public class PlayerInventory : NetworkBehaviour
         }
         else if (indiceActivo.Value == -1 && pulsacionNueva)
         {
-            melee.Atacar(); // manos vacías: un golpe por click
+            melee.Atacar();
+        }
+        else if (indiceActivo.Value >= 0 && items[indiceActivo.Value].item.esConsumible && pulsacionNueva)
+        {
+            UsarServerRpc(indiceActivo.Value);
         }
     }
 
