@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using UnityEngine.AI;
 using Unity.Netcode;
@@ -15,17 +14,44 @@ public class EnemyAI : NetworkBehaviour
     [Header("Búsqueda de objetivo")]
     [SerializeField] private float intervaloBusqueda = 0.5f;
 
+    [Header("Actualización de ruta")]
+    [SerializeField] private float intervaloActualizacionRuta = 0.35f;
+    [SerializeField] private float movimientoMinimoObjetivo = 0.75f;
+
+    [Header("Recuperación de atasco")]
+    [SerializeField] private float intervaloComprobacionAtasco = 0.5f;
+    [SerializeField] private float tiempoParaConsiderarAtasco = 1.5f;
+    [SerializeField] private float velocidadMinimaMovimiento = 0.15f;
+    [SerializeField] private float distanciaMinimaAvance = 0.1f;
+
     private float proximaBusqueda;
+    private float proximaActualizacionRuta;
+    private float proximaComprobacionAtasco;
+    private float tiempoAtascado;
+
+    private Vector3 ultimaPosicionComprobada;
+    private Vector3 ultimaPosicionObjetivoRuta;
+    private bool rutaInicializada;
 
     private NavMeshAgent agent;
     private Health salud;
     private Transform target;
     private Health targetHealth;
+
     private TankAttack ataqueTanque;
     private NormalAttack ataqueCuerpoACuerpo;
     private RangedAttack ataqueDistancia;
     private EnemyKnockback knockback;
     private Animator animator;
+
+    private static readonly int VelocidadHash =
+    Animator.StringToHash("Velocidad");
+
+    private static readonly int AttackHash =
+    Animator.StringToHash("Attack");
+
+    private static readonly int DeathHash =
+    Animator.StringToHash("Death");
 
     private enum EstadoIA
     {
@@ -59,7 +85,10 @@ public class EnemyAI : NetworkBehaviour
             return;
         }
 
-        salud.OnMuerto += AlMorir;
+        if (salud != null)
+            salud.OnMuerto += AlMorir;
+
+        ReiniciarSeguimiento();
     }
 
     public override void OnNetworkDespawn()
@@ -75,6 +104,7 @@ public class EnemyAI : NetworkBehaviour
         estadoActual = EstadoIA.Idle;
         target = null;
         targetHealth = null;
+        ReiniciarSeguimiento();
 
         if (agent != null && agent.enabled)
         {
@@ -89,18 +119,37 @@ public class EnemyAI : NetworkBehaviour
 
         if (animator != null)
         {
-            animator.ResetTrigger("Embestir");
-            animator.SetTrigger("Death");
+            // Cada tipo de enemigo puede usar parámetros distintos.
+            // No limpiar "Attack" en el tanque: su trigger es "Embestir".
+            if (ataqueTanque != null)
+                animator.ResetTrigger("Embestir");
+            else if (ataqueCuerpoACuerpo != null)
+                animator.ResetTrigger(AttackHash);
+
+            animator.SetTrigger(DeathHash);
         }
     }
 
     private void Update()
     {
-        if (!IsServer || salud.EstaMuerto)
+        if (!IsServer || salud == null || salud.EstaMuerto)
             return;
 
         if (knockback != null && knockback.EstaSiendoLanzado)
             return;
+
+        // "Velocidad" se actualiza solo en el enemigo normal cuerpo a cuerpo.
+        // Así no exigimos ese parámetro a los Animator Controllers del tanque
+        // ni del enemigo tirador.
+        if (animator != null &&
+            ataqueTanque == null &&
+            ataqueDistancia == null &&
+            ataqueCuerpoACuerpo != null &&
+            agent != null &&
+            agent.enabled)
+        {
+            animator.SetFloat(VelocidadHash, agent.velocity.magnitude);
+        }
 
         switch (estadoActual)
         {
@@ -130,6 +179,7 @@ public class EnemyAI : NetworkBehaviour
         target = null;
         targetHealth = null;
         estadoActual = EstadoIA.Idle;
+        ReiniciarSeguimiento();
     }
 
     private void EstadoIdle()
@@ -141,7 +191,28 @@ public class EnemyAI : NetworkBehaviour
         FindTarget();
 
         if (TargetValido())
+        {
             estadoActual = EstadoIA.Perseguir;
+            ReiniciarSeguimiento();
+        }
+    }
+
+    private float ObtenerRangoAtaque()
+    {
+        if (ataqueTanque != null)
+            return ataqueTanque.DistanciaActivacion;
+
+        if (ataqueDistancia != null)
+            return ataqueDistancia.DistanciaActivacion;
+
+        return attackRange;
+    }
+    private float DistanciaHorizontal(Vector3 a, Vector3 b)
+    {
+        a.y = 0f;
+        b.y = 0f;
+
+        return Vector3.Distance(a, b);
     }
 
     private void EstadoPerseguir()
@@ -152,45 +223,134 @@ public class EnemyAI : NetworkBehaviour
             return;
         }
 
-        float distancia = Vector3.Distance(
-            transform.position,
-            target.position
-        );
+        float distancia = DistanciaHorizontal(
+    transform.position,
+    target.position
+);
 
-        // Cada tipo de enemigo utiliza su propio rango de ataque.
-        float rangoActual;
-
-        if (ataqueTanque != null)
-            rangoActual = ataqueTanque.DistanciaActivacion;
-        else if (ataqueDistancia != null)
-            rangoActual = ataqueDistancia.DistanciaActivacion;
-        else
-            rangoActual = attackRange;
-
-        if (distancia <= rangoActual)
+        if (distancia <= ObtenerRangoAtaque())
         {
-            if (agent.enabled)
-            {
-                if (agent.isOnNavMesh)
-                {
-                    agent.isStopped = true;
-                    agent.ResetPath();
-                }
-            }
-
+            DetenerNavegacion();
             estadoActual = EstadoIA.Atacar;
             EstadoAtacar();
             return;
         }
 
-        if (agent.enabled && agent.isOnNavMesh)
+        if (agent == null || !agent.enabled || !agent.isOnNavMesh)
+            return;
+
+        agent.stoppingDistance = stoppingDistance;
+        agent.isStopped = false;
+
+        ActualizarRutaSiHaceFalta();
+        ComprobarAtasco();
+        MirarAlObjetivo();
+    }
+
+    private void ActualizarRutaSiHaceFalta()
+    {
+        if (target == null || !agent.enabled || !agent.isOnNavMesh)
+            return;
+
+        bool objetivoSeMovio =
+            !rutaInicializada ||
+            Vector3.Distance(
+                target.position,
+                ultimaPosicionObjetivoRuta
+            ) >= movimientoMinimoObjetivo;
+
+        bool tocaActualizar =
+            Time.time >= proximaActualizacionRuta;
+
+        if (!objetivoSeMovio && !tocaActualizar)
+            return;
+
+        agent.SetDestination(target.position);
+
+        ultimaPosicionObjetivoRuta = target.position;
+        proximaActualizacionRuta =
+            Time.time + intervaloActualizacionRuta;
+
+        rutaInicializada = true;
+    }
+
+    private void ComprobarAtasco()
+    {
+        if (Time.time < proximaComprobacionAtasco)
+            return;
+
+        proximaComprobacionAtasco =
+            Time.time + intervaloComprobacionAtasco;
+
+        float avance = Vector3.Distance(
+            transform.position,
+            ultimaPosicionComprobada
+        );
+
+        ultimaPosicionComprobada = transform.position;
+
+        bool necesitaAvanzar =
+            !agent.pathPending &&
+            agent.hasPath &&
+            agent.remainingDistance >
+                agent.stoppingDistance + 0.5f;
+
+        bool noAvanza =
+            avance < distanciaMinimaAvance &&
+            agent.velocity.magnitude < velocidadMinimaMovimiento &&
+            agent.desiredVelocity.magnitude > velocidadMinimaMovimiento;
+
+        if (necesitaAvanzar && noAvanza)
         {
-            agent.isStopped = false;
-            agent.stoppingDistance = stoppingDistance;
-            agent.SetDestination(target.position);
+            tiempoAtascado += intervaloComprobacionAtasco;
+        }
+        else
+        {
+            tiempoAtascado = 0f;
         }
 
-        MirarAlObjetivo();
+        if (tiempoAtascado < tiempoParaConsiderarAtasco)
+            return;
+
+        // Recuperación: solicitar nuevamente la ruta al jugador.
+        tiempoAtascado = 0f;
+        rutaInicializada = false;
+
+        if (TargetValido() && agent.enabled && agent.isOnNavMesh)
+        {
+            agent.ResetPath();
+            agent.SetDestination(target.position);
+
+            ultimaPosicionObjetivoRuta = target.position;
+            proximaActualizacionRuta =
+                Time.time + intervaloActualizacionRuta;
+
+            rutaInicializada = true;
+        }
+    }
+
+    private void DetenerNavegacion()
+    {
+        if (agent == null || !agent.enabled || !agent.isOnNavMesh)
+            return;
+
+        agent.isStopped = true;
+        agent.ResetPath();
+
+        ReiniciarSeguimiento();
+    }
+
+    private void ReiniciarSeguimiento()
+    {
+        tiempoAtascado = 0f;
+        rutaInicializada = false;
+
+        proximaActualizacionRuta = 0f;
+        proximaComprobacionAtasco =
+            Time.time + intervaloComprobacionAtasco;
+
+        ultimaPosicionComprobada = transform.position;
+        ultimaPosicionObjetivoRuta = Vector3.zero;
     }
 
     private void EstadoAtacar()
@@ -204,24 +364,20 @@ public class EnemyAI : NetworkBehaviour
         // Enemigo tirador.
         if (ataqueDistancia != null)
         {
-            float distancia = Vector3.Distance(
-                transform.position,
-                target.position
-            );
+            float distancia = DistanciaHorizontal(
+    transform.position,
+    target.position
+);
 
             if (distancia > ataqueDistancia.DistanciaActivacion)
             {
                 ataqueDistancia.CancelarApuntado();
                 estadoActual = EstadoIA.Perseguir;
+                ReiniciarSeguimiento();
                 return;
             }
 
-            if (agent.enabled && agent.isOnNavMesh)
-            {
-                agent.isStopped = true;
-                agent.ResetPath();
-            }
-
+            DetenerNavegacion();
             MirarAlObjetivo();
             ataqueDistancia.IntentarDisparar(target);
             return;
@@ -241,6 +397,7 @@ public class EnemyAI : NetworkBehaviour
             if (distancia > ataqueTanque.DistanciaActivacion)
             {
                 estadoActual = EstadoIA.Perseguir;
+                ReiniciarSeguimiento();
                 return;
             }
 
@@ -263,15 +420,11 @@ public class EnemyAI : NetworkBehaviour
             if (distancia > attackRange)
             {
                 estadoActual = EstadoIA.Perseguir;
+                ReiniciarSeguimiento();
                 return;
             }
 
-            if (agent.enabled && agent.isOnNavMesh)
-            {
-                agent.isStopped = true;
-                agent.ResetPath();
-            }
-
+            DetenerNavegacion();
             MirarAlObjetivo();
             ataqueCuerpoACuerpo.Atacar(target);
         }
@@ -315,7 +468,9 @@ public class EnemyAI : NetworkBehaviour
         if (target == null)
             return;
 
-        Vector3 direccion = target.position - transform.position;
+        Vector3 direccion =
+            target.position - transform.position;
+
         direccion.y = 0f;
 
         if (direccion.sqrMagnitude > 0.001f)
