@@ -1,5 +1,6 @@
 using UnityEngine;
 
+// Va en el objeto "Golpe" (Image + CanvasGroup con Alpha 0).
 [RequireComponent(typeof(CanvasGroup))]
 public class HitEffect : MonoBehaviour
 {
@@ -8,18 +9,20 @@ public class HitEffect : MonoBehaviour
 
     CanvasGroup grupo;
     float tiempo;
+    float intensidadActual;
 
     void Awake()
     {
         grupo = GetComponent<CanvasGroup>();
         grupo.alpha = 0f;
-        tiempo = 0f;
     }
 
-    public void Mostrar()
+    // intensidad: 0 a 1 (1 = golpe fuerte)
+    public void Mostrar(float intensidad = 1f)
     {
+        intensidadActual = intensidadMaxima * Mathf.Clamp01(intensidad);
         tiempo = duracion;
-        grupo.alpha = intensidadMaxima;
+        grupo.alpha = intensidadActual;
     }
 
     void Update()
@@ -27,6 +30,6 @@ public class HitEffect : MonoBehaviour
         if (tiempo <= 0f) return;
 
         tiempo -= Time.unscaledDeltaTime;
-        grupo.alpha = Mathf.Lerp(0f, intensidadMaxima, tiempo / duracion);
+        grupo.alpha = Mathf.Lerp(0f, intensidadActual, Mathf.Max(0f, tiempo) / duracion);
     }
 }
