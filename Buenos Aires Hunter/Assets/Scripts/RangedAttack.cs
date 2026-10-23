@@ -1,6 +1,6 @@
-
 using UnityEngine;
 using Unity.Netcode;
+
 
 public class RangedAttack : NetworkBehaviour
 {
@@ -22,6 +22,7 @@ public class RangedAttack : NetworkBehaviour
                 }
             }
         }
+        animator = GetComponentInChildren<Animator>();
     }
     [SerializeField] private float distanciaActivacion = 20f;
     [SerializeField] private float tiempoApuntado = 0.7f;
@@ -30,6 +31,10 @@ public class RangedAttack : NetworkBehaviour
     private float tiempoFinApuntado;
     private float proximoDisparo;
     private bool apuntando;
+    private Animator animator;
+
+    private static readonly int AttackHash =
+        Animator.StringToHash("Attack");
 
     public float DistanciaActivacion => distanciaActivacion;
 
@@ -45,6 +50,10 @@ public class RangedAttack : NetworkBehaviour
         {
             apuntando = true;
             tiempoFinApuntado = Time.time + tiempoApuntado;
+
+            if (animator != null)
+                animator.SetTrigger(AttackHash);
+
             return;
         }
 
