@@ -156,6 +156,22 @@ public class Sprint2Tests
         );
     }
 
+    // Verifica la existencia de un EnemySpawner dentro de la escena, encargado de gestionar la aparición de enemigos.
+    [UnityTest]
+    public IEnumerator CP_ENEMY_01_EnemySpawnerDebeExistir()
+    {
+        yield return SceneManager.LoadSceneAsync("Extraccion1");
+
+        GameObject enemySpawner =
+            GameObject.Find("EnemySpawner");
+
+        Assert.IsNotNull(
+            enemySpawner,
+            "No se encontró EnemySpawner."
+        );
+    }
+
+
     // Verifica que EnemySpawner disponga de al menos un punto de aparición configurado para la generación de enemigos en la escena.
     [UnityTest]
     public IEnumerator CP_ENEMY_01_SpawnPointDebeExistir()
