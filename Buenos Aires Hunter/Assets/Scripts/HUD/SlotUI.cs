@@ -14,7 +14,7 @@ public class SlotUI : MonoBehaviour
     [Header("Icono")]
     [SerializeField] Image icono;
     [SerializeField] Color colorBloqueado = new Color(0.25f, 0.25f, 0.25f, 0.5f);
-
+    private Estado estado;
     public void SetEstado(Estado estado)
     {
         if (frameBloqueado != null) frameBloqueado.SetActive(estado == Estado.Bloqueado);
@@ -23,5 +23,11 @@ public class SlotUI : MonoBehaviour
 
         if (icono != null)
             icono.color = estado == Estado.Bloqueado ? colorBloqueado : Color.white;
+        this.estado = estado;
+    }
+
+    public Estado GetEstado()
+    {
+        return estado;
     }
 }

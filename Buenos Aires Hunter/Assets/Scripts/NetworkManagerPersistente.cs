@@ -36,7 +36,6 @@ public class NetworkManagerPersistente : MonoBehaviour
     // NUEVO: prefab de jugador configurado en el NetworkManager (se guarda al iniciar)
     private GameObject playerPrefabOriginal;
     public GameObject PlayerPrefabOriginal => playerPrefabOriginal;
-
     /// <summary>
     /// NUEVO. Llamar ANTES de StartHost. true: el host NO crea jugadores al conectarse; el modo de juego los crea
     /// cuando la escena de juego ya cargó en todos (evita mover jugadores entre escenas). false: comportamiento normal.
@@ -66,8 +65,22 @@ public class NetworkManagerPersistente : MonoBehaviour
 
         var nm = GetComponent<NetworkManager>();
         if (nm != null) playerPrefabOriginal = nm.NetworkConfig.PlayerPrefab;
-    }
 
+    }
+    private void AlCargarEscena(string sceneName, UnityEngine.SceneManagement.LoadSceneMode mode,
+        System.Collections.Generic.List<ulong> clientsCompleted, System.Collections.Generic.List<ulong> clientsTimedOut)
+    {
+        if (NetworkManager.Singleton.LocalClient == null) return;
+
+        var playerObject = NetworkManager.Singleton.LocalClient.PlayerObject;
+        if (playerObject == null) return;
+
+        var playerUI = playerObject.GetComponentInChildren<PlayerUI>(true);
+        if (playerUI != null && playerUI.hud != null)
+        {
+            playerUI.hud.SetActive(true);
+        }
+    }
     private async void Start()
     {
         // NUEVO: si Relay descarta la allocation (host cerrado, inactividad...), volver al menú en vez de quedar a medias
@@ -75,8 +88,18 @@ public class NetworkManagerPersistente : MonoBehaviour
             NetworkManager.Singleton.OnTransportFailure += AlFallarElTransporte;
 
         await InitializeServicesAsync();
-    }
+        StartCoroutine(SuscribirseACargaDeEscenaCuandoEsteListo());
 
+    }
+    private IEnumerator SuscribirseACargaDeEscenaCuandoEsteListo()
+    {
+        while (NetworkManager.Singleton == null || NetworkManager.Singleton.SceneManager == null)
+        {
+            yield return null;
+        }
+
+        NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += AlCargarEscena;
+    }
     /// <summary>
     /// NUEVO. Apaga la red, espera a que el apagado termine y recién entonces carga la escena
     /// con el SceneManager de Unity. Hacer Shutdown() justo después del LoadScene de red
