@@ -13,6 +13,7 @@ public class InputManager : NetworkBehaviour
     private PlayerInteract interactuar;
     private Health salud; // NUEVO (combate)
     private TiendaUI tiendaUI;
+    public PlayerUI playerUI;
     private PausaUI pausaUI;
 
     void Awake()
@@ -39,8 +40,8 @@ public class InputManager : NetworkBehaviour
         // para permitir fuego automático al mantener el botón.
         inventarioActions.Recargar.performed += ctx => inventario.Recargar();
 
-        inventarioActions.Apuntar.performed += ctx => inventario.SetApuntando(true);
-        inventarioActions.Apuntar.canceled += ctx => inventario.SetApuntando(false);
+        inventarioActions.Apuntar.performed += ctx => { inventario.SetApuntando(true); playerUI.apagarCrosshair(); };
+        inventarioActions.Apuntar.canceled += ctx => { inventario.SetApuntando(false); playerUI.activarCrosshair(); };
 
         inventarioActions.Items.performed += ctx =>
         {

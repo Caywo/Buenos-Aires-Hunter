@@ -4219,7 +4219,7 @@ RectTransform:
   m_Father: {fileID: 1174136679}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -10558,7 +10558,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &533700865
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20502,7 +20502,7 @@ RectTransform:
   m_Father: {fileID: 2059185142}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -40618,7 +40618,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1796833305
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -40658,14 +40658,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ace31ac1e06c33040a56107159f94885, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HudScript
+  hud: {fileID: 0}
   textoSaldo: {fileID: 43524183}
+  fondoSaldo: {fileID: 0}
   textoInteraccion: {fileID: 501531425}
-  barraVida: {fileID: 1875055714}
-  textoVida: {fileID: 1775628506}
+  barraDeVida: {fileID: 0}
   textoMunicion: {fileID: 2003946332}
+  fondoMunicion: {fileID: 0}
   textoRonda: {fileID: 0}
   hitMarker: {fileID: 1598173427}
   duracionHitMarker: 0.1
+  crosshair: {fileID: 0}
 --- !u!4 &1796833308
 Transform:
   m_ObjectHideFlags: 0
