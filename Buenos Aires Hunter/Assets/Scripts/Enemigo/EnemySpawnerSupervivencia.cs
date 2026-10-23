@@ -2,6 +2,7 @@ using UnityEngine;
 using Unity.Netcode;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 
 public class EnemySpawnerSupervivencia : NetworkBehaviour
 {
@@ -35,6 +36,9 @@ public class EnemySpawnerSupervivencia : NetworkBehaviour
 
     [Header("Recompensa")]
     [SerializeField] private int recompensaPorKill = 100;
+
+    [Header("UI")]
+    public TMP_Text textoRonda;
 
     public NetworkVariable<int> rondaActual = new NetworkVariable<int>(0,
         NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
@@ -82,8 +86,22 @@ public class EnemySpawnerSupervivencia : NetworkBehaviour
         {
             IniciarEsperaNuevaRonda();
         }
+        ActualizarRonda();
     }
 
+    private void ActualizarRonda()
+    {
+        if (textoRonda == null) return;
+            textoRonda.gameObject.SetActive(true);
+            if (tiempoRestante.Value > 0f)
+            {
+                textoRonda.text = "Próxima ronda en " + Mathf.CeilToInt(tiempoRestante.Value);
+            }
+            else
+            {
+                textoRonda.text = "Ronda " + rondaActual.Value;
+            }
+    }
     private void LimpiarEnemigosActuales()
     {
         for (int i = enemigosActuales.Count - 1; i >= 0; i--)

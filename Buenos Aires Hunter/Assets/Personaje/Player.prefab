@@ -1449,7 +1449,8 @@ MonoBehaviour:
   barraDeVida: {fileID: 3698832116236349461}
   textoMunicion: {fileID: 2539631993506248578}
   fondoMunicion: {fileID: 5307898940039771361}
-  textoRonda: {fileID: 0}
+  textoRonda: {fileID: 5908414482227808890}
+  textoContador: {fileID: 8789549109966612743}
   hitMarker: {fileID: 8330816283817818547}
   duracionHitMarker: 0.1
   crosshair: {fileID: 3429545734165454388}
@@ -1999,7 +2000,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1095980501
+  GlobalObjectIdHash: 131308231
   InScenePlacedSourceGlobalObjectIdHash: 0
   m_InScenePlacedDisabledByDefault: 0
   DeferredDespawnTick: 0
@@ -3578,13 +3579,13 @@ MonoBehaviour:
       - m_Target: {fileID: 8829739629924418889}
         m_TargetAssemblyTypeName: PausaUI, Assembly-CSharp
         m_MethodName: VolverAlMenu
-        m_Mode: 1
+        m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 
+          m_StringArgument: MenuPrincipal
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!1001 &5097746276558474230
@@ -3595,6 +3596,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5430290490509041616}
     m_Modifications:
+    - target: {fileID: 7147883222819679696, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7831238591258256438, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -3685,7 +3690,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 277380948045502063, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 256818846215423624, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
+    - {fileID: 4654511465481424168, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 7831238591258256438, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
       insertIndex: 2
@@ -3768,6 +3775,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1585599693190016446, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
   m_PrefabInstance: {fileID: 5097746276558474230}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5908414482227808890 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1675394655969132940, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
+  m_PrefabInstance: {fileID: 5097746276558474230}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!114 &7380516938762758389 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2364961789204210435, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
@@ -3784,3 +3802,14 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 3980163701012268960, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
   m_PrefabInstance: {fileID: 5097746276558474230}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8789549109966612743 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4558792235373535985, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
+  m_PrefabInstance: {fileID: 5097746276558474230}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI

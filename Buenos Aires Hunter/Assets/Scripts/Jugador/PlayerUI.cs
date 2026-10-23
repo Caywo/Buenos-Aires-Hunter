@@ -19,6 +19,7 @@ public class PlayerUI : MonoBehaviour
     public TMP_Text textoMunicion;
     public GameObject fondoMunicion;
     public TMP_Text textoRonda;
+    public TMP_Text textoContador;
     public GameObject hitMarker;
     public float duracionHitMarker = 0.1f;
     public GameObject crosshair;
@@ -29,7 +30,6 @@ public class PlayerUI : MonoBehaviour
     private float finHitMarker;
     private EnemySpawnerSupervivencia spawner;
     private bool avisoEmitido;
-   
 
     void Awake()
     {
@@ -46,7 +46,15 @@ public class PlayerUI : MonoBehaviour
         ActualizarSaldo();
         ActualizarVida();
         ActualizarMunicion();
-        ActualizarRonda();
+
+        if (spawner == null)
+        {
+            spawner = FindAnyObjectByType<EnemySpawnerSupervivencia>();
+            textoRonda.gameObject.SetActive(true);
+        }
+        else {
+            ActualizarRonda();
+        }
     }
 
     // NUEVO: cada componente se busca por separado y se avisa UNA vez si falta alguno
@@ -117,8 +125,6 @@ public class PlayerUI : MonoBehaviour
             textoMunicion.text = string.Empty;
             fondoMunicion.SetActive(municionActiva);
     }
-
-    // Ronda (modo supervivencia): sin cambios respecto a tu versión
     private void ActualizarRonda()
     {
         if (textoRonda == null) return;
@@ -130,10 +136,12 @@ public class PlayerUI : MonoBehaviour
             textoRonda.gameObject.SetActive(true);
             if (spawner.tiempoRestante.Value > 0f)
             {
-                textoRonda.text = "Próxima ronda en " + Mathf.CeilToInt(spawner.tiempoRestante.Value);
+                textoContador.gameObject.SetActive(true);
+                textoContador.text = "Próxima ronda en " + Mathf.CeilToInt(spawner.tiempoRestante.Value);
             }
             else
             {
+                textoContador.gameObject.SetActive(false);
                 textoRonda.text = "Ronda " + spawner.rondaActual.Value;
             }
         }
@@ -142,7 +150,6 @@ public class PlayerUI : MonoBehaviour
             textoRonda.gameObject.SetActive(false);
         }
     }
-
     private void MostrarHitMarker()
     {
         if (hitMarker == null) return;
