@@ -30387,6 +30387,9 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   enemyPrefab: {fileID: 1324170431698116061, guid: bc4a5e110b682754b882d65eb15df22e, type: 3}
   tankPrefab: {fileID: 1324170431698116061, guid: 1835945e47b39034e95e4b8f7056fadd, type: 3}
+  enemy3Prefab: {fileID: 3500235552399831248, guid: cd4716ff675374b4989829cd30ce08ab, type: 3}
+  primeraOleadaEnemigo3: 1
+  probabilidadEnemigo3: 0.25
   spawnPoints:
   - {fileID: 1668767639}
   - {fileID: 1152298788}

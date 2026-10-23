@@ -7,6 +7,22 @@ public class RangedAttack : NetworkBehaviour
     [Header("Disparo")]
     [SerializeField] private GameObject proyectilPrefab;
     [SerializeField] private Transform puntoDisparo;
+    private void Awake()
+    {
+        if (puntoDisparo == null)
+        {
+            Transform[] hijos = GetComponentsInChildren<Transform>(true);
+
+            foreach (Transform hijo in hijos)
+            {
+                if (hijo.name == "PuntoDisparo")
+                {
+                    puntoDisparo = hijo;
+                    break;
+                }
+            }
+        }
+    }
     [SerializeField] private float distanciaActivacion = 20f;
     [SerializeField] private float tiempoApuntado = 0.7f;
     [SerializeField] private float tiempoEntreDisparos = 2f;
