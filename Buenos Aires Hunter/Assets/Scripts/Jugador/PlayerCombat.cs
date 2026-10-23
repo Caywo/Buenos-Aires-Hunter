@@ -357,7 +357,10 @@ public class PlayerCombat : NetworkBehaviour
             {
                 Collider c = bufferLinea[i].collider;
                 if (c.transform.IsChildOf(transform)) continue; // uno mismo
-                if (ReferenceEquals(c.GetComponentInParent<IDamageable>(), objetivo)) continue; // el propio objetivo
+
+                // Cualquier otro ente dañable (otro enemigo, otro jugador) no bloquea el melee,
+                // solo lo bloquea el escenario (paredes, obstáculos sin IDamageable)
+                if (c.GetComponentInParent<IDamageable>() != null) continue;
 
                 Debug.Log($"[Melee] Golpe bloqueado por '{c.name}'");
                 objetivo = null;

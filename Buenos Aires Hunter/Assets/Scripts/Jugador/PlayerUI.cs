@@ -6,17 +6,22 @@ using UnityEngine.Assertions.Must;
 
 public class PlayerUI : MonoBehaviour
 {
+    [Header("HUD")]
+    public GameObject hud;
+
     [Header("Existentes")]
     public TMP_Text textoSaldo;
+    public GameObject fondoSaldo;
     public TMP_Text textoInteraccion;
 
-    [Header("Combate (todos opcionales)")]
-    public Slider barraVida;
-    public TMP_Text textoVida;
+    [Header("Combate")]
+    public Image barraDeVida;
     public TMP_Text textoMunicion;
+    public GameObject fondoMunicion;
     public TMP_Text textoRonda;
     public GameObject hitMarker;
     public float duracionHitMarker = 0.1f;
+    public GameObject crosshair;
 
     private PlayerInventory inventarioLocal;
     private PlayerCombat combateLocal;
@@ -24,7 +29,12 @@ public class PlayerUI : MonoBehaviour
     private float finHitMarker;
     private EnemySpawnerSupervivencia spawner;
     private bool avisoEmitido;
+   
 
+    void Awake()
+    {
+        if (hud != null) hud.SetActive(false);
+    }
     void Update()
     {
         if (hitMarker != null && hitMarker.activeSelf && Time.time >= finHitMarker)
@@ -69,13 +79,13 @@ public class PlayerUI : MonoBehaviour
         }
     }
 
-    // Saldo SUBE (como antes)
     private void ActualizarSaldo()
     {
         if (textoSaldo == null || inventarioLocal == null) return;
 
         bool mostrar = inventarioLocal.TieneSubeEquipada;
         textoSaldo.gameObject.SetActive(mostrar);
+        fondoSaldo.gameObject.SetActive(mostrar);
         if (mostrar)
             textoSaldo.text = $"$ {inventarioLocal.saldoSube.Value}";
     }
@@ -85,10 +95,10 @@ public class PlayerUI : MonoBehaviour
     {
         if (saludLocal == null) return;
 
-        if (barraVida != null)
-            barraVida.value = saludLocal.VidaMaxima > 0f ? saludLocal.VidaActual / saludLocal.VidaMaxima : 0f;
-        if (textoVida != null)
-            textoVida.text = Mathf.CeilToInt(saludLocal.VidaActual).ToString();
+        if (barraDeVida != null)
+        {
+            barraDeVida.fillAmount = saludLocal.VidaMaxima > 0f ? saludLocal.VidaActual / saludLocal.VidaMaxima : 0f;
+        }
     }
 
     // Munición
@@ -96,10 +106,16 @@ public class PlayerUI : MonoBehaviour
     {
         if (textoMunicion == null || combateLocal == null) return;
 
-        if (combateLocal.TryGetMunicionActiva(out int cargador, out int reserva))
+        bool municionActiva = combateLocal.TryGetMunicionActiva(out int cargador, out int reserva);
+        if (municionActiva)
+        {
+            fondoMunicion.SetActive(municionActiva);
             textoMunicion.text = combateLocal.Recargando ? "RECARGANDO..." : $"{cargador} / {reserva}";
+
+        }
         else
             textoMunicion.text = string.Empty;
+            fondoMunicion.SetActive(municionActiva);
     }
 
     // Ronda (modo supervivencia): sin cambios respecto a tu versión
@@ -145,4 +161,16 @@ public class PlayerUI : MonoBehaviour
         if (textoInteraccion != null)
             textoInteraccion.text = mensajeInteraccion;
     }
+
+    public void apagarCrosshair()
+    {
+        crosshair.SetActive(false);
+    }
+
+    public void activarCrosshair()
+    {
+        crosshair.SetActive(true);
+    }
 }
+
+

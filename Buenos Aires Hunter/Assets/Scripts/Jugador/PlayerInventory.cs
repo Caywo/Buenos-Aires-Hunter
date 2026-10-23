@@ -23,7 +23,6 @@ public class PlayerInventory : NetworkBehaviour
     private PlayerCombat combate;   // NUEVO (combate)
     private Health salud;           // NUEVO (combate)
     private Camera camaraJugador;
-
     // NUEVO (fix apuntado): pose base del weaponHolder y FOV de la cámara. Se guardan una sola vez
     // para restaurarlos al cambiar de ítem (si no, un arma nueva "hereda" la pose de apuntado).
     private Vector3 posBaseHolder;
@@ -42,6 +41,7 @@ public class PlayerInventory : NetworkBehaviour
     public event System.Action<WeaponShoot> OnArmaCambiada;
     private MeleeAttack melee;
     public bool inputBloqueado = false;
+    public GameObject[] slots;
 
     void Awake()
     {
@@ -55,7 +55,6 @@ public class PlayerInventory : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        // NUEVO (fix apuntado): capturar la pose base ANTES de equipar nada
         if (weaponHolder != null) posBaseHolder = weaponHolder.localPosition;
         if (camaraJugador != null) fovBase = camaraJugador.fieldOfView;
 
@@ -73,7 +72,7 @@ public class PlayerInventory : NetworkBehaviour
             int inicial;
             if (!items[i].item.arrancaDesbloqueado)
             {
-                inicial = 0; // bloqueado hasta comprarlo
+                inicial = 0;
             }
             else
             {
@@ -85,8 +84,23 @@ public class PlayerInventory : NetworkBehaviour
                 NetworkVariableWritePermission.Server);
         }
 
+        ActualizarEstadoInicialSlots();
+
         indiceActivo.OnValueChanged += (viejo, nuevo) => EquiparVisual(nuevo);
         EquiparVisual(indiceActivo.Value);
+    }
+
+    private void ActualizarEstadoInicialSlots()
+    {
+        if (slots == null) return;
+
+        for (int i = 0; i < slots.Length && i < cantidades.Length; i++)
+        {
+            var slotUI = slots[i] != null ? slots[i].GetComponent<SlotUI>() : null;
+            if (slotUI == null) continue;
+
+            slotUI.SetEstado(cantidades[i].Value == 0 ? SlotUI.Estado.Bloqueado : SlotUI.Estado.Desbloqueado);
+        }
     }
 
     public void Equipar(int indice)
@@ -115,27 +129,51 @@ public class PlayerInventory : NetworkBehaviour
         if (cantidades[indice].Value <= 0) return;
 
         cantidades[indice].Value--;
-        // Acá aplicás el efecto real (curar, tirar la granada, etc.)
+
+        if (data.prefabUso != null)
+        {
+            Vector3 posicion = transform.position + transform.forward * 1.5f;
+            GameObject instancia = Instantiate(data.prefabUso, posicion, Quaternion.identity);
+
+            NetworkObject netObj = instancia.GetComponent<NetworkObject>();
+            if (netObj != null)
+            {
+                netObj.Spawn();
+            }
+        }
+        if (cantidades[indice].Value <= 0 && indiceActivo.Value == indice)
+        {
+            indiceActivo.Value = -1;
+        }
     }
 
     private void EquiparVisual(int indice)
     {
         if (instanciaActual != null)
         {
-            instanciaActual.SetActive(false); // NUEVO (fix apuntado): que no vuelva a animar en este frame
+            instanciaActual.SetActive(false);
             Destroy(instanciaActual);
         }
         instanciaActual = null;
         weaponActual = null;
 
-        // NUEVO (fix apuntado): si estabas apuntando, el arma anterior dejó el holder y el FOV en la pose
-        // de apuntado. Se restauran ANTES de crear la nueva arma, que toma esos valores como su pose
-        // "de cadera". También cubre guardar el arma o pasar a un ítem sin arma (SUBE), donde nadie más
-        // restauraría el zoom.
         if (weaponHolder != null) weaponHolder.localPosition = posBaseHolder;
         if (IsOwner && camaraJugador != null) camaraJugador.fieldOfView = fovBase;
 
-        if (indice >= 0 && indice < items.Length) // si es -1: manos vacías
+        // Vuelve a "Desbloqueado" cualquier slot que haya quedado marcado como Seleccionado
+        if (slots != null)
+        {
+            foreach (var slotObj in slots)
+            {
+                var slotUI = slotObj != null ? slotObj.GetComponent<SlotUI>() : null;
+                if (slotUI != null && slotUI.GetEstado() == SlotUI.Estado.Seleccionado)
+                {
+                    slotUI.SetEstado(SlotUI.Estado.Desbloqueado);
+                }
+            }
+        }
+
+        if (indice >= 0 && indice < items.Length)
         {
             var data = items[indice].item;
             if (data != null && data.prefabEnMano != null)
@@ -145,13 +183,18 @@ public class PlayerInventory : NetworkBehaviour
 
                 if (weaponActual != null)
                 {
-                    // NUEVO (combate): 4º parámetro esLocal
                     weaponActual.Init(weaponHolder, mirar, camaraJugador, IsOwner);
                 }
             }
+
+            // Se marca "Seleccionado" sin importar si el ítem tiene prefabEnMano o no (ej: la SUBE)
+            if (slots != null && indice < slots.Length)
+            {
+                var slotUI = slots[indice] != null ? slots[indice].GetComponent<SlotUI>() : null;
+                slotUI?.SetEstado(SlotUI.Estado.Seleccionado);
+            }
         }
 
-        // NUEVO (combate): PlayerCombat se entera del cambio (cancela recargas en curso)
         OnArmaCambiada?.Invoke(weaponActual);
     }
 
@@ -168,7 +211,11 @@ public class PlayerInventory : NetworkBehaviour
         }
         else if (indiceActivo.Value == -1 && pulsacionNueva)
         {
-            melee.Atacar(); // manos vacías: un golpe por click
+            melee.Atacar();
+        }
+        else if (indiceActivo.Value >= 0 && items[indiceActivo.Value].item.esConsumible && pulsacionNueva)
+        {
+            UsarServerRpc(indiceActivo.Value);
         }
     }
 
@@ -275,6 +322,12 @@ public class PlayerInventory : NetworkBehaviour
         else
         {
             cantidades[indiceSlot].Value = -1;
+        }
+
+        if (slots != null && indiceSlot < slots.Length)
+        {
+            var slotUI = slots[indiceSlot] != null ? slots[indiceSlot].GetComponent<SlotUI>() : null;
+            slotUI?.SetEstado(SlotUI.Estado.Desbloqueado);
         }
     }
 

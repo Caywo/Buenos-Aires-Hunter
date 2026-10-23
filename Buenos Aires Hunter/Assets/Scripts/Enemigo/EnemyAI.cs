@@ -1,6 +1,7 @@
+using Unity.Netcode;
+using Unity.Netcode.Components;
 using UnityEngine;
 using UnityEngine.AI;
-using Unity.Netcode;
 
 [RequireComponent(typeof(Health))]
 public class EnemyAI : NetworkBehaviour
@@ -71,6 +72,7 @@ public class EnemyAI : NetworkBehaviour
         ataqueDistancia = GetComponent<RangedAttack>();
         knockback = GetComponent<EnemyKnockback>();
         animator = GetComponentInChildren<Animator>();
+
     }
 
     public override void OnNetworkSpawn()

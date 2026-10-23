@@ -133,8 +133,8 @@ MonoBehaviour:
   aimPoint: {fileID: 4659516080112646689}
   aimSpeed: 10
   aimFOV: 40
-  shootSound: {fileID: 0}
-  reloadSound: {fileID: 0}
+  shootSound: {fileID: 8300000, guid: de40e50035bc4064bae49a57df2b6478, type: 3}
+  reloadSound: {fileID: 8300000, guid: 1181931e5c032bd4d9075e280bd71028, type: 3}
 --- !u!4 &637152161879773368 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4519716788627816, guid: ee329c3cd08e58645834d20702d7f6c6, type: 3}

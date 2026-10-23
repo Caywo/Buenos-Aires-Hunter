@@ -20,6 +20,7 @@ public class MeleeAttack : MonoBehaviour
     private Camera playerCamera;
     private PlayerCombat combate;
     private float nextAttackTime = 0f;
+    private PlayerAudio playerAudio;
 
     /// <summary>Se dispara en el dueño al lanzar un golpe. Ideal para enganchar animación y sonido.</summary>
     public event Action OnGolpe;
@@ -27,6 +28,9 @@ public class MeleeAttack : MonoBehaviour
     void Awake()
     {
         combate = GetComponent<PlayerCombat>();
+        playerAudio = GetComponent<PlayerAudio>();
+
+        OnGolpe += playerAudio.PlayPunch;
     }
 
     public void Init(Camera playerCamera)
@@ -37,6 +41,8 @@ public class MeleeAttack : MonoBehaviour
     /// <summary>Lo llama PlayerInventory (solo dueño) cuando hacés click con las manos vacías.</summary>
     public void Atacar()
     {
+        Debug.Log($"[Melee] Atacar() llamado. Time.time={Time.time}, nextAttackTime={nextAttackTime}");
+
         if (Time.time < nextAttackTime) return;
         if (playerCamera == null || combate == null)
         {
