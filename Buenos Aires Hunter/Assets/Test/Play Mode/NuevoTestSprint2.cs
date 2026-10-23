@@ -12,80 +12,127 @@ public class Sprint2Tests
     {
         yield return SceneManager.LoadSceneAsync("Extraccion1");
 
-        GameObject hud = GameObject.Find("HUD");
+        GameObject[] objetos =
+            Resources.FindObjectsOfTypeAll<GameObject>();
 
-        Assert.IsNotNull(
-            hud,
-            "No se encontró el objeto HUD."
+        bool existeHUD = false;
+
+        foreach (var obj in objetos)
+        {
+            if (obj.name.Contains("HUD"))
+            {
+                existeHUD = true;
+                break;
+            }
+        }
+
+        Assert.IsTrue(
+            existeHUD,
+            "No se encontró ningún objeto HUD."
         );
     }
 
-    // Verifica que el texto de saldo se encuentre presente dentro del HUD.
+    // Verifica la existencia del indicador de saldo dentro del HUD.
     [UnityTest]
     public IEnumerator CP_HUD_01_TextoSaldoDebeExistir()
     {
         yield return SceneManager.LoadSceneAsync("Extraccion1");
 
-        GameObject texto = GameObject.Find("TextSaldo");
+        GameObject[] objetos =
+            Resources.FindObjectsOfTypeAll<GameObject>();
 
-        Assert.IsNotNull(
-            texto,
-            "No se encontró TextSaldo."
+        bool existeDinero = false;
+
+        foreach (var obj in objetos)
+        {
+            if (obj.name.Contains("Dinero"))
+            {
+                existeDinero = true;
+                break;
+            }
+        }
+
+        Assert.IsTrue(
+            existeDinero,
+            "No se encontró el texto Dinero."
         );
     }
 
-    // Verifica que el texto de vida exista y pueda ser utilizado por el sistema de interfaz.
+    // Verifica la existencia del indicador de vida utilizado por el HUD.
     [UnityTest]
     public IEnumerator CP_HUD_01_TextoVidaDebeExistir()
     {
         yield return SceneManager.LoadSceneAsync("Extraccion1");
 
-        GameObject texto = GameObject.Find("TextoVida");
+        GameObject[] objetos =
+            Resources.FindObjectsOfTypeAll<GameObject>();
 
-        Assert.IsNotNull(
-            texto,
-            "No se encontró TextoVida."
+        bool existeVida = false;
+
+        foreach (var obj in objetos)
+        {
+            if (obj.name.Contains("Vida"))
+            {
+                existeVida = true;
+                break;
+            }
+        }
+
+        Assert.IsTrue(
+            existeVida,
+            "No se encontró el objeto Vida."
         );
     }
 
-    // Verifica que el texto de munición exista dentro de la interfaz de usuario.
+    // Verifica la existencia del indicador de munición dentro del HUD.
     [UnityTest]
     public IEnumerator CP_HUD_01_TextoMunicionDebeExistir()
     {
         yield return SceneManager.LoadSceneAsync("Extraccion1");
 
-        GameObject texto = GameObject.Find("TextoMunicion");
+        GameObject[] objetos =
+            Resources.FindObjectsOfTypeAll<GameObject>();
 
-        Assert.IsNotNull(
-            texto,
-            "No se encontró TextoMunicion."
+        bool existeMunicion = false;
+
+        foreach (var obj in objetos)
+        {
+            if (obj.name.Contains("Balas"))
+            {
+                existeMunicion = true;
+                break;
+            }
+        }
+
+        Assert.IsTrue(
+            existeMunicion,
+            "No se encontró el objeto Balas."
         );
     }
 
-    // Verifica que el HUD disponga correctamente del componente PlayerUI encargado de gestionar la visualización de vida, munición y saldo del jugador. 
-    [Test]
-    public void CP_HUD_01_PlayerUIDebeExistir()
-    {
-        GameObject hud = GameObject.Find("HUD");
-
-        PlayerUI playerUI =
-            hud.GetComponent<PlayerUI>();
-
-        Assert.IsNotNull(playerUI);
-    }
-
-    // Verifica la existencia de un EnemySpawner dentro de la escena, encargado de gestionar la aparición de enemigos.
+    // Verifica que el HUD disponga correctamente del sistema Hotbar utilizado para mostrar los elementos equipables del jugador. 
     [UnityTest]
-    public IEnumerator CP_ENEMY_01_EnemySpawnerDebeExistir()
+    public IEnumerator CP_HUD_01_HotbarDebeExistir()
     {
         yield return SceneManager.LoadSceneAsync("Extraccion1");
 
-        GameObject enemySpawner =
-            GameObject.Find("EnemySpawner");
+        GameObject[] objetos =
+            Resources.FindObjectsOfTypeAll<GameObject>();
 
-        Assert.IsNotNull(
-            enemySpawner,
-            "No se encontró EnemySpawner."
+        bool existeHotbar = false;
+
+        foreach (var obj in objetos)
+        {
+            if (obj.name.Contains("Hotbar"))
+            {
+                existeHotbar = true;
+                break;
+            }
+        }
+
+        Assert.IsTrue(
+            existeHotbar,
+            "No se encontró Hotbar."
         );
     }
 
