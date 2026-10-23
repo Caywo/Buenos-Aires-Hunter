@@ -4090,6 +4090,7 @@ MonoBehaviour:
   maxTanquesVivos: 1
   distanciaMinimaJugador: 15
   recompensaPorKill: 100
+  textoRonda: {fileID: 0}
   rondaActual:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0
@@ -38741,6 +38742,7 @@ MonoBehaviour:
   textoMunicion: {fileID: 914711817}
   fondoMunicion: {fileID: 0}
   textoRonda: {fileID: 1515152010}
+  textoContador: {fileID: 0}
   hitMarker: {fileID: 1429942675}
   duracionHitMarker: 0.1
   crosshair: {fileID: 0}

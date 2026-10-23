@@ -103,45 +103,24 @@ public class PausaUI : MonoBehaviour
 
         Cursor.visible = visible;
     }
-
-    public void VolverAlMenu()
+    public void VolverAlMenu(string escenaMenu)
     {
-        if (volviendoAlMenu)
-            return;
-
+        if (volviendoAlMenu) return;
         volviendoAlMenu = true;
-        pausaAbierta = false;
 
-        BloquearControles(true);
+        var spawner = FindAnyObjectByType<EnemySpawner>();
+        if (spawner != null) spawner.enabled = false;
 
-        if (panelPausa != null)
-            panelPausa.SetActive(false);
+        var spawnerSupervivencia = FindAnyObjectByType<EnemySpawnerSupervivencia>();
+        if (spawnerSupervivencia != null) spawnerSupervivencia.enabled = false;
 
-        ActualizarCursor(true);
 
-        StartCoroutine(DesconectarYVolver());
-    }
+        Debug.Log("[VolverAlMenu] Cargando escena: " + escenaMenu);
+        SceneManager.LoadScene(escenaMenu, LoadSceneMode.Single);
 
-    private IEnumerator DesconectarYVolver()
-    {
         NetworkManager nm = NetworkManager.Singleton;
+        if (nm != null) nm.Shutdown();
 
-        if (nm != null && nm.IsListening)
-        {
-            nm.Shutdown();
-
-            float tiempoEspera = 0f;
-
-            while (nm != null && nm.IsListening && tiempoEspera < 5f)
-            {
-                tiempoEspera += Time.unscaledDeltaTime;
-                yield return null;
-            }
-
-            // Dejar que Netcode procese el apagado.
-            yield return null;
-        }
-
-        SceneManager.LoadScene(escenaMenuPrincipal);
+        volviendoAlMenu = false;
     }
 }

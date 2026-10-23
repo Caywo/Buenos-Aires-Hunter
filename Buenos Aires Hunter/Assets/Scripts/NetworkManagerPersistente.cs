@@ -88,8 +88,12 @@ public class NetworkManagerPersistente : MonoBehaviour
             NetworkManager.Singleton.OnTransportFailure += AlFallarElTransporte;
 
         await InitializeServicesAsync();
-        StartCoroutine(SuscribirseACargaDeEscenaCuandoEsteListo());
+        SuscribirseACargaDeEscena();
 
+    }
+    public void SuscribirseACargaDeEscena()
+    {
+        StartCoroutine(SuscribirseACargaDeEscenaCuandoEsteListo());
     }
     private IEnumerator SuscribirseACargaDeEscenaCuandoEsteListo()
     {
@@ -97,7 +101,7 @@ public class NetworkManagerPersistente : MonoBehaviour
         {
             yield return null;
         }
-
+        NetworkManager.Singleton.SceneManager.OnLoadEventCompleted -= AlCargarEscena;
         NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += AlCargarEscena;
     }
     /// <summary>
@@ -197,6 +201,8 @@ public class NetworkManagerPersistente : MonoBehaviour
             RelayServerData relayServerData = allocation.ToRelayServerData(connectionType);
             transport.SetRelayServerData(relayServerData);
 
+            SuscribirseACargaDeEscena();
+
             bool started = NetworkManager.Singleton.StartHost();
             if (!started)
             {
@@ -239,6 +245,8 @@ public class NetworkManagerPersistente : MonoBehaviour
 
             RelayServerData relayServerData = joinAllocation.ToRelayServerData(connectionType);
             transport.SetRelayServerData(relayServerData);
+
+            SuscribirseACargaDeEscena();
 
             bool started = NetworkManager.Singleton.StartClient();
             if (!started)

@@ -72,18 +72,15 @@ public class MenuPrincipal : MonoBehaviour
         var modo = ObtenerModoActual();
         if (modo == null) return;
 
-        UnityTransport transport =
-            NetworkManager.Singleton.GetComponent<UnityTransport>();
-
+        UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
         transport.SetConnectionData("127.0.0.1", 7777);
 
         NetworkManagerPersistente.Instance.ConfigurarSpawnDeJugadores(false);
+        NetworkManagerPersistente.Instance.SuscribirseACargaDeEscena(); // agregado
+
         NetworkManager.Singleton.StartHost();
 
-        NetworkManager.Singleton.SceneManager.LoadScene(
-            modo.escenaDeJuego,
-            LoadSceneMode.Single
-        );
+        NetworkManager.Singleton.SceneManager.LoadScene(modo.escenaDeJuego, LoadSceneMode.Single);
     }
 
     public async void CrearPartida()
@@ -133,6 +130,8 @@ public class MenuPrincipal : MonoBehaviour
         transport.SetConnectionData("127.0.0.1", 7777);
 
         NetworkManagerPersistente.Instance.ConfigurarSpawnDeJugadores(false);
+        NetworkManagerPersistente.Instance.SuscribirseACargaDeEscena();
+
         NetworkManager.Singleton.StartHost();
 
         NetworkManager.Singleton.SceneManager.LoadScene(
