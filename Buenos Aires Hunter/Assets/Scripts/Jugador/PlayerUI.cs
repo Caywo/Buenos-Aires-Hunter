@@ -24,19 +24,40 @@ public class PlayerUI : MonoBehaviour
     public float duracionHitMarker = 0.1f;
     public GameObject crosshair;
 
+    [Header("Modo duelo")]
+    [Tooltip("Elementos del HUD que NO aplican al duelo (ej: slots de la SUBE y del Wachin en la hotbar). " +
+             "Solo se ocultan cuando empieza un duelo; en los demás modos no se tocan.")]
+    public GameObject[] ocultarEnDuelo;
+
     private PlayerInventory inventarioLocal;
     private PlayerCombat combateLocal;
     private Health saludLocal;
     private float finHitMarker;
     private EnemySpawnerSupervivencia spawner;
     private bool avisoEmitido;
+    private NetworkObject duenio; // jugador al que pertenece este HUD (el HUD vive dentro del prefab del jugador)
+    private bool hudMostrado;
+    private float proximaBusquedaSpawner;
 
     void Awake()
     {
+        duenio = GetComponentInParent<NetworkObject>();
         if (hud != null) hud.SetActive(false);
     }
     void Update()
     {
+        // El HUD vive dentro del prefab del jugador, así que cada jugador tiene una copia.
+        // Solo la del jugador LOCAL se muestra y se actualiza; las de los jugadores remotos se apagan.
+        if (duenio != null)
+        {
+            if (!duenio.IsSpawned) return;   // todavía no se creó en red
+            if (!duenio.IsOwner)
+            {
+                enabled = false;
+                return;
+            }
+        }
+
         if (hitMarker != null && hitMarker.activeSelf && Time.time >= finHitMarker)
             hitMarker.SetActive(false);
 
@@ -49,10 +70,18 @@ public class PlayerUI : MonoBehaviour
 
         if (spawner == null)
         {
-            spawner = FindAnyObjectByType<EnemySpawnerSupervivencia>();
-            textoRonda.gameObject.SetActive(true);
+            // Solo existe en supervivencia: buscarlo una vez por segundo, no en cada frame
+            if (Time.time >= proximaBusquedaSpawner)
+            {
+                spawner = FindAnyObjectByType<EnemySpawnerSupervivencia>();
+                proximaBusquedaSpawner = Time.time + 1f;
+            }
+
+            if (textoRonda != null && !textoRonda.gameObject.activeSelf)
+                textoRonda.gameObject.SetActive(true);
         }
-        else {
+        else
+        {
             ActualizarRonda();
         }
     }
@@ -63,10 +92,22 @@ public class PlayerUI : MonoBehaviour
         if (inventarioLocal != null && saludLocal != null && combateLocal != null) return;
 
         if (NetworkManager.Singleton == null || !NetworkManager.Singleton.IsListening) return;
-        if (NetworkManager.Singleton.LocalClient == null) return;
 
-        var playerObject = NetworkManager.Singleton.LocalClient.PlayerObject;
+        NetworkObject playerObject = duenio;
+        if (playerObject == null)
+        {
+            // HUD puesto en la escena (no dentro del jugador): buscar al jugador local
+            if (NetworkManager.Singleton.LocalClient == null) return;
+            playerObject = NetworkManager.Singleton.LocalClient.PlayerObject;
+        }
         if (playerObject == null) return;
+
+        // Awake oculta el HUD: se muestra una vez que existe el jugador local
+        if (!hudMostrado && hud != null)
+        {
+            hud.SetActive(true);
+            hudMostrado = true;
+        }
 
         if (inventarioLocal == null) inventarioLocal = playerObject.GetComponent<PlayerInventory>();
         if (saludLocal == null) saludLocal = playerObject.GetComponent<Health>();
@@ -93,7 +134,7 @@ public class PlayerUI : MonoBehaviour
 
         bool mostrar = inventarioLocal.TieneSubeEquipada;
         textoSaldo.gameObject.SetActive(mostrar);
-        fondoSaldo.gameObject.SetActive(mostrar);
+        if (fondoSaldo != null) fondoSaldo.SetActive(mostrar);
         if (mostrar)
             textoSaldo.text = $"$ {inventarioLocal.saldoSube.Value}";
     }
@@ -115,16 +156,15 @@ public class PlayerUI : MonoBehaviour
         if (textoMunicion == null || combateLocal == null) return;
 
         bool municionActiva = combateLocal.TryGetMunicionActiva(out int cargador, out int reserva);
-        if (municionActiva)
-        {
-            fondoMunicion.SetActive(municionActiva);
-            textoMunicion.text = combateLocal.Recargando ? "RECARGANDO..." : $"{cargador} / {reserva}";
 
-        }
+        if (municionActiva)
+            textoMunicion.text = combateLocal.Recargando ? "RECARGANDO..." : $"{cargador} / {reserva}";
         else
             textoMunicion.text = string.Empty;
-            fondoMunicion.SetActive(municionActiva);
+
+        if (fondoMunicion != null) fondoMunicion.SetActive(municionActiva);
     }
+
     private void ActualizarRonda()
     {
         if (textoRonda == null) return;
@@ -136,12 +176,15 @@ public class PlayerUI : MonoBehaviour
             textoRonda.gameObject.SetActive(true);
             if (spawner.tiempoRestante.Value > 0f)
             {
-                textoContador.gameObject.SetActive(true);
-                textoContador.text = "Próxima ronda en " + Mathf.CeilToInt(spawner.tiempoRestante.Value);
+                if (textoContador != null)
+                {
+                    textoContador.gameObject.SetActive(true);
+                    textoContador.text = "Próxima ronda en " + Mathf.CeilToInt(spawner.tiempoRestante.Value);
+                }
             }
             else
             {
-                textoContador.gameObject.SetActive(false);
+                if (textoContador != null) textoContador.gameObject.SetActive(false);
                 textoRonda.text = "Ronda " + spawner.rondaActual.Value;
             }
         }
@@ -169,14 +212,25 @@ public class PlayerUI : MonoBehaviour
             textoInteraccion.text = mensajeInteraccion;
     }
 
+    /// <summary>Oculta los elementos que no aplican al duelo. Lo llama DuelManager en el jugador local.</summary>
+    public void ConfigurarModoDuelo()
+    {
+        if (ocultarEnDuelo == null) return;
+
+        foreach (GameObject elemento in ocultarEnDuelo)
+        {
+            if (elemento != null) elemento.SetActive(false);
+        }
+    }
+
     public void apagarCrosshair()
     {
-        crosshair.SetActive(false);
+        if (crosshair != null) crosshair.SetActive(false);
     }
 
     public void activarCrosshair()
     {
-        crosshair.SetActive(true);
+        if (crosshair != null) crosshair.SetActive(true);
     }
 }
 
