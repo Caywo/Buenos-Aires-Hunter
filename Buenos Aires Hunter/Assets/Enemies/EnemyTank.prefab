@@ -320,6 +320,12 @@ MonoBehaviour:
   stoppingDistance: 0
   attackRange: 10
   intervaloBusqueda: 0.5
+  intervaloActualizacionRuta: 0.35
+  movimientoMinimoObjetivo: 0.75
+  intervaloComprobacionAtasco: 0.5
+  tiempoParaConsiderarAtasco: 1.5
+  velocidadMinimaMovimiento: 0.15
+  distanciaMinimaAvance: 0.1
 --- !u!114 &-4515127777169364866
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -334,7 +340,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TankAttack
   ShowTopMostFoldoutHeaderGroup: 1
   distanciaActivacion: 10
-  tiempoPreparacion: 0.7
+  tiempoPreparacion: 1.2
   velocidadEmbestida: 10
   radioImpacto: 1.2
   distanciaDeteccionObstaculo: 0.8
@@ -382,13 +388,41 @@ MonoBehaviour:
   - IsCrossFadeExit: 0
     Layer: 0
     OriginatingState: -1919845803
-    DestinationState: 1080829965
+    DestinationState: 646380074
     TransitionDuration: 0.25
-    TriggerNameHash: -627677271
+    TriggerNameHash: 646380074
     TransitionIndex: 0
   - IsCrossFadeExit: 0
     Layer: 0
     OriginatingState: -1919845803
+    DestinationState: -161963885
+    TransitionDuration: 0.25
+    TriggerNameHash: -627677271
+    TransitionIndex: 1
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 1080829965
+    DestinationState: 646380074
+    TransitionDuration: 0.25
+    TriggerNameHash: 646380074
+    TransitionIndex: 0
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 1080829965
+    DestinationState: -193210735
+    TransitionDuration: 0.25
+    TriggerNameHash: -928376645
+    TransitionIndex: 1
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -193210735
+    DestinationState: 646380074
+    TransitionDuration: 0.25
+    TriggerNameHash: 646380074
+    TransitionIndex: 1
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -161963885
     DestinationState: 646380074
     TransitionDuration: 0.25
     TriggerNameHash: 646380074
@@ -407,6 +441,10 @@ MonoBehaviour:
       NameHash: 1227042640
       Synchronize: 1
       ParameterType: 4
+    - name: Choque
+      NameHash: -928376645
+      Synchronize: 1
+      ParameterType: 9
   AnimatorParametersExpanded: 0
 --- !u!136 &2545165011792053643
 CapsuleCollider:
