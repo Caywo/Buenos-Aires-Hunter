@@ -208,7 +208,6 @@ GameObject:
   - component: {fileID: -4515127777169364866}
   - component: {fileID: 4748220991439468640}
   - component: {fileID: -3704969153709723923}
-  - component: {fileID: 2545165011792053643}
   - component: {fileID: -1153060902703492327}
   m_Layer: 7
   m_Name: EnemyTank
@@ -234,8 +233,8 @@ Transform:
   - {fileID: 1858533900929723901}
   - {fileID: 1889444531744017346}
   - {fileID: 8933306317950060853}
-  - {fileID: 2621435352973406984}
   - {fileID: 7579090096552548615}
+  - {fileID: 2621435352973406984}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4036833418959277550
@@ -408,20 +407,6 @@ MonoBehaviour:
     TransitionIndex: 0
   - IsCrossFadeExit: 0
     Layer: 0
-    OriginatingState: 1080829965
-    DestinationState: -193210735
-    TransitionDuration: 0.25
-    TriggerNameHash: -928376645
-    TransitionIndex: 1
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: -193210735
-    DestinationState: 646380074
-    TransitionDuration: 0.25
-    TriggerNameHash: 646380074
-    TransitionIndex: 1
-  - IsCrossFadeExit: 0
-    Layer: 0
     OriginatingState: -161963885
     DestinationState: 646380074
     TransitionDuration: 0.25
@@ -446,29 +431,6 @@ MonoBehaviour:
       Synchronize: 1
       ParameterType: 9
   AnimatorParametersExpanded: 0
---- !u!136 &2545165011792053643
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1324170431698116061}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 1
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &-1153060902703492327
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1175,7 +1137,7 @@ Transform:
   m_GameObject: {fileID: 3351409891045440190}
   serializedVersion: 2
   m_LocalRotation: {x: -0.008750716, y: 0.0015919898, z: 0.010849352, w: 0.9999016}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

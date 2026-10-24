@@ -30434,7 +30434,7 @@ MonoBehaviour:
   enemigosExtraPorOleada: 1
   tiempoEntreOleadas: 5
   maxEnemigosVivos: 4
-  primeraOleadaTanque: 4
+  primeraOleadaTanque: 1
   maxTanquesVivos: 1
   distanciaMinimaJugador: 15
   recompensaPorKill: 100
@@ -48984,8 +48984,10 @@ MonoBehaviour:
   textoMunicion: {fileID: 2127004652}
   fondoMunicion: {fileID: 2127004654}
   textoRonda: {fileID: 0}
+  textoContador: {fileID: 0}
   hitMarker: {fileID: 41365239}
   duracionHitMarker: 0.1
+  crosshair: {fileID: 0}
 --- !u!114 &1799899434
 MonoBehaviour:
   m_ObjectHideFlags: 0
