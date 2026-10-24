@@ -193,6 +193,171 @@ public class Sprint3Tests
         );
     }
 
+    // Verifica la existencia del DuelManager encargado de controlar las rondas y la lógica del modo Duelo.
+    [UnityTest]
+    public IEnumerator CP_DUEL_01_DuelManagerDebeExistir()
+    {
+        yield return SceneManager.LoadSceneAsync("Duelo");
+
+        GameObject duelManager =
+            GameObject.Find("DuelManager");
+
+        Assert.IsNotNull(
+            duelManager,
+            "No se encontró DuelManager."
+        );
+    }
+
+    // Verifica la existencia del punto de aparición correspondiente al jugador 1 en el modo Duelo.
+    [UnityTest]
+    public IEnumerator CP_DUEL_01_SpawnDuelo1DebeExistir()
+    {
+        yield return SceneManager.LoadSceneAsync("Duelo");
+
+        GameObject spawn =
+            GameObject.Find("Spawn_Duelo_1");
+
+        Assert.IsNotNull(
+            spawn,
+            "No se encontró Spawn_Duelo_1."
+        );
+    }
+
+    // Verifica la existencia del punto de aparición correspondiente al jugador 2 en el modo Duelo.
+    [UnityTest]
+    public IEnumerator CP_DUEL_01_SpawnDuelo2DebeExistir()
+    {
+        yield return SceneManager.LoadSceneAsync("Duelo");
+
+        GameObject spawn =
+            GameObject.Find("Spawn_Duelo_2");
+
+        Assert.IsNotNull(
+            spawn,
+            "No se encontró Spawn_Duelo_2."
+        );
+    }
+
+    // Verifica que la escena Duelo disponga de un Canvas para mostrar la información de la partida.
+    [UnityTest]
+    public IEnumerator CP_DUEL_01_CanvasDueloDebeExistir()
+    {
+        yield return SceneManager.LoadSceneAsync("Duelo");
+
+        GameObject canvas =
+            GameObject.Find("Canvas");
+
+        Assert.IsNotNull(
+            canvas,
+            "No se encontró Canvas en la escena Duelo."
+        );
+    }
+
+    // Verifica que la escena Duelo disponga del sistema HUD utilizado durante la partida.
+    [UnityTest]
+    public IEnumerator CP_DUEL_01_HUDDebeExistir()
+    {
+        yield return SceneManager.LoadSceneAsync("Duelo");
+
+        GameObject hud =
+            GameObject.Find("HUD");
+
+        Assert.IsNotNull(
+            hud,
+            "No se encontró HUD en la escena Duelo."
+        );
+    }
+    // Verifica que la escena Supervivencia disponga de un EventSystem para gestionar la interfaz de usuario.
+    [UnityTest]
+    public IEnumerator CP_SURV_01_EventSystemDebeExistir()
+    {
+        yield return SceneManager.LoadSceneAsync("Supervivencia");
+
+        GameObject eventSystem =
+            GameObject.Find("EventSystem");
+
+        Assert.IsNotNull(
+            eventSystem,
+            "No se encontró EventSystem."
+        );
+    }
+
+    // Verifica que la escena Supervivencia disponga de un HUD para mostrar la información del jugador.
+    [UnityTest]
+    public IEnumerator CP_SURV_01_HUDDebeExistir()
+    {
+        yield return SceneManager.LoadSceneAsync("Supervivencia");
+
+        GameObject[] objetos =
+            Resources.FindObjectsOfTypeAll<GameObject>();
+
+        bool existeHUD = false;
+
+        foreach (var obj in objetos)
+        {
+            if (obj.name.Contains("HUD"))
+            {
+                existeHUD = true;
+                break;
+            }
+        }
+
+        Assert.IsTrue(
+            existeHUD,
+            "No se encontró ningún objeto HUD."
+        );
+    }
+
+    // Verifica que el NPC Horacio se encuentre presente en la escena Supervivencia.
+    [UnityTest]
+    public IEnumerator CP_SURV_01_HoracioDebeExistir()
+    {
+        yield return SceneManager.LoadSceneAsync("Supervivencia");
+
+        GameObject horacio =
+            GameObject.Find("Horacio");
+
+        Assert.IsNotNull(
+            horacio,
+            "No se encontró Horacio."
+        );
+    }
+
+    // Verifica que el NPC Horacio disponga del componente Tienda para permitir la interacción comercial.
+    [UnityTest]
+    public IEnumerator CP_SURV_01_HoracioDebeTenerComponenteTienda()
+    {
+        yield return SceneManager.LoadSceneAsync("Supervivencia");
+
+        GameObject horacio =
+            GameObject.Find("Horacio");
+
+        Assert.IsNotNull(horacio);
+
+        Tienda tienda =
+            horacio.GetComponent<Tienda>();
+
+        Assert.IsNotNull(
+            tienda,
+            "Horacio no posee componente Tienda."
+        );
+    }
+
+    // Verifica que la escena Supervivencia disponga del sistema de generación de enemigos.
+    [UnityTest]
+    public IEnumerator CP_SURV_01_EnemySpawnerSupervivenciaDebeExistirComoObjeto()
+    {
+        yield return SceneManager.LoadSceneAsync("Supervivencia");
+
+        GameObject enemySpawner =
+            GameObject.Find("EnemySpawnerSupervivencia");
+
+        Assert.IsNotNull(
+            enemySpawner,
+            "No se encontró EnemySpawnerSupervivencia."
+        );
+    }
+
 
 
 }
