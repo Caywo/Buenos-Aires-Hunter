@@ -2,15 +2,11 @@
 
 **Desarrollado por Conurbano Studios**
 
----
-
 ## Descripción General
 
 **Buenos Aires Hunter** es un shooter en primera persona del género _Boomer Shooter_, inspirado en **DOOM** y **ULTRAKILL**, pero ambientado en un Buenos Aires urbano y reconocible.
 
 La propuesta es un combate rápido, vertical y frenético: hordas de demonios, recursos que se gestionan en movimiento y objetivos claros en cada partida. Las mecánicas clásicas del género se combinan con una identidad propia y con tres modos de juego que amplían la rejugabilidad.
-
----
 
 ## Modos de Juego
 
@@ -31,8 +27,6 @@ Una prueba de resistencia basada en **oleadas progresivas**. Los jugadores enfre
 
 Una modalidad competitiva **1 vs 1 en línea** donde la velocidad de movimiento, la puntería y el dominio del arsenal definen al ganador. Se juega sin tienda ni demonios: solo vos, tu rival y la arena.
 
----
-
 ## Sistema de Tienda y Aliados
 
 En los modos **Extracción** y **Supervivencia** hay un punto de abastecimiento para mejorar las chances de éxito:
@@ -40,13 +34,9 @@ En los modos **Extracción** y **Supervivencia** hay un punto de abastecimiento 
 - **El Negocio de Horacio:** Horacio es el mercader principal del juego. En su puesto, los jugadores gastan los recursos obtenidos durante la partida para comprar armamento nuevo y desbloquear mejoras de estadísticas y equipamiento.
 - **Wachín:** En el negocio de Horacio se puede reclutar a **Wachín**, un ayudante que asiste al jugador en combate. Es un aliado **kamikaze**: cada invocación tiene un único uso, ya que se inmola contra los enemigos y causa daño explosivo. Se puede volver a comprar en la tienda tantas veces como se quiera, siempre que alcancen los recursos.
 
----
-
 ## Amenazas y Enemigos
 
 En los modos **Extracción** y **Supervivencia**, la amenaza principal son distintas variantes de **demonios** que invaden la ciudad. Cada tipo tiene patrones de ataque y comportamientos propios que obligan al jugador a mantenerse en movimiento y a alternar entre armas y aliados.
-
----
 
 ## Ficha Técnica
 
