@@ -1454,6 +1454,9 @@ MonoBehaviour:
   hitMarker: {fileID: 8330816283817818547}
   duracionHitMarker: 0.1
   crosshair: {fileID: 3429545734165454388}
+  ocultarEnDuelo:
+  - {fileID: 1556108043915717074}
+  - {fileID: 1157278980685131385}
 --- !u!114 &389148221887834588
 MonoBehaviour:
   m_ObjectHideFlags: 0

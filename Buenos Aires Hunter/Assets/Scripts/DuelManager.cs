@@ -272,6 +272,7 @@ public class DuelManager : NetworkBehaviour
     private void PrepararRonda()
     {
         CongelarClientRpc(true);
+        ConfigurarHudClientRpc();
 
         ulong[] ids = { idA.Value, idB.Value };
         for (int i = 0; i < ids.Length; i++)
@@ -378,6 +379,17 @@ public class DuelManager : NetworkBehaviour
 
         if (NetworkManagerPersistente.Instance != null)
             NetworkManagerPersistente.Instance.VolverAlMenu(escenaMenu);
+    }
+
+    // Cada peer ajusta el HUD de SU jugador local para el duelo (oculta lo que no aplica: SUBE, Wachin...)
+    [ClientRpc]
+    private void ConfigurarHudClientRpc()
+    {
+        var local = NetworkManager.LocalClient?.PlayerObject;
+        if (local == null) return;
+
+        var ui = local.GetComponentInChildren<PlayerUI>(true);
+        if (ui != null) ui.ConfigurarModoDuelo();
     }
 
     // Se ejecuta en todos los peers: cada uno bloquea o libera a SU jugador local
