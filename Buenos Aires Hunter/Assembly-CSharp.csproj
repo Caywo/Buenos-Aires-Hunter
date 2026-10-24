@@ -76,6 +76,7 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMPro_InstructionOverlay.cs" />
     <Compile Include="Assets\Scripts\Jugador\PlayerInventory.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeB.cs" />
+    <Compile Include="Assets\Scripts\Logros\LogrosUI.cs" />
     <Compile Include="Assets\Scripts\SaveManager.cs" />
     <Compile Include="Assets\Scripts\Interactuables\BotonComprar.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexJitter.cs" />
@@ -118,6 +119,7 @@
     <Compile Include="Assets\Scripts\Health.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\CameraController.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark03.cs" />
+    <Compile Include="Assets\Scripts\Logros\LogroData.cs" />
     <Compile Include="Assets\Personaje\Input\InputPersonaje.cs" />
     <Compile Include="Assets\Scripts\RangedAttack.cs" />
     <Compile Include="Assets\Scripts\IDamageable.cs" />
@@ -130,6 +132,7 @@
     <Compile Include="Assets\Scripts\Enemigo\EnemyKnockback.cs" />
     <Compile Include="Assets\Personaje\Inventario\ItemData.cs" />
     <Compile Include="Assets\Scripts\HUD\SlotUI.cs" />
+    <Compile Include="Assets\Scripts\Logros\LogroUI.cs" />
     <Compile Include="Assets\Escenario2\CityTools\script\BuildingCreator.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextConsoleSimulator.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TeleType.cs" />
