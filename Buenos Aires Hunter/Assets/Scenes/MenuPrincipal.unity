@@ -14738,7 +14738,7 @@ MonoBehaviour:
     crearJugadoresAlCargarEscena: 0
   - nombre: Duelo
     panel: {fileID: 1337654767}
-    escenaDeJuego: Duelo
+    escenaDeJuego: Duelo1
     joinCodeInput: {fileID: 1680689483}
     joinCodeDisplay: {fileID: 1889479057}
     estadoDisplay: {fileID: 1533434359}
@@ -20985,7 +20985,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 10
   m_TargetDisplay: 0
 --- !u!224 &1614567065
 RectTransform:

@@ -3599,9 +3599,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5430290490509041616}
     m_Modifications:
-    - target: {fileID: 7147883222819679696, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
+    - target: {fileID: 1675394655969132940, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
+      propertyPath: m_text
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 4624763071233307123, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5599183348176495965, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7147883222819679696, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7831238591258256438, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
       propertyPath: m_Pivot.x
@@ -3690,6 +3702,10 @@ PrefabInstance:
     - target: {fileID: 8730644940341003968, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9009017250885999699, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
+      propertyPath: m_SortingOrder
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 277380948045502063, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
