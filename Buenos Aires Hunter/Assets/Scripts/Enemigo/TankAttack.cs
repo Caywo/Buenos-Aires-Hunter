@@ -80,8 +80,10 @@ public class TankAttack : NetworkBehaviour
         if (Time.time < proximoAtaque)
             return false;
 
-        float distancia = Vector3.Distance(transform.position, target.position);
-        return distancia <= distanciaActivacion;
+        Vector3 delta = target.position - transform.position;
+        delta.y = 0f;
+
+        return delta.magnitude <= distanciaActivacion;
     }
 
     public void IniciarEmbestida(Transform target)
