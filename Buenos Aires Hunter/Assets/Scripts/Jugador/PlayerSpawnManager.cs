@@ -144,7 +144,6 @@ public class PlayerSpawnManager : MonoBehaviour
             jugadorCliente.PlayerObject == null)
             yield break;
 
-        // Evitar procesar dos veces al mismo jugador en una misma carga.
         if (!jugadoresProcesados.Add(clientId))
             yield break;
 
@@ -158,30 +157,13 @@ public class PlayerSpawnManager : MonoBehaviour
 
         NetworkObject jugador = jugadorCliente.PlayerObject;
 
-        CharacterController controlador =
-            jugador.GetComponent<CharacterController>();
-
-        if (controlador != null)
-            controlador.enabled = false;
-
-        jugador.transform.SetPositionAndRotation(
-            punto.position,
-            punto.rotation
-        );
-
-        if (controlador != null)
-            controlador.enabled = true;
-
-        // Sincronizar el teletransporte si el jugador utiliza NetworkTransform.
-        NetworkTransform networkTransform =
-            jugador.GetComponent<NetworkTransform>();
-
-        if (networkTransform != null)
-            networkTransform.Teleport(
-                punto.position,
-                punto.rotation,
-                jugador.transform.localScale
-            );
+        // En vez de mover el transform directo acá (el servidor no tiene autoridad
+        // sobre el NetworkTransform del jugador remoto), le pedimos al dueño que se mueva.
+        PlayerCombat combate = jugador.GetComponent<PlayerCombat>();
+        if (combate != null)
+        {
+            combate.TeletransportarA(punto.position, punto.rotation);
+        }
 
         AplicarDatosGuardadoSiHay(clientId, jugador);
     }
