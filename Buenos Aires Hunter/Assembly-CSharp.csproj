@@ -108,6 +108,7 @@
     <Compile Include="Assets\Scripts\Jugador\MeleeAttack.cs" />
     <Compile Include="Assets\Scripts\Interactuables\Bondi.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ChatController.cs" />
+    <Compile Include="Assets\Scripts\Jugador\ZonaCaida.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_DigitValidator.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_FrameRateCounter.cs" />
     <Compile Include="Assets\Scripts\Jugador\PlayerLook.cs" />
