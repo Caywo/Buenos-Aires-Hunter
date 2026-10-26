@@ -1940,6 +1940,7 @@ GameObject:
   - component: {fileID: 1070948456886115100}
   - component: {fileID: 5888196171528925299}
   - component: {fileID: -8708946833366736154}
+  - component: {fileID: 3075985288231058369}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -2378,6 +2379,19 @@ MonoBehaviour:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 0
+--- !u!114 &3075985288231058369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5264654166265889176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33494417bf038984a83572b49dde9e62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LogrosJugador
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1 &5528525388740455850
 GameObject:
   m_ObjectHideFlags: 0

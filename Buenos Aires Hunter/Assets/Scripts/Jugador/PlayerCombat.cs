@@ -231,7 +231,7 @@ public class PlayerCombat : NetworkBehaviour
             IDamageable objetivo = hit.collider.GetComponentInParent<IDamageable>();
             if (objetivo != null)
             {
-                objetivo.TakeDamage(arma.damage, OwnerClientId);
+                AplicarDano(objetivo, arma.damage, false);
                 ConfirmarImpactoClientRpc(SoloAlDueno());
             }
         }
@@ -276,6 +276,24 @@ public class PlayerCombat : NetworkBehaviour
         OnImpactoConfirmado?.Invoke();
     }
 
+    /// <summary>
+    /// Aplica el daño y, si ese golpe fue el que mató a un enemigo (no a un jugador), avisa al sistema de logros.
+    /// Se compara el estado antes y después para no contar disparos a un enemigo que ya estaba muerto.
+    /// </summary>
+    private void AplicarDano(IDamageable objetivo, float dano, bool fueMelee)
+    {
+        var vida = objetivo as Health;
+        bool estabaMuerto = vida != null && vida.EstaMuerto;
+
+        objetivo.TakeDamage(dano, OwnerClientId);
+
+        if (vida != null && !estabaMuerto && vida.EstaMuerto && !vida.EsJugador)
+        {
+            var logros = GetComponent<LogrosJugador>();
+            if (logros != null) logros.Notificar(EventoLogro.Baja, fueMelee ? 1 : 0);
+        }
+    }
+
     // ───────────────────────── MELEE (puños) ─────────────────────────
 
     /// <summary>Lo llama MeleeAttack en el dueño, después de pasar su cooldown local.</summary>
@@ -304,7 +322,7 @@ public class PlayerCombat : NetworkBehaviour
         if (BuscarObjetivoMelee(origen, direccion, out IDamageable objetivo, out RaycastHit hit))
         {
             Debug.Log($"[Melee] Impacto en '{hit.collider.name}', daño {melee.damage}");
-            objetivo.TakeDamage(melee.damage, OwnerClientId);
+            AplicarDano(objetivo, melee.damage, true);
             ConfirmarImpactoClientRpc(SoloAlDueno()); // hitmarker
         }
     }
@@ -357,10 +375,7 @@ public class PlayerCombat : NetworkBehaviour
             {
                 Collider c = bufferLinea[i].collider;
                 if (c.transform.IsChildOf(transform)) continue; // uno mismo
-
-                // Cualquier otro ente dañable (otro enemigo, otro jugador) no bloquea el melee,
-                // solo lo bloquea el escenario (paredes, obstáculos sin IDamageable)
-                if (c.GetComponentInParent<IDamageable>() != null) continue;
+                if (ReferenceEquals(c.GetComponentInParent<IDamageable>(), objetivo)) continue; // el propio objetivo
 
                 Debug.Log($"[Melee] Golpe bloqueado por '{c.name}'");
                 objetivo = null;

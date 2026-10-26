@@ -322,7 +322,9 @@ public class PlayerInventory : NetworkBehaviour
         if (items[indiceSlot].item == null) return;
 
         if (!PagarConSube(precio)) return;
-
+        var logros = GetComponent<LogrosJugador>();
+        if (logros != null) logros.Notificar(EventoLogro.Compra, precio);
+        
         var data = items[indiceSlot].item;
         if (data.esConsumible)
         {

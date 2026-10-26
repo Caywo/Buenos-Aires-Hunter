@@ -208,6 +208,7 @@ public class DuelManager : NetworkBehaviour
         }
 
         ganadorPartida.Value = puntajeA.Value > puntajeB.Value ? (long)idA.Value : (long)idB.Value;
+        NotificarVictoriaDeDuelo();
         estado.Value = (int)EstadoDuelo.FinDePartida;
 
         yield return new WaitForSeconds(pausaFinDePartida);
@@ -247,6 +248,34 @@ public class DuelManager : NetworkBehaviour
         for (int i = 0; i < clientes.Count; i++)
             if (clientes[i].PlayerObject != null) n++;
         return n;
+    }
+
+    // Logros: el ganador de la ronda la cobra como "perfecta" si terminó con la vida llena
+    private void NotificarRondaGanada(ulong ganador)
+    {
+        var obj = ObtenerJugador(ganador);
+        if (obj == null) return;
+
+        var logros = obj.GetComponent<LogrosJugador>();
+        var vida = obj.GetComponent<Health>();
+        if (logros == null) return;
+
+        bool perfecta = vida != null && vida.VidaActual >= vida.VidaMaxima;
+        logros.Notificar(EventoLogro.RondaDueloGanada, perfecta ? 1 : 0);
+    }
+
+    // Logros: victoria del duelo (solo si terminó jugando; un abandono del rival no cuenta)
+    private void NotificarVictoriaDeDuelo()
+    {
+        bool ganaA = puntajeA.Value > puntajeB.Value;
+        ulong idGanador = ganaA ? idA.Value : idB.Value;
+        int puntosDelPerdedor = ganaA ? puntajeB.Value : puntajeA.Value;
+
+        var obj = ObtenerJugador(idGanador);
+        if (obj == null) return;
+
+        var logros = obj.GetComponent<LogrosJugador>();
+        if (logros != null) logros.Notificar(EventoLogro.DueloGanado, puntosDelPerdedor == 0 ? 1 : 0);
     }
 
     private void ConfigurarJugadores()
@@ -334,6 +363,8 @@ public class DuelManager : NetworkBehaviour
 
         if (ganador == idA.Value) puntajeA.Value++;
         else puntajeB.Value++;
+
+        NotificarRondaGanada(ganador);
 
         estado.Value = (int)EstadoDuelo.FinDeRonda;
         HabilitarJugadores(false); // nadie sigue disparando ni moviéndose

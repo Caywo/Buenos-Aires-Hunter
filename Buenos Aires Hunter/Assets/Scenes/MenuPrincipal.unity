@@ -14563,6 +14563,22 @@ MonoBehaviour:
   contenedor: {fileID: 1848005414}
   logros:
   - {fileID: 11400000, guid: 2cbbc0af0f5f8be4282ed1d07d583e28, type: 2}
+  - {fileID: 11400000, guid: 690e78012b0761d4c8154a3deb8fc55c, type: 2}
+  - {fileID: 11400000, guid: 83069c511c15d3b42856eb424fb7bf78, type: 2}
+  - {fileID: 11400000, guid: 9018ac5c0db4add4e8892e618634335f, type: 2}
+  - {fileID: 11400000, guid: e2223ea266d94254684e6ea288454928, type: 2}
+  - {fileID: 11400000, guid: 44c191efee0ba214b8514534bbbdda20, type: 2}
+  - {fileID: 11400000, guid: c2e933d288eada84e86385a5f2efea8b, type: 2}
+  - {fileID: 11400000, guid: 42ee122460670b242abaf51c0ec81bd7, type: 2}
+  - {fileID: 11400000, guid: eaff88f9a39b7a64a82a6b587d3ae64f, type: 2}
+  - {fileID: 11400000, guid: 2e1924a3ca9eb9a41baa04ea11eda2ec, type: 2}
+  - {fileID: 11400000, guid: f2b22daa56bf68547981ad4d036791bc, type: 2}
+  - {fileID: 11400000, guid: 4ca9c0c36c540b546ade009acb4b0a29, type: 2}
+  - {fileID: 11400000, guid: 18aeb6b011fd23e43a1ec6a4d76d2d12, type: 2}
+  - {fileID: 11400000, guid: 43fa7986457da69499e70eb98ffb850e, type: 2}
+  - {fileID: 11400000, guid: 009f80d7f8fee154c8f4ab90a238bc87, type: 2}
+  - {fileID: 11400000, guid: 12d402f53bca6314c950389861f81f27, type: 2}
+  - {fileID: 11400000, guid: f5c4a29c9d236b141862a5be313ce250, type: 2}
   txtContador: {fileID: 0}
 --- !u!1 &1130883145
 GameObject:
@@ -17832,6 +17848,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1374976313}
   m_CullTransparentMesh: 1
+--- !u!1 &1379525602
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1379525604}
+  - component: {fileID: 1379525603}
+  m_Layer: 0
+  m_Name: LogrosManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1379525603
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1379525602}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bccadba423ac194a8d608594440ca62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LogrosManager
+--- !u!4 &1379525604
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1379525602}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 807.49207, y: -0.00001, z: 22941.672}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1379704754
 GameObject:
   m_ObjectHideFlags: 0
@@ -23613,6 +23673,8 @@ MonoBehaviour:
   maxConnections: 1
   connectionType: dtls
   escenaMenuPorDefecto: MenuPrincipal
+  disconnectTimeoutMs: 5000
+  maxConnectAttempts: 5
 --- !u!1 &1778447270
 GameObject:
   m_ObjectHideFlags: 0
@@ -27597,3 +27659,4 @@ SceneRoots:
   - {fileID: 900407151}
   - {fileID: 1614567065}
   - {fileID: 779088883}
+  - {fileID: 1379525604}
