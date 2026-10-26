@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: SUPERV_RONDA_15
   m_EditorClassIdentifier: Assembly-CSharp::LogroData
   id: SUPERV_RONDA_15
-  titulo: Aguantando los trapos
+  titulo: Sobreviviendo
   descripcion: "Lleg\xE1 a la ronda 15 en Supervivencia."
   secreto: 0

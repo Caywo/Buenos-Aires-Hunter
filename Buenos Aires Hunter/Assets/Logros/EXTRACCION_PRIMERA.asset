@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: EXTRACCION_PRIMERA
   m_EditorClassIdentifier: Assembly-CSharp::LogroData
   id: EXTRACCION_PRIMERA
-  titulo: Me voy a tomar el colectivo
+  titulo: Me tomo el bondi
   descripcion: "Extra\xE9 con \xE9xito por primera vez."
   secreto: 0

@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: DUELO_RONDA_PERFECTA
   m_EditorClassIdentifier: Assembly-CSharp::LogroData
   id: DUELO_RONDA_PERFECTA
-  titulo: Ni para el pasaje
+  titulo: Intocable
   descripcion: "Gan\xE1 una ronda de duelo sin recibir da\xF1o."
   secreto: 0

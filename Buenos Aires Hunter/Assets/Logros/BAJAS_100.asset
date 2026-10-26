@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: BAJAS_100
   m_EditorClassIdentifier: Assembly-CSharp::LogroData
   id: BAJAS_100
-  titulo: Cien por ciento picante
+  titulo: Matador
   descripcion: "Elimin\xE1 a 100 enemigos entre todas tus partidas."
   secreto: 0

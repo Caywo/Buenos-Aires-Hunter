@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: SUPERV_RONDA_5
   m_EditorClassIdentifier: Assembly-CSharp::LogroData
   id: SUPERV_RONDA_5
-  titulo: Un domingo en la plaza
+  titulo: "Un d\xEDa en la plaza"
   descripcion: "Lleg\xE1 a la ronda 5 en Supervivencia."
   secreto: 0
