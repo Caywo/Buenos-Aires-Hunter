@@ -18,10 +18,10 @@ EditorBuildSettings:
     path: Assets/Scenes/Extraccion2.unity
     guid: 7d1c425355aa83e498eb079c017e5d26
   - enabled: 1
-    path: Assets/Scenes/Duelo.unity
-    guid: d20bca47d10a94a4c9e75473d8b9d83d
-  - enabled: 1
     path: Assets/Scenes/Duelo1.unity
     guid: 39db184da63f43f40a058fbaba4159f9
+  - enabled: 1
+    path: Assets/Scenes/Tutorial.unity
+    guid: c54bd92e0f81b9649a09c9bd5053f404
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

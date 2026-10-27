@@ -69,7 +69,15 @@ public class MenuPrincipal : MonoBehaviour
 
     public void CargarTutorial()
     {
-        SceneManager.LoadScene("Tutorial");
+        UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+        transport.SetConnectionData("127.0.0.1", 7777);
+
+        NetworkManagerPersistente.Instance.ConfigurarSpawnDeJugadores(false);
+        NetworkManagerPersistente.Instance.SuscribirseACargaDeEscena();
+
+        NetworkManager.Singleton.StartHost();
+
+        NetworkManager.Singleton.SceneManager.LoadScene("Tutorial", LoadSceneMode.Single);
     }
     public void UnJugador()
     {
