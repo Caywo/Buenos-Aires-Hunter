@@ -67,6 +67,10 @@ public class MenuPrincipal : MonoBehaviour
         return (modo != null && modo.estadoDisplay != null) ? modo.estadoDisplay : estadoDisplay;
     }
 
+    public void CargarTutorial()
+    {
+        SceneManager.LoadScene("Tutorial");
+    }
     public void UnJugador()
     {
         var modo = ObtenerModoActual();
@@ -284,5 +288,10 @@ public class MenuPrincipal : MonoBehaviour
     private void OnDestroy()
     {
         DejarDeEsperar();
+    }
+
+    public void CerrarJuego()
+    {
+        Application.Quit();
     }
 }

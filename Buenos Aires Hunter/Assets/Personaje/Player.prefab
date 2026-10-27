@@ -2004,7 +2004,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 131308231
+  GlobalObjectIdHash: 1095980501
   InScenePlacedSourceGlobalObjectIdHash: 0
   m_InScenePlacedDisabledByDefault: 0
   DeferredDespawnTick: 0
@@ -3616,6 +3616,22 @@ PrefabInstance:
     - target: {fileID: 1675394655969132940, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
       propertyPath: m_text
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3165655269023423790, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
+      propertyPath: m_UiScaleMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3165655269023423790, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
+      propertyPath: m_MatchWidthOrHeight
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3165655269023423790, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
+      propertyPath: m_ReferenceResolution.x
+      value: 1920
+      objectReference: {fileID: 0}
+    - target: {fileID: 3165655269023423790, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
+      propertyPath: m_ReferenceResolution.y
+      value: 1080
       objectReference: {fileID: 0}
     - target: {fileID: 4624763071233307123, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
       propertyPath: m_IsActive
