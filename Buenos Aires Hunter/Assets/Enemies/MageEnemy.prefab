@@ -906,6 +906,7 @@ GameObject:
   - component: {fileID: 6726570102347720915}
   - component: {fileID: 6219226171623985677}
   - component: {fileID: 5822445789429318640}
+  - component: {fileID: -2592817316253681293}
   m_Layer: 7
   m_Name: MageEnemy
   m_TagString: Untagged
@@ -943,7 +944,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 3782469612
+  GlobalObjectIdHash: 339785524
   InScenePlacedSourceGlobalObjectIdHash: 0
   m_InScenePlacedDisabledByDefault: 0
   DeferredDespawnTick: 0
@@ -1013,6 +1014,7 @@ MonoBehaviour:
   stoppingDistance: 1.5
   attackRange: 2
   intervaloBusqueda: 0.5
+  ventajaParaCambiarObjetivo: 2
   intervaloActualizacionRuta: 0.35
   movimientoMinimoObjetivo: 0.75
   intervaloComprobacionAtasco: 0.5
@@ -1061,6 +1063,7 @@ MonoBehaviour:
   gravedad: -20
   alturaRaycast: 0.5
   distanciaRaycast: 2
+  caidaMaxima: 3
   radioBusquedaNavMesh: 3
   capasObstaculos:
     serializedVersion: 2
@@ -1212,6 +1215,22 @@ MonoBehaviour:
       Synchronize: 1
       ParameterType: 9
   AnimatorParametersExpanded: 0
+--- !u!114 &-2592817316253681293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3500235552399831248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f326798a9dfcc3040aa4baf1a65dad1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySeparation
+  ShowTopMostFoldoutHeaderGroup: 1
+  radioSeparacion: 0.6
+  peso: 1
+  velocidadSeparacion: 3
 --- !u!1 &3565028168079311536
 GameObject:
   m_ObjectHideFlags: 0

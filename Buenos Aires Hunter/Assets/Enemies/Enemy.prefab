@@ -305,6 +305,7 @@ GameObject:
   - component: {fileID: -3241191473686073636}
   - component: {fileID: -3197491060436791423}
   - component: {fileID: 3460774068934761816}
+  - component: {fileID: 5976778588863940782}
   m_Layer: 7
   m_Name: Enemy
   m_TagString: Untagged
@@ -341,7 +342,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 2513508081
+  GlobalObjectIdHash: 2239249136
   InScenePlacedSourceGlobalObjectIdHash: 0
   m_InScenePlacedDisabledByDefault: 0
   DeferredDespawnTick: 0
@@ -389,6 +390,7 @@ MonoBehaviour:
   stoppingDistance: 1.5
   attackRange: 2
   intervaloBusqueda: 0.5
+  ventajaParaCambiarObjetivo: 2
   intervaloActualizacionRuta: 0.35
   movimientoMinimoObjetivo: 0.75
   intervaloComprobacionAtasco: 0.5
@@ -459,6 +461,7 @@ MonoBehaviour:
   gravedad: -20
   alturaRaycast: 0.5
   distanciaRaycast: 2
+  caidaMaxima: 3
   radioBusquedaNavMesh: 3
   capasObstaculos:
     serializedVersion: 2
@@ -579,6 +582,13 @@ MonoBehaviour:
     TransitionDuration: 0.25
     TriggerNameHash: 646380074
     TransitionIndex: 1
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 1080829965
+    DestinationState: 646380074
+    TransitionDuration: 0.25
+    TriggerNameHash: 646380074
+    TransitionIndex: 1
   AnimatorParameterEntries:
     ParameterEntries:
     - name: Death
@@ -594,6 +604,22 @@ MonoBehaviour:
       Synchronize: 1
       ParameterType: 1
   AnimatorParametersExpanded: 0
+--- !u!114 &5976778588863940782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1324170431698116061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f326798a9dfcc3040aa4baf1a65dad1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySeparation
+  ShowTopMostFoldoutHeaderGroup: 1
+  radioSeparacion: 0.6
+  peso: 1
+  velocidadSeparacion: 3
 --- !u!1 &1438659816915356148
 GameObject:
   m_ObjectHideFlags: 0
