@@ -197,7 +197,7 @@ public class Sprint3Tests
     [UnityTest]
     public IEnumerator CP_DUEL_01_DuelManagerDebeExistir()
     {
-        yield return SceneManager.LoadSceneAsync("Duelo");
+        yield return SceneManager.LoadSceneAsync("Duelo1");
 
         GameObject duelManager =
             GameObject.Find("DuelManager");
@@ -212,10 +212,10 @@ public class Sprint3Tests
     [UnityTest]
     public IEnumerator CP_DUEL_01_SpawnDuelo1DebeExistir()
     {
-        yield return SceneManager.LoadSceneAsync("Duelo");
+        yield return SceneManager.LoadSceneAsync("Duelo1");
 
         GameObject spawn =
-            GameObject.Find("Spawn_Duelo_1");
+            GameObject.Find("Spawn1");
 
         Assert.IsNotNull(
             spawn,
@@ -227,10 +227,10 @@ public class Sprint3Tests
     [UnityTest]
     public IEnumerator CP_DUEL_01_SpawnDuelo2DebeExistir()
     {
-        yield return SceneManager.LoadSceneAsync("Duelo");
+        yield return SceneManager.LoadSceneAsync("Duelo1");
 
         GameObject spawn =
-            GameObject.Find("Spawn_Duelo_2");
+            GameObject.Find("Spawn2");
 
         Assert.IsNotNull(
             spawn,
@@ -242,7 +242,7 @@ public class Sprint3Tests
     [UnityTest]
     public IEnumerator CP_DUEL_01_CanvasDueloDebeExistir()
     {
-        yield return SceneManager.LoadSceneAsync("Duelo");
+        yield return SceneManager.LoadSceneAsync("Duelo1");
 
         GameObject canvas =
             GameObject.Find("Canvas");
@@ -257,7 +257,7 @@ public class Sprint3Tests
     [UnityTest]
     public IEnumerator CP_DUEL_01_HUDDebeExistir()
     {
-        yield return SceneManager.LoadSceneAsync("Duelo");
+        yield return SceneManager.LoadSceneAsync("Duelo1");
 
         GameObject hud =
             GameObject.Find("HUD");
