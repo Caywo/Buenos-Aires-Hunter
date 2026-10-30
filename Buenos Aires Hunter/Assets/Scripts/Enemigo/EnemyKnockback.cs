@@ -15,6 +15,7 @@ public class EnemyKnockback : NetworkBehaviour
     [SerializeField] private float gravedad = -20f;
     [SerializeField] private float alturaRaycast = 0.5f;
     [SerializeField] private float distanciaRaycast = 2f;
+    [SerializeField] private float caidaMaxima = 3f; // seguro anti "bajo el mapa"
 
     [Header("NavMesh")]
     [SerializeField] private float radioBusquedaNavMesh = 3f;
@@ -25,9 +26,13 @@ public class EnemyKnockback : NetworkBehaviour
 
     private NavMeshAgent agent;
     private CapsuleCollider capsule;
+    private Rigidbody rb;
 
     private bool siendoLanzado;
     private float tiempoInicio;
+    private Vector3 posicionInicial;
+    private int mascaraEfectiva;
+    private bool rbEraKinematico;
 
     private Vector3 velocidadHorizontal;
     private float velocidadVertical;
@@ -38,6 +43,10 @@ public class EnemyKnockback : NetworkBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         capsule = GetComponent<CapsuleCollider>();
+        rb = GetComponent<Rigidbody>();
+
+        // Ignorar la capa propia: así otros enemigos no cuentan como obstáculo ni como suelo.
+        mascaraEfectiva = capasObstaculos & ~(1 << gameObject.layer);
     }
 
     public void Lanzar(Vector3 direccion)
@@ -49,7 +58,6 @@ public class EnemyKnockback : NetworkBehaviour
             return;
 
         direccion.y = 0f;
-
         if (direccion.sqrMagnitude <= 0.01f)
             return;
 
@@ -57,6 +65,7 @@ public class EnemyKnockback : NetworkBehaviour
 
         siendoLanzado = true;
         tiempoInicio = Time.time;
+        posicionInicial = transform.position; // seguro estaba en el NavMesh
 
         velocidadHorizontal = direccion * fuerzaHorizontal;
         velocidadVertical = fuerzaVertical;
@@ -64,6 +73,13 @@ public class EnemyKnockback : NetworkBehaviour
         agent.isStopped = true;
         agent.ResetPath();
         agent.enabled = false;
+
+        // Que la física no lo empuje ni lo hunda mientras lo movemos a mano.
+        if (rb != null)
+        {
+            rbEraKinematico = rb.isKinematic;
+            rb.isKinematic = true;
+        }
     }
 
     private void Update()
@@ -78,24 +94,23 @@ public class EnemyKnockback : NetworkBehaviour
     {
         float delta = Time.deltaTime;
 
-        // Movimiento horizontal: las paredes bloquean el desplazamiento.
-        Vector3 desplazamientoHorizontal =
-            velocidadHorizontal * delta;
-
-        if (!MoverConColision(desplazamientoHorizontal))
+        // Seguro: si cayó demasiado por debajo del punto de partida, recuperarlo.
+        if (transform.position.y < posicionInicial.y - caidaMaxima)
         {
-            velocidadHorizontal = Vector3.zero;
+            TerminarKnockback();
+            return;
         }
 
-        // Movimiento vertical: permite subir y caer, pero bloquea techos.
-        Vector3 desplazamientoVertical =
-            Vector3.up * velocidadVertical * delta;
+        // Horizontal
+        if (!MoverConColision(velocidadHorizontal * delta))
+            velocidadHorizontal = Vector3.zero;
 
-        if (!MoverConColision(desplazamientoVertical))
+        // Vertical
+        if (!MoverConColision(Vector3.up * velocidadVertical * delta))
         {
             if (velocidadVertical > 0f)
             {
-                velocidadVertical = 0f;
+                velocidadVertical = 0f; // golpeó un techo
             }
             else
             {
@@ -108,34 +123,24 @@ public class EnemyKnockback : NetworkBehaviour
             velocidadVertical += gravedad * delta;
         }
 
-        // Detectar el suelo mientras el NPC está descendiendo.
+        // Detección de suelo al descender (ignora enemigos).
         if (velocidadVertical <= 0f &&
             Physics.Raycast(
                 transform.position + Vector3.up * alturaRaycast,
                 Vector3.down,
                 out RaycastHit suelo,
                 alturaRaycast + distanciaRaycast,
-                capasObstaculos,
+                mascaraEfectiva,
                 QueryTriggerInteraction.Ignore) &&
             suelo.normal.y > 0.5f)
         {
-            float distanciaVertical =
-                transform.position.y - suelo.point.y;
-
-            if (distanciaVertical >= 0f &&
-                distanciaVertical <= alturaRaycast + distanciaRaycast)
-            {
-                transform.position = suelo.point;
-                TerminarKnockback();
-                return;
-            }
-        }
-
-        // Límite de seguridad para evitar lanzamientos infinitos.
-        if (Time.time >= tiempoInicio + duracion)
-        {
+            transform.position = suelo.point;
             TerminarKnockback();
+            return;
         }
+
+        if (Time.time >= tiempoInicio + duracion)
+            TerminarKnockback();
     }
 
     private bool MoverConColision(Vector3 desplazamiento)
@@ -147,25 +152,14 @@ public class EnemyKnockback : NetworkBehaviour
             return false;
 
         Vector3 escala = transform.lossyScale;
+        float radio = capsule.radius * Mathf.Max(Mathf.Abs(escala.x), Mathf.Abs(escala.z));
+        float altura = Mathf.Max(capsule.height * Mathf.Abs(escala.y), radio * 2f);
 
-        float radio = capsule.radius *
-            Mathf.Max(Mathf.Abs(escala.x), Mathf.Abs(escala.z));
+        Vector3 centro = transform.TransformPoint(capsule.center);
+        float semialtura = Mathf.Max(0f, altura * 0.5f - radio);
 
-        float altura = Mathf.Max(
-            capsule.height * Mathf.Abs(escala.y),
-            radio * 2f);
-
-        Vector3 centro =
-            transform.TransformPoint(capsule.center);
-
-        float semialtura =
-            Mathf.Max(0f, altura * 0.5f - radio);
-
-        Vector3 puntoSuperior =
-            centro + Vector3.up * semialtura;
-
-        Vector3 puntoInferior =
-            centro - Vector3.up * semialtura;
+        Vector3 puntoSuperior = centro + Vector3.up * semialtura;
+        Vector3 puntoInferior = centro - Vector3.up * semialtura;
 
         float distancia = desplazamiento.magnitude;
         Vector3 direccion = desplazamiento / distancia;
@@ -177,15 +171,11 @@ public class EnemyKnockback : NetworkBehaviour
             direccion,
             out RaycastHit hit,
             distancia + margenColision,
-            capasObstaculos,
+            mascaraEfectiva,
             QueryTriggerInteraction.Ignore))
         {
-            float distanciaSegura =
-                Mathf.Max(0f, hit.distance - margenColision);
-
-            transform.position +=
-                direccion * Mathf.Min(distancia, distanciaSegura);
-
+            float distanciaSegura = Mathf.Max(0f, hit.distance - margenColision);
+            transform.position += direccion * Mathf.Min(distancia, distanciaSegura);
             return false;
         }
 
@@ -193,50 +183,37 @@ public class EnemyKnockback : NetworkBehaviour
         return true;
     }
 
+    private bool BuscarPuntoNavMesh(Vector3 origen, out Vector3 resultado)
+    {
+        if (NavMesh.SamplePosition(origen, out NavMeshHit hit,
+            radioBusquedaNavMesh, agent.areaMask))
+        {
+            resultado = hit.position;
+            return true;
+        }
+
+        resultado = origen;
+        return false;
+    }
+
     private void TerminarKnockback()
     {
-        Vector3 posicionFinal = transform.position;
-
-        // Buscar una posición transitable cercana.
-        if (!NavMesh.SamplePosition(
-            posicionFinal,
-            out NavMeshHit hit,
-            radioBusquedaNavMesh,
-            agent.areaMask))
+        // 1) cerca de donde terminó, 2) cerca de donde empezó, 3) el punto exacto de inicio.
+        if (!BuscarPuntoNavMesh(transform.position, out Vector3 destino) &&
+            !BuscarPuntoNavMesh(posicionInicial, out destino))
         {
-            // Intentar volver hacia la posición anterior al empujón.
-            Vector3 alternativa =
-                posicionFinal -
-                velocidadHorizontal.normalized *
-                fuerzaHorizontal * duracion;
-
-            if (!NavMesh.SamplePosition(
-                alternativa,
-                out hit,
-                radioBusquedaNavMesh,
-                agent.areaMask))
-            {
-                // No reactivar el agente fuera del NavMesh.
-                siendoLanzado = false;
-                velocidadHorizontal = Vector3.zero;
-                velocidadVertical = 0f;
-                return;
-            }
+            destino = posicionInicial;
         }
 
-        transform.position = hit.position;
+        transform.position = destino;
 
+        // Nunca dejar el agente deshabilitado.
         agent.enabled = true;
+        agent.Warp(destino);
+        agent.isStopped = false;
 
-        if (agent.isOnNavMesh)
-        {
-            agent.Warp(hit.position);
-            agent.isStopped = false;
-        }
-        else
-        {
-            agent.enabled = false;
-        }
+        if (rb != null)
+            rb.isKinematic = rbEraKinematico;
 
         siendoLanzado = false;
         velocidadHorizontal = Vector3.zero;

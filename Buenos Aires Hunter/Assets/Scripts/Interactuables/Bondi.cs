@@ -22,7 +22,8 @@ public class Bondi : Interactuable
             return;
 
         extraccionIniciada = true;
-
+        LogrosJugador.NotificarExtraccionATodos();
+        
         if (SaveManager.Instance != null)
             SaveManager.Instance.GuardarPartida(siguienteMapa);
 

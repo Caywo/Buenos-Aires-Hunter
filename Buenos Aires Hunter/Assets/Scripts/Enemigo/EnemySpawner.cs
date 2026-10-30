@@ -8,6 +8,11 @@ public class EnemySpawner : NetworkBehaviour
     [Header("Enemigos")]
     [SerializeField] private GameObject enemyPrefab;
     [SerializeField] private GameObject tankPrefab;
+    [SerializeField] private GameObject enemy3Prefab;
+
+    [Header("Enemigo 3")]
+    [SerializeField] private int primeraOleadaEnemigo3 = 6;
+    [SerializeField, Range(0f, 1f)] private float probabilidadEnemigo3 = 0.25f;
 
     [Header("Puntos de aparición")]
     [SerializeField] private Transform[] spawnPoints;
@@ -153,10 +158,19 @@ public class EnemySpawner : NetworkBehaviour
                 PuedeGenerarTanque();
 
             GameObject prefab;
+            bool esTanque = debeSerTanque;
 
-            if (debeSerTanque && tankPrefab != null)
+            if (esTanque && tankPrefab != null)
             {
                 prefab = tankPrefab;
+            }
+            else if (
+                numeroOleada >= primeraOleadaEnemigo3 &&
+                enemy3Prefab != null &&
+                Random.value < probabilidadEnemigo3
+            )
+            {
+                prefab = enemy3Prefab;
             }
             else
             {

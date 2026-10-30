@@ -208,8 +208,8 @@ GameObject:
   - component: {fileID: -4515127777169364866}
   - component: {fileID: 4748220991439468640}
   - component: {fileID: -3704969153709723923}
-  - component: {fileID: 2545165011792053643}
   - component: {fileID: -1153060902703492327}
+  - component: {fileID: -3282333813762899678}
   m_Layer: 7
   m_Name: EnemyTank
   m_TagString: Untagged
@@ -234,8 +234,8 @@ Transform:
   - {fileID: 1858533900929723901}
   - {fileID: 1889444531744017346}
   - {fileID: 8933306317950060853}
-  - {fileID: 2621435352973406984}
   - {fileID: 7579090096552548615}
+  - {fileID: 2621435352973406984}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4036833418959277550
@@ -320,6 +320,12 @@ MonoBehaviour:
   stoppingDistance: 0
   attackRange: 10
   intervaloBusqueda: 0.5
+  intervaloActualizacionRuta: 0.35
+  movimientoMinimoObjetivo: 0.75
+  intervaloComprobacionAtasco: 0.5
+  tiempoParaConsiderarAtasco: 1.5
+  velocidadMinimaMovimiento: 0.15
+  distanciaMinimaAvance: 0.1
 --- !u!114 &-4515127777169364866
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -334,8 +340,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TankAttack
   ShowTopMostFoldoutHeaderGroup: 1
   distanciaActivacion: 10
-  tiempoPreparacion: 0.7
+  tiempoPreparacion: 1.2
   velocidadEmbestida: 10
+  capaJugadores:
+    serializedVersion: 2
+    m_Bits: 256
+  capaEnemigos:
+    serializedVersion: 2
+    m_Bits: 128
+  margenDanio: 0.2
   radioImpacto: 1.2
   distanciaDeteccionObstaculo: 0.8
   danoEmbestida: 40
@@ -382,13 +395,27 @@ MonoBehaviour:
   - IsCrossFadeExit: 0
     Layer: 0
     OriginatingState: -1919845803
-    DestinationState: 1080829965
+    DestinationState: 646380074
     TransitionDuration: 0.25
-    TriggerNameHash: -627677271
+    TriggerNameHash: 646380074
     TransitionIndex: 0
   - IsCrossFadeExit: 0
     Layer: 0
     OriginatingState: -1919845803
+    DestinationState: -161963885
+    TransitionDuration: 0.25
+    TriggerNameHash: -627677271
+    TransitionIndex: 1
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 1080829965
+    DestinationState: 646380074
+    TransitionDuration: 0.25
+    TriggerNameHash: 646380074
+    TransitionIndex: 0
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -161963885
     DestinationState: 646380074
     TransitionDuration: 0.25
     TriggerNameHash: 646380074
@@ -407,30 +434,11 @@ MonoBehaviour:
       NameHash: 1227042640
       Synchronize: 1
       ParameterType: 4
+    - name: Choque
+      NameHash: -928376645
+      Synchronize: 1
+      ParameterType: 9
   AnimatorParametersExpanded: 0
---- !u!136 &2545165011792053643
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1324170431698116061}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 1
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &-1153060902703492327
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -477,6 +485,29 @@ MonoBehaviour:
   SwitchTransformSpaceWhenParented: 0
   Interpolate: 1
   SlerpPosition: 0
+--- !u!136 &-3282333813762899678
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1324170431698116061}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 1.303022
+  m_Height: 3.707455
+  m_Direction: 1
+  m_Center: {x: 0.03817322, y: 1.420896, z: 0.1877721}
 --- !u!1 &1446459878991317827
 GameObject:
   m_ObjectHideFlags: 0
@@ -1120,7 +1151,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2621435352973406984}
   - component: {fileID: 4455718916862890545}
-  - component: {fileID: 2567112703704033247}
   m_Layer: 7
   m_Name: mesh_1
   m_TagString: Untagged
@@ -1137,7 +1167,7 @@ Transform:
   m_GameObject: {fileID: 3351409891045440190}
   serializedVersion: 2
   m_LocalRotation: {x: -0.008750716, y: 0.0015919898, z: 0.010849352, w: 0.9999016}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1271,29 +1301,6 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.039830267, y: 0.11678499, z: -0.017277718}
     m_Extent: {x: 1.2655869, y: 0.9919408, z: 1.7242048}
   m_DirtyAABB: 0
---- !u!136 &2567112703704033247
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3351409891045440190}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 1.3030221
-  m_Height: 3.707455
-  m_Direction: 1
-  m_Center: {x: 0.038173225, y: 1.420896, z: 0.18777213}
 --- !u!1 &3363695904020498921
 GameObject:
   m_ObjectHideFlags: 0

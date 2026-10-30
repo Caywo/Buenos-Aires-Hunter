@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 using Unity.Netcode;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class TankAttack : NetworkBehaviour
@@ -9,10 +10,12 @@ public class TankAttack : NetworkBehaviour
     [SerializeField] private float distanciaActivacion = 6f;
     [SerializeField] private float tiempoPreparacion = 0.7f;
     [SerializeField] private float velocidadEmbestida = 10f;
-    
 
     [Header("Detección de impacto")]
-    [SerializeField] private float radioImpacto = 1.2f;
+    [SerializeField] private LayerMask capaJugadores;   // capa "Jugador"
+    [SerializeField] private LayerMask capaEnemigos;    // capa "Enemigo" (para lanzarlos)
+    [SerializeField] private float margenDanio = 0.2f;  // margen extra sobre el CapsuleCollider
+    [SerializeField] private float radioImpacto = 1.2f; // solo para obstáculos y gizmo
     [SerializeField] private float distanciaDeteccionObstaculo = 0.8f;
 
     [Header("Daño")]
@@ -22,11 +25,16 @@ public class TankAttack : NetworkBehaviour
     [SerializeField] private float cooldown = 4f;
 
     private NavMeshAgent agent;
+    private CapsuleCollider capsule;
     private Animator animator;
     private Health salud;
+
     private bool embistiendo;
     private bool preparando;
-    private bool yaGolpeoJugador;
+
+    private readonly HashSet<ulong> golpeadosEnEmbestida = new HashSet<ulong>();
+    private readonly Collider[] bufferImpactos = new Collider[16];
+    private Vector3 posicionInicioEmbestida;
 
     private float tiempoInicioPreparacion;
     private float tiempoInicioEmbestida;
@@ -43,8 +51,16 @@ public class TankAttack : NetworkBehaviour
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        capsule = GetComponent<CapsuleCollider>();
         animator = GetComponentInChildren<Animator>();
         salud = GetComponent<Health>();
+    }
+
+    private Vector3 CentroCuerpo()
+    {
+        return capsule != null
+            ? transform.TransformPoint(capsule.center)
+            : transform.position + Vector3.up * 0.5f;
     }
 
     public bool PuedeEmbestir(Transform target)
@@ -64,12 +80,10 @@ public class TankAttack : NetworkBehaviour
         if (Time.time < proximoAtaque)
             return false;
 
-        float distancia = Vector3.Distance(
-            transform.position,
-            target.position
-        );
+        Vector3 delta = target.position - transform.position;
+        delta.y = 0f;
 
-        return distancia <= distanciaActivacion;
+        return delta.magnitude <= distanciaActivacion;
     }
 
     public void IniciarEmbestida(Transform target)
@@ -82,9 +96,7 @@ public class TankAttack : NetworkBehaviour
 
         objetivo = target;
 
-        direccionEmbestida =
-            objetivo.position - transform.position;
-
+        direccionEmbestida = objetivo.position - transform.position;
         direccionEmbestida.y = 0f;
 
         if (direccionEmbestida.sqrMagnitude <= 0.01f)
@@ -92,12 +104,12 @@ public class TankAttack : NetworkBehaviour
 
         direccionEmbestida.Normalize();
 
-        transform.rotation =
-            Quaternion.LookRotation(direccionEmbestida);
+        transform.rotation = Quaternion.LookRotation(direccionEmbestida);
 
         preparando = true;
         tiempoInicioPreparacion = Time.time;
-        yaGolpeoJugador = false;
+        golpeadosEnEmbestida.Clear();
+        posicionInicioEmbestida = transform.position;
 
         if (animator != null)
         {
@@ -156,120 +168,104 @@ public class TankAttack : NetworkBehaviour
 
     private void ActualizarEmbestida()
     {
-        // Primero comprobamos si hay una pared/obstáculo.
         if (HayObstaculoDelante())
         {
-            Debug.Log("TANQUE: chocó contra un obstáculo");
+            Debug.Log("TANQUE: terminó por obstáculo");
             TerminarEmbestida();
             return;
         }
 
-        // Avanzamos.
-        transform.position +=
-            direccionEmbestida *
-            velocidadEmbestida *
-            Time.deltaTime;
+        Vector3 siguiente = transform.position +
+            direccionEmbestida * velocidadEmbestida * Time.deltaTime;
 
-        // Comprobamos jugadores y enemigos.
-        DetectarEntidades();
+        // El pivote está baseOffset por encima del NavMesh: buscar desde los "pies".
+        Vector3 pie = siguiente - Vector3.up * agent.baseOffset;
 
-        if (!embistiendo)
+        if (!NavMesh.SamplePosition(pie, out NavMeshHit navHit, 1.5f, NavMesh.AllAreas))
+        {
+            Debug.Log("TANQUE: terminó por borde de NavMesh");
+            TerminarEmbestida();
             return;
+        }
+
+        siguiente.y = navHit.position.y + agent.baseOffset;
+        transform.position = siguiente;
+        Physics.SyncTransforms();
+
+        DetectarEntidades();
     }
 
     private void DetectarEntidades()
     {
-        Collider[] impactos = Physics.OverlapSphere(
-            transform.position,
-            radioImpacto
-        );
+        if (capsule == null)
+            return;
 
-        foreach (Collider impacto in impactos)
+        // Misma forma que el CapsuleCollider del tanque (más un pequeño margen).
+        Vector3 escala = transform.lossyScale;
+        float radioBase = capsule.radius * Mathf.Max(Mathf.Abs(escala.x), Mathf.Abs(escala.z));
+        float altura = Mathf.Max(capsule.height * Mathf.Abs(escala.y), radioBase * 2f);
+
+        Vector3 centro = CentroCuerpo();
+        float semialtura = Mathf.Max(0f, altura * 0.5f - radioBase);
+
+        int cantidad = Physics.OverlapCapsuleNonAlloc(
+            centro - Vector3.up * semialtura,
+            centro + Vector3.up * semialtura,
+            radioBase + margenDanio,
+            bufferImpactos,
+            capaJugadores | capaEnemigos,
+            QueryTriggerInteraction.Ignore);
+
+        for (int i = 0; i < cantidad; i++)
         {
-            Health saludGolpeada =
-                impacto.GetComponentInParent<Health>();
+            Collider impacto = bufferImpactos[i];
+            Health saludGolpeada = impacto.GetComponentInParent<Health>();
 
-            if (saludGolpeada == null)
+            if (saludGolpeada == null || saludGolpeada.EstaMuerto)
                 continue;
 
-            if (saludGolpeada.EstaMuerto)
-                continue;
-
-            // No golpearnos a nosotros mismos.
             if (saludGolpeada.NetworkObjectId == NetworkObjectId)
                 continue;
 
-            // =====================================
-            // JUGADOR
-            // =====================================
+            // Una sola vez por embestida (jugador o enemigo).
+            if (!golpeadosEnEmbestida.Add(saludGolpeada.NetworkObjectId))
+                continue;
 
             if (saludGolpeada.EsJugador)
             {
-                if (!yaGolpeoJugador)
-                {
-                    saludGolpeada.TakeDamage(
-                        danoEmbestida,
-                        ReglasCombate.AtacanteNeutral
-                    );
-
-                    yaGolpeoJugador = true;
-
-                    Debug.Log(
-                        "TANQUE: golpeó al jugador, continúa la embestida"
-                    );
-                }
-
+                Debug.Log($"TANQUE: aplicando {danoEmbestida} de daño a {saludGolpeada.name}");
+                saludGolpeada.TakeDamage(danoEmbestida, ReglasCombate.AtacanteNeutral);
                 continue;
-            
-        }
+            }
 
-            // =====================================
-            // ENEMIGO
-            // =====================================
-
-            EnemyKnockback knockback =
-                impacto.GetComponentInParent<EnemyKnockback>();
+            EnemyKnockback knockback = impacto.GetComponentInParent<EnemyKnockback>();
 
             if (knockback != null)
             {
-                Vector3 direccionEmpuje =
-                    saludGolpeada.transform.position -
-                    transform.position;
-
+                Vector3 direccionEmpuje = saludGolpeada.transform.position - transform.position;
                 direccionEmpuje.y = 0f;
 
                 if (direccionEmpuje.sqrMagnitude <= 0.01f)
                     direccionEmpuje = direccionEmbestida;
 
                 knockback.Lanzar(direccionEmpuje);
-
-                Debug.Log(
-                    "TANQUE: enemigo lanzado, continúa la embestida"
-                );
             }
         }
     }
 
     private bool HayObstaculoDelante()
     {
-        Vector3 origen =
-            transform.position + Vector3.up * 0.5f;
-
         if (Physics.SphereCast(
-            origen,
+            CentroCuerpo(),
             radioImpacto * 0.7f,
             direccionEmbestida,
             out RaycastHit hit,
-            distanciaDeteccionObstaculo))
+            distanciaDeteccionObstaculo,
+            ~0,
+            QueryTriggerInteraction.Ignore))
         {
-            Health salud =
-                hit.collider.GetComponentInParent<Health>();
-
-            // Si es jugador o enemigo, NO es un obstáculo.
-            if (salud != null)
-                return false;
-
-            return true;
+            // Si es jugador o enemigo (tiene Health), NO es un obstáculo.
+            return hit.collider.GetComponentInParent<Health>() == null;
         }
 
         return false;
@@ -291,22 +287,25 @@ public class TankAttack : NetworkBehaviour
 
         Debug.Log("TANQUE: embestida terminada");
 
-        agent.enabled = true;
+        Vector3 destino = posicionInicioEmbestida - Vector3.up * agent.baseOffset;
 
-        if (agent.isOnNavMesh)
+        if (NavMesh.SamplePosition(transform.position - Vector3.up * agent.baseOffset,
+            out NavMeshHit hit, 3f, NavMesh.AllAreas))
         {
-            agent.Warp(transform.position);
-            agent.isStopped = false;
+            destino = hit.position;
         }
+
+        transform.position = destino;
+        agent.enabled = true;
+        agent.Warp(destino); // Warp vuelve a aplicar el baseOffset
+        agent.isStopped = false;
     }
 
     private void OnDrawGizmosSelected()
     {
-        Gizmos.DrawWireSphere(
-            transform.position,
-            radioImpacto
-        );
+        Gizmos.DrawWireSphere(transform.position, radioImpacto);
     }
+
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();

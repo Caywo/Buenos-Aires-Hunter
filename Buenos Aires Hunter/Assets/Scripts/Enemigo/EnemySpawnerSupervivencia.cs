@@ -2,12 +2,18 @@ using UnityEngine;
 using Unity.Netcode;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 
 public class EnemySpawnerSupervivencia : NetworkBehaviour
 {
     [Header("Enemigos")]
     [SerializeField] private GameObject enemyPrefab;
     [SerializeField] private GameObject tankPrefab;
+    [SerializeField] private GameObject enemy3Prefab;
+
+    [Header("Enemigo 3")]
+    [SerializeField] private int primeraRondaEnemigo3 = 6;
+    [SerializeField, Range(0f, 1f)] private float probabilidadEnemigo3 = 0.25f;
 
     [Header("Puntos de aparición")]
     [SerializeField] private Transform[] spawnPoints;
@@ -30,6 +36,9 @@ public class EnemySpawnerSupervivencia : NetworkBehaviour
 
     [Header("Recompensa")]
     [SerializeField] private int recompensaPorKill = 100;
+
+    [Header("UI")]
+    public TMP_Text textoRonda;
 
     public NetworkVariable<int> rondaActual = new NetworkVariable<int>(0,
         NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
@@ -77,8 +86,22 @@ public class EnemySpawnerSupervivencia : NetworkBehaviour
         {
             IniciarEsperaNuevaRonda();
         }
+        ActualizarRonda();
     }
 
+    private void ActualizarRonda()
+    {
+        if (textoRonda == null) return;
+            textoRonda.gameObject.SetActive(true);
+            if (tiempoRestante.Value > 0f)
+            {
+                textoRonda.text = "Próxima ronda en " + Mathf.CeilToInt(tiempoRestante.Value);
+            }
+            else
+            {
+                textoRonda.text = "Ronda " + rondaActual.Value;
+            }
+    }
     private void LimpiarEnemigosActuales()
     {
         for (int i = enemigosActuales.Count - 1; i >= 0; i--)
@@ -128,7 +151,24 @@ public class EnemySpawnerSupervivencia : NetworkBehaviour
                 tanquesVivos < maxTanquesVivos &&
                 tankPrefab != null;
 
-            GameObject prefab = debeSerTanque ? tankPrefab : enemyPrefab;
+            GameObject prefab;
+
+            if (debeSerTanque)
+            {
+                prefab = tankPrefab;
+            }
+            else if (
+                rondaActual.Value >= primeraRondaEnemigo3 &&
+                enemy3Prefab != null &&
+                Random.value < probabilidadEnemigo3
+            )
+            {
+                prefab = enemy3Prefab;
+            }
+            else
+            {
+                prefab = enemyPrefab;
+            }
 
             if (prefab == null)
             {

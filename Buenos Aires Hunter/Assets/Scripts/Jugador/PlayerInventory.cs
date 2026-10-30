@@ -16,15 +16,16 @@ public class PlayerInventory : NetworkBehaviour
         NetworkVariableReadPermission.Everyone,
         NetworkVariableWritePermission.Owner);
 
-    private NetworkVariable<int>[] cantidades;
+    private NetworkList<int> cantidades = new NetworkList<int>(
+        readPerm: NetworkVariableReadPermission.Everyone,
+        writePerm: NetworkVariableWritePermission.Server);
+
     private GameObject instanciaActual;
     private WeaponShoot weaponActual;
     private PlayerLook mirar;
-    private PlayerCombat combate;   // NUEVO (combate)
-    private Health salud;           // NUEVO (combate)
+    private PlayerCombat combate;
+    private Health salud;
     private Camera camaraJugador;
-    // NUEVO (fix apuntado): pose base del weaponHolder y FOV de la cámara. Se guardan una sola vez
-    // para restaurarlos al cambiar de ítem (si no, un arma nueva "hereda" la pose de apuntado).
     private Vector3 posBaseHolder;
     private float fovBase;
 
@@ -34,7 +35,6 @@ public class PlayerInventory : NetworkBehaviour
     NetworkVariableWritePermission.Server);
     public bool TieneSubeEquipada => indiceActivo.Value == indiceSube;
 
-    // NUEVO (combate): acceso de solo lectura para PlayerCombat / HUD
     public int IndiceActivo => indiceActivo.Value;
     public WeaponShoot ArmaActual => weaponActual;
 
@@ -58,65 +58,87 @@ public class PlayerInventory : NetworkBehaviour
         if (weaponHolder != null) posBaseHolder = weaponHolder.localPosition;
         if (camaraJugador != null) fovBase = camaraJugador.fieldOfView;
 
-        cantidades = new NetworkVariable<int>[items.Length];
-        for (int i = 0; i < items.Length; i++)
+        if (IsServer)
         {
-            if (items[i].item == null)
-            {
-                cantidades[i] = new NetworkVariable<int>(-1,
-                    NetworkVariableReadPermission.Everyone,
-                    NetworkVariableWritePermission.Server);
-                continue;
-            }
+            cantidades.Clear();
 
-            int inicial;
-            if (!items[i].item.arrancaDesbloqueado)
+            for (int i = 0; i < items.Length; i++)
             {
-                inicial = 0;
-            }
-            else
-            {
-                inicial = items[i].item.esConsumible ? items[i].item.cantidadInicial : -1;
-            }
+                if (items[i].item == null)
+                {
+                    cantidades.Add(-1);
+                    continue;
+                }
 
-            cantidades[i] = new NetworkVariable<int>(inicial,
-                NetworkVariableReadPermission.Everyone,
-                NetworkVariableWritePermission.Server);
+                int inicial;
+                if (!items[i].item.arrancaDesbloqueado)
+                {
+                    inicial = 0;
+                }
+                else
+                {
+                    inicial = items[i].item.esConsumible ? items[i].item.cantidadInicial : -1;
+                }
+
+                cantidades.Add(inicial);
+            }
         }
 
+        cantidades.OnListChanged += AlCambiarCantidades;
         ActualizarEstadoInicialSlots();
 
         indiceActivo.OnValueChanged += (viejo, nuevo) => EquiparVisual(nuevo);
         EquiparVisual(indiceActivo.Value);
     }
 
+    public override void OnNetworkDespawn()
+    {
+        cantidades.OnListChanged -= AlCambiarCantidades;
+    }
+
+    // Reacciona a cualquier cambio de cantidad (comprar, usar, etc.) y actualiza el slot correspondiente.
+    // Corre en todos los peers que reciben la sincronización, pero solo el dueño toca su propia UI.
+    private void AlCambiarCantidades(NetworkListEvent<int> cambio)
+    {
+        if (!IsOwner) return;
+        if (slots == null || cambio.Index < 0 || cambio.Index >= slots.Length) return;
+
+        var slotUI = slots[cambio.Index] != null ? slots[cambio.Index].GetComponent<SlotUI>() : null;
+        if (slotUI == null) return;
+
+        // No pisa el estado "Seleccionado" del slot actualmente equipado
+        if (indiceActivo.Value == cambio.Index) return;
+
+        slotUI.SetEstado(cambio.Value == 0 ? SlotUI.Estado.Bloqueado : SlotUI.Estado.Desbloqueado);
+    }
+
     private void ActualizarEstadoInicialSlots()
     {
         if (slots == null) return;
 
-        for (int i = 0; i < slots.Length && i < cantidades.Length; i++)
+        for (int i = 0; i < slots.Length && i < cantidades.Count; i++)
         {
             var slotUI = slots[i] != null ? slots[i].GetComponent<SlotUI>() : null;
             if (slotUI == null) continue;
 
-            slotUI.SetEstado(cantidades[i].Value == 0 ? SlotUI.Estado.Bloqueado : SlotUI.Estado.Desbloqueado);
+            slotUI.SetEstado(cantidades[i] == 0 ? SlotUI.Estado.Bloqueado : SlotUI.Estado.Desbloqueado);
         }
     }
 
     public void Equipar(int indice)
     {
         if (!IsOwner || inputBloqueado) return;
-        if (salud != null && salud.EstaMuerto) return; // NUEVO (combate)
+        if (salud != null && salud.EstaMuerto) return;
 
         if (indice == indiceActivo.Value)
         {
-            indiceActivo.Value = -1; // tocar el mismo boton de lo que tenes equipado lo desequipa
+            indiceActivo.Value = -1;
             return;
         }
 
         if (indice < 0 || indice >= items.Length) return;
-        if (items[indice].item == null) return; // posición vacía, no hay nada que equipar
-        if (cantidades[indice].Value == 0) return;
+        if (items[indice].item == null) return;
+        if (cantidades[indice] == 0) return;
 
         indiceActivo.Value = indice;
     }
@@ -126,9 +148,9 @@ public class PlayerInventory : NetworkBehaviour
     {
         var data = items[indice].item;
         if (!data.esConsumible) return;
-        if (cantidades[indice].Value <= 0) return;
+        if (cantidades[indice] <= 0) return;
 
-        cantidades[indice].Value--;
+        cantidades[indice] = cantidades[indice] - 1;
 
         if (data.prefabUso != null)
         {
@@ -141,7 +163,7 @@ public class PlayerInventory : NetworkBehaviour
                 netObj.Spawn();
             }
         }
-        if (cantidades[indice].Value <= 0 && indiceActivo.Value == indice)
+        if (cantidades[indice] <= 0 && indiceActivo.Value == indice)
         {
             indiceActivo.Value = -1;
         }
@@ -160,7 +182,6 @@ public class PlayerInventory : NetworkBehaviour
         if (weaponHolder != null) weaponHolder.localPosition = posBaseHolder;
         if (IsOwner && camaraJugador != null) camaraJugador.fieldOfView = fovBase;
 
-        // Vuelve a "Desbloqueado" cualquier slot que haya quedado marcado como Seleccionado
         if (slots != null)
         {
             foreach (var slotObj in slots)
@@ -187,7 +208,6 @@ public class PlayerInventory : NetworkBehaviour
                 }
             }
 
-            // Se marca "Seleccionado" sin importar si el ítem tiene prefabEnMano o no (ej: la SUBE)
             if (slots != null && indice < slots.Length)
             {
                 var slotUI = slots[indice] != null ? slots[indice].GetComponent<SlotUI>() : null;
@@ -198,8 +218,6 @@ public class PlayerInventory : NetworkBehaviour
         OnArmaCambiada?.Invoke(weaponActual);
     }
 
-    // CAMBIO (combate): ahora recibe si es una pulsación nueva (para armas semiautomáticas)
-    // y el disparo real lo valida el servidor en PlayerCombat.
     public void Disparar(bool pulsacionNueva)
     {
         if (!IsOwner || inputBloqueado) return;
@@ -225,49 +243,39 @@ public class PlayerInventory : NetworkBehaviour
         if (weaponActual != null && combate != null) combate.IntentarRecargar();
     }
 
-    public int GetCantidad(int indice) => cantidades[indice].Value;
+    public int GetCantidad(int indice) => cantidades[indice];
 
     public void SetApuntando(bool apuntando)
     {
         if (!IsOwner) return;
-        // Dejar de apuntar se permite siempre; empezar a apuntar, no (tienda, cuenta regresiva del duelo)
         if (apuntando && inputBloqueado) return;
         if (weaponActual != null) weaponActual.SetAiming(apuntando);
     }
 
-    // ───────── NUEVO (modo duelo) ─────────
-
-    /// <summary>Un slot está desbloqueado si su cantidad no es 0 (0 = bloqueado, -1 = desbloqueado, >0 = consumible).</summary>
     public bool EstaDesbloqueado(int indice)
     {
-        if (cantidades == null || indice < 0 || indice >= cantidades.Length) return false;
-        return cantidades[indice].Value != 0;
+        if (cantidades == null || indice < 0 || indice >= cantidades.Count) return false;
+        return cantidades[indice] != 0;
     }
 
-    /// <summary>
-    /// SOLO SERVIDOR. Deja desbloqueados únicamente los slots indicados y bloquea el resto.
-    /// Sirve para que ambos jugadores del duelo tengan exactamente el mismo equipamiento,
-    /// sin importar lo comprado o guardado en otros modos.
-    /// </summary>
     public void ConfigurarEquipamientoFijo(int[] slotsDesbloqueados)
     {
         if (!IsServer || cantidades == null) return;
 
-        for (int i = 0; i < cantidades.Length; i++)
+        for (int i = 0; i < cantidades.Count; i++)
         {
             if (System.Array.IndexOf(slotsDesbloqueados, i) >= 0)
             {
                 var data = items[i].item;
-                cantidades[i].Value = (data != null && data.esConsumible) ? data.cantidadInicial : -1;
+                cantidades[i] = (data != null && data.esConsumible) ? data.cantidadInicial : -1;
             }
             else
             {
-                cantidades[i].Value = 0;
+                cantidades[i] = 0;
             }
         }
     }
 
-    /// <summary>SOLO SERVIDOR. Equipa un slot en el dueño sin pasar por el input (ej: al empezar una ronda).</summary>
     public void ForzarEquipar(int indice)
     {
         if (!IsServer) return;
@@ -282,7 +290,7 @@ public class PlayerInventory : NetworkBehaviour
     private void ForzarEquiparClientRpc(int indice, ClientRpcParams rpcParams = default)
     {
         if (!IsOwner) return;
-        indiceActivo.Value = indice; // el dueño escribe su propia variable
+        indiceActivo.Value = indice;
     }
 
     public void AgregarSaldo(int cantidad)
@@ -294,14 +302,15 @@ public class PlayerInventory : NetworkBehaviour
     public bool PagarConSube(int monto)
     {
         if (!IsServer) return false;
-        if (indiceActivo.Value != indiceSube) return false; // no tiene la SUBE en mano
-        if (saldoSube.Value - monto < -1200) return false; // saldo negativo
+        if (indiceActivo.Value != indiceSube) return false;
+        if (saldoSube.Value - monto < -1200) return false;
 
         saldoSube.Value -= monto;
         return true;
     }
 
-    [ServerRpc] public void IntentarPagarServerRpc(int monto)
+    [ServerRpc]
+    public void IntentarPagarServerRpc(int monto)
     {
         PagarConSube(monto);
     }
@@ -313,34 +322,31 @@ public class PlayerInventory : NetworkBehaviour
         if (items[indiceSlot].item == null) return;
 
         if (!PagarConSube(precio)) return;
-
+        var logros = GetComponent<LogrosJugador>();
+        if (logros != null) logros.Notificar(EventoLogro.Compra, precio);
+        
         var data = items[indiceSlot].item;
         if (data.esConsumible)
         {
-            cantidades[indiceSlot].Value += 1;
+            cantidades[indiceSlot] = cantidades[indiceSlot] + 1;
         }
         else
         {
-            cantidades[indiceSlot].Value = -1;
+            cantidades[indiceSlot] = -1;
         }
-
-        if (slots != null && indiceSlot < slots.Length)
-        {
-            var slotUI = slots[indiceSlot] != null ? slots[indiceSlot].GetComponent<SlotUI>() : null;
-            slotUI?.SetEstado(SlotUI.Estado.Desbloqueado);
-        }
+        // La UI se actualiza sola en el dueño, vía AlCambiarCantidades (OnListChanged)
     }
 
-    // GUARDADO DE JUGADOR
+    // --GUARDADO JUGADOR--
     public JugadorGuardado ObtenerDatosGuardado()
     {
         var lista = new System.Collections.Generic.List<ItemGuardado>();
 
-        for (int i = 0; i < cantidades.Length; i++)
+        for (int i = 0; i < cantidades.Count; i++)
         {
-            if (cantidades[i].Value != 0) // 0 = bloqueado, no hace falta guardarlo
+            if (cantidades[i] != 0)
             {
-                lista.Add(new ItemGuardado { indiceSlot = i, cantidad = cantidades[i].Value });
+                lista.Add(new ItemGuardado { indiceSlot = i, cantidad = cantidades[i] });
             }
         }
 
@@ -359,9 +365,9 @@ public class PlayerInventory : NetworkBehaviour
 
         foreach (var item in datos.items)
         {
-            if (item.indiceSlot >= 0 && item.indiceSlot < cantidades.Length)
+            if (item.indiceSlot >= 0 && item.indiceSlot < cantidades.Count)
             {
-                cantidades[item.indiceSlot].Value = item.cantidad;
+                cantidades[item.indiceSlot] = item.cantidad;
             }
         }
     }

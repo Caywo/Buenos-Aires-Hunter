@@ -1,5 +1,4 @@
 using Unity.Netcode;
-using Unity.Netcode.Components;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -14,6 +13,8 @@ public class EnemyAI : NetworkBehaviour
 
     [Header("Búsqueda de objetivo")]
     [SerializeField] private float intervaloBusqueda = 0.5f;
+    [Tooltip("Metros que debe estar más cerca otro jugador para cambiar de objetivo (evita oscilar).")]
+    [SerializeField] private float ventajaParaCambiarObjetivo = 2f;
 
     [Header("Actualización de ruta")]
     [SerializeField] private float intervaloActualizacionRuta = 0.35f;
@@ -45,14 +46,9 @@ public class EnemyAI : NetworkBehaviour
     private EnemyKnockback knockback;
     private Animator animator;
 
-    private static readonly int VelocidadHash =
-    Animator.StringToHash("Velocidad");
-
-    private static readonly int AttackHash =
-    Animator.StringToHash("Attack");
-
-    private static readonly int DeathHash =
-    Animator.StringToHash("Death");
+    private static readonly int VelocidadHash = Animator.StringToHash("Velocidad");
+    private static readonly int AttackHash = Animator.StringToHash("Attack");
+    private static readonly int DeathHash = Animator.StringToHash("Death");
 
     private enum EstadoIA
     {
@@ -72,7 +68,6 @@ public class EnemyAI : NetworkBehaviour
         ataqueDistancia = GetComponent<RangedAttack>();
         knockback = GetComponent<EnemyKnockback>();
         animator = GetComponentInChildren<Animator>();
-
     }
 
     public override void OnNetworkSpawn()
@@ -141,8 +136,6 @@ public class EnemyAI : NetworkBehaviour
             return;
 
         // "Velocidad" se actualiza solo en el enemigo normal cuerpo a cuerpo.
-        // Así no exigimos ese parámetro a los Animator Controllers del tanque
-        // ni del enemigo tirador.
         if (animator != null &&
             ataqueTanque == null &&
             ataqueDistancia == null &&
@@ -209,6 +202,7 @@ public class EnemyAI : NetworkBehaviour
 
         return attackRange;
     }
+
     private float DistanciaHorizontal(Vector3 a, Vector3 b)
     {
         a.y = 0f;
@@ -225,10 +219,16 @@ public class EnemyAI : NetworkBehaviour
             return;
         }
 
-        float distancia = DistanciaHorizontal(
-    transform.position,
-    target.position
-);
+        // Con 2 jugadores, el objetivo puede cambiar si el otro se acerca más.
+        ReevaluarObjetivo();
+
+        if (!TargetValido())
+        {
+            SoltarTarget();
+            return;
+        }
+
+        float distancia = DistanciaHorizontal(transform.position, target.position);
 
         if (distancia <= ObtenerRangoAtaque())
         {
@@ -256,13 +256,9 @@ public class EnemyAI : NetworkBehaviour
 
         bool objetivoSeMovio =
             !rutaInicializada ||
-            Vector3.Distance(
-                target.position,
-                ultimaPosicionObjetivoRuta
-            ) >= movimientoMinimoObjetivo;
+            Vector3.Distance(target.position, ultimaPosicionObjetivoRuta) >= movimientoMinimoObjetivo;
 
-        bool tocaActualizar =
-            Time.time >= proximaActualizacionRuta;
+        bool tocaActualizar = Time.time >= proximaActualizacionRuta;
 
         if (!objetivoSeMovio && !tocaActualizar)
             return;
@@ -270,8 +266,7 @@ public class EnemyAI : NetworkBehaviour
         agent.SetDestination(target.position);
 
         ultimaPosicionObjetivoRuta = target.position;
-        proximaActualizacionRuta =
-            Time.time + intervaloActualizacionRuta;
+        proximaActualizacionRuta = Time.time + intervaloActualizacionRuta;
 
         rutaInicializada = true;
     }
@@ -281,21 +276,15 @@ public class EnemyAI : NetworkBehaviour
         if (Time.time < proximaComprobacionAtasco)
             return;
 
-        proximaComprobacionAtasco =
-            Time.time + intervaloComprobacionAtasco;
+        proximaComprobacionAtasco = Time.time + intervaloComprobacionAtasco;
 
-        float avance = Vector3.Distance(
-            transform.position,
-            ultimaPosicionComprobada
-        );
-
+        float avance = Vector3.Distance(transform.position, ultimaPosicionComprobada);
         ultimaPosicionComprobada = transform.position;
 
         bool necesitaAvanzar =
             !agent.pathPending &&
             agent.hasPath &&
-            agent.remainingDistance >
-                agent.stoppingDistance + 0.5f;
+            agent.remainingDistance > agent.stoppingDistance + 0.5f;
 
         bool noAvanza =
             avance < distanciaMinimaAvance &&
@@ -303,13 +292,9 @@ public class EnemyAI : NetworkBehaviour
             agent.desiredVelocity.magnitude > velocidadMinimaMovimiento;
 
         if (necesitaAvanzar && noAvanza)
-        {
             tiempoAtascado += intervaloComprobacionAtasco;
-        }
         else
-        {
             tiempoAtascado = 0f;
-        }
 
         if (tiempoAtascado < tiempoParaConsiderarAtasco)
             return;
@@ -324,8 +309,7 @@ public class EnemyAI : NetworkBehaviour
             agent.SetDestination(target.position);
 
             ultimaPosicionObjetivoRuta = target.position;
-            proximaActualizacionRuta =
-                Time.time + intervaloActualizacionRuta;
+            proximaActualizacionRuta = Time.time + intervaloActualizacionRuta;
 
             rutaInicializada = true;
         }
@@ -348,8 +332,7 @@ public class EnemyAI : NetworkBehaviour
         rutaInicializada = false;
 
         proximaActualizacionRuta = 0f;
-        proximaComprobacionAtasco =
-            Time.time + intervaloComprobacionAtasco;
+        proximaComprobacionAtasco = Time.time + intervaloComprobacionAtasco;
 
         ultimaPosicionComprobada = transform.position;
         ultimaPosicionObjetivoRuta = Vector3.zero;
@@ -366,10 +349,7 @@ public class EnemyAI : NetworkBehaviour
         // Enemigo tirador.
         if (ataqueDistancia != null)
         {
-            float distancia = DistanciaHorizontal(
-    transform.position,
-    target.position
-);
+            float distancia = DistanciaHorizontal(transform.position, target.position);
 
             if (distancia > ataqueDistancia.DistanciaActivacion)
             {
@@ -391,10 +371,8 @@ public class EnemyAI : NetworkBehaviour
             if (ataqueTanque.EstaOcupado)
                 return;
 
-            float distancia = Vector3.Distance(
-                transform.position,
-                target.position
-            );
+            // Horizontal, igual que en Perseguir (el Base Offset del tanque falsea la distancia 3D).
+            float distancia = DistanciaHorizontal(transform.position, target.position);
 
             if (distancia > ataqueTanque.DistanciaActivacion)
             {
@@ -414,10 +392,7 @@ public class EnemyAI : NetworkBehaviour
         // Enemigo normal cuerpo a cuerpo.
         if (ataqueCuerpoACuerpo != null)
         {
-            float distancia = Vector3.Distance(
-                transform.position,
-                target.position
-            );
+            float distancia = DistanciaHorizontal(transform.position, target.position);
 
             if (distancia > attackRange)
             {
@@ -432,37 +407,44 @@ public class EnemyAI : NetworkBehaviour
         }
     }
 
+    // ───────────────────────── BÚSQUEDA DE OBJETIVO ─────────────────────────
+
     private void FindTarget()
     {
-        GameObject[] players =
-            GameObject.FindGameObjectsWithTag("Player");
+        AsignarTarget(ObjetivosJugadores.MasCercano(transform.position));
+    }
 
-        float distanciaMasCercana = Mathf.Infinity;
-        Transform jugadorMasCercano = null;
-        Health saludMasCercano = null;
+    private void ReevaluarObjetivo()
+    {
+        if (Time.time < proximaBusqueda)
+            return;
 
-        foreach (GameObject player in players)
-        {
-            Health h = player.GetComponentInParent<Health>();
+        proximaBusqueda = Time.time + intervaloBusqueda;
 
-            if (h == null || h.EstaMuerto)
-                continue;
+        Health candidato = ObjetivosJugadores.MasCercano(transform.position);
 
-            float distancia = Vector3.Distance(
-                transform.position,
-                player.transform.position
-            );
+        if (candidato == null || candidato == targetHealth)
+            return;
 
-            if (distancia < distanciaMasCercana)
-            {
-                distanciaMasCercana = distancia;
-                jugadorMasCercano = player.transform;
-                saludMasCercano = h;
-            }
-        }
+        float dActual = DistanciaHorizontal(transform.position, target.position);
+        float dNuevo = DistanciaHorizontal(transform.position, candidato.transform.position);
 
-        target = jugadorMasCercano;
-        targetHealth = saludMasCercano;
+        // Solo cambiar si el otro jugador está claramente más cerca.
+        if (dNuevo + ventajaParaCambiarObjetivo < dActual)
+            AsignarTarget(candidato);
+    }
+
+    private void AsignarTarget(Health nuevo)
+    {
+        if (nuevo == targetHealth)
+            return;
+
+        targetHealth = nuevo;
+        target = nuevo != null ? nuevo.transform : null;
+        rutaInicializada = false; // fuerza una ruta nueva hacia el nuevo objetivo
+
+        if (nuevo != null)
+            Debug.Log($"[IA] {name} ahora persigue a {nuevo.name}");
     }
 
     private void MirarAlObjetivo()
@@ -470,15 +452,12 @@ public class EnemyAI : NetworkBehaviour
         if (target == null)
             return;
 
-        Vector3 direccion =
-            target.position - transform.position;
-
+        Vector3 direccion = target.position - transform.position;
         direccion.y = 0f;
 
         if (direccion.sqrMagnitude > 0.001f)
         {
-            Quaternion rotacionObjetivo =
-                Quaternion.LookRotation(direccion);
+            Quaternion rotacionObjetivo = Quaternion.LookRotation(direccion);
 
             transform.rotation = Quaternion.Slerp(
                 transform.rotation,
