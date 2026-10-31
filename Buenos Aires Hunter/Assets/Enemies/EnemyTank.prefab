@@ -320,6 +320,7 @@ MonoBehaviour:
   stoppingDistance: 0
   attackRange: 10
   intervaloBusqueda: 0.5
+  ventajaParaCambiarObjetivo: 2
   intervaloActualizacionRuta: 0.35
   movimientoMinimoObjetivo: 0.75
   intervaloComprobacionAtasco: 0.5
