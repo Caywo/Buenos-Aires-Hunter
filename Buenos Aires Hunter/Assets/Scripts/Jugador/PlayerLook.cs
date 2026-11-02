@@ -11,6 +11,27 @@ public class PlayerLook : MonoBehaviour
     public float recoilReturnSpeed = 6f;
     private float recoilX = 0f;
     public bool inputBloqueado = false;
+
+    private void Start()
+    {
+        ActualizarSensibilidad();
+    }
+
+    public void ActualizarSensibilidad()
+    {
+        if (Configuracion.Instance != null)
+        {
+            sensibilidadX = Configuracion.Instance.SensibilidadX;
+            sensibilidadY = Configuracion.Instance.SensibilidadY;
+        }
+        else
+        {
+            // Fallback si inicias directo desde la escena de prueba
+            sensibilidadX = PlayerPrefs.GetFloat("SensibilidadX", 5f);
+            sensibilidadY = PlayerPrefs.GetFloat("SensibilidadY", 5f);
+        }
+    }
+
     public void ProcessMirar(Vector2 input)
     {
         if (inputBloqueado) return;
