@@ -12,6 +12,9 @@ public class ControladorUIOpciones : MonoBehaviour
     public Slider sliderMusica;
     public Slider sliderSonidos;
 
+    [Header("Botones")]
+    public Button btnRestablecer; // Referencia al botón UI
+
     private void OnEnable()
     {
         SincronizarUI();
@@ -21,7 +24,33 @@ public class ControladorUIOpciones : MonoBehaviour
     {
         InicializarDropdownResolucion();
         SincronizarUI();
+
+        if (btnRestablecer != null)
+        {
+            btnRestablecer.onClick.RemoveAllListeners();
+            btnRestablecer.onClick.AddListener(OnClicRestablecer);
+        }
     }
+
+    public void OnClicRestablecer()
+    {
+        if (Configuracion.Instance != null)
+        {
+            // 1. Restablece los datos de backend en el Singleton
+            Configuracion.Instance.RestablecerPorDefecto();
+            
+            // 2. Refresca la UI con los nuevos valores
+            SincronizarUI();
+            
+            // 3. Ajusta el Dropdown de resolución a la opción media
+            if (dropdownResolucion != null)
+            {
+                dropdownResolucion.value = Configuracion.Instance.ResolucionIndex;
+                dropdownResolucion.RefreshShownValue();
+            }
+        }
+    }
+
 
     private void InicializarDropdownResolucion()
     {
