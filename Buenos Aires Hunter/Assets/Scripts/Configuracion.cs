@@ -17,7 +17,7 @@ public class Configuracion : MonoBehaviour
 
     [Header("Audio Mixer")]
     public AudioMixer audioMixer;
-
+    public AudioMixerGroup grupoSonidos;
     // Keys para PlayerPrefs
     private const string KEY_SENS_X = "SensibilidadX";
     private const string KEY_SENS_Y = "SensibilidadY";

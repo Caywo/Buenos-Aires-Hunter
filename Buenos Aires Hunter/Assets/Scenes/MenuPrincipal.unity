@@ -23718,6 +23718,7 @@ MonoBehaviour:
   sliderMusica: {fileID: 1280718251}
   sliderSonidos: {fileID: 1016156951}
   audioMixer: {fileID: 24100000, guid: 3ae33763f0eb40b41a425201400a888f, type: 2}
+  grupoSonidos: {fileID: -1289039570626938906, guid: 3ae33763f0eb40b41a425201400a888f, type: 2}
 --- !u!4 &1688706868
 Transform:
   m_ObjectHideFlags: 0
