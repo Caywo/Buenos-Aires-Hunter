@@ -118,6 +118,7 @@
     <Compile Include="Assets\Scripts\Jugador\PlayerCombat.cs" />
     <Compile Include="Assets\UI\Menu\InfoPanelHover.cs" />
     <Compile Include="Assets\Scripts\ClientNetworkTransform.cs" />
+    <Compile Include="Assets\Scripts\ControladorUIOpciones.cs" />
     <Compile Include="Assets\Scripts\Health.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\CameraController.cs" />
     <Compile Include="Assets\Scripts\Configuracion.cs" />

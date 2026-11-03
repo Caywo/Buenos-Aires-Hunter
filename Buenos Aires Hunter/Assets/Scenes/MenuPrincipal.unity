@@ -2526,10 +2526,10 @@ MonoBehaviour:
   m_FillRect: {fileID: 162157985}
   m_HandleRect: {fileID: 877602393}
   m_Direction: 0
-  m_MinValue: 0
-  m_MaxValue: 100
+  m_MinValue: 1
+  m_MaxValue: 10
   m_WholeNumbers: 0
-  m_Value: 0
+  m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -4667,10 +4667,10 @@ MonoBehaviour:
   m_FillRect: {fileID: 1001160463}
   m_HandleRect: {fileID: 222271557}
   m_Direction: 0
-  m_MinValue: 0
-  m_MaxValue: 100
+  m_MinValue: 1
+  m_MaxValue: 10
   m_WholeNumbers: 0
-  m_Value: 0
+  m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -18890,6 +18890,7 @@ GameObject:
   - component: {fileID: 1388470669}
   - component: {fileID: 1388470668}
   - component: {fileID: 1388470667}
+  - component: {fileID: 1388470670}
   m_Layer: 5
   m_Name: CanvasOpciones
   m_TagString: Untagged
@@ -18982,6 +18983,23 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &1388470670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1388470665}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dba0febe3cfa02d45b2ca8beb70fb931, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ControladorUIOpciones
+  dropdownResolucion: {fileID: 569184842}
+  sliderSensibilidadX: {fileID: 173663654}
+  sliderSensibilidadY: {fileID: 302084509}
+  sliderMusica: {fileID: 1280718251}
+  sliderSonidos: {fileID: 1016156951}
 --- !u!1 &1401459436
 GameObject:
   m_ObjectHideFlags: 0
@@ -23712,11 +23730,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfa9bdcaf613b1d4ba0c1f5185c9bbb8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Configuracion
-  dropdownResolucion: {fileID: 569184842}
-  sliderSensibilidadX: {fileID: 173663654}
-  sliderSensibilidadY: {fileID: 302084509}
-  sliderMusica: {fileID: 1280718251}
-  sliderSonidos: {fileID: 1016156951}
   audioMixer: {fileID: 24100000, guid: 3ae33763f0eb40b41a425201400a888f, type: 2}
   grupoSonidos: {fileID: -1289039570626938906, guid: 3ae33763f0eb40b41a425201400a888f, type: 2}
 --- !u!4 &1688706868
