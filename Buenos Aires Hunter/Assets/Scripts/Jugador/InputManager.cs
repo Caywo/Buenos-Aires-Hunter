@@ -32,17 +32,30 @@ public class InputManager : NetworkBehaviour
         if (inventario == null) Debug.LogError("InputManager: no se encontró PlayerInventory.", this);
         if (salud == null) Debug.LogError("InputManager: no se encontró Health.", this);
 
-        inventarioActions.Interactuar.performed += ctx => { if (!salud.EstaMuerto) interactuar.Interactuar(); };
 
+        // INTERACTUAR
+        inventarioActions.Interactuar.performed += ctx => { if (!salud.EstaMuerto) interactuar.Interactuar(); };
+        inventarioActions.Interactuar.started += ctx =>
+        {
+            if (!salud.EstaMuerto)
+                interactuar.IniciarInteraccion();
+        };
+
+        inventarioActions.Interactuar.canceled += ctx =>
+        {
+            interactuar.TerminarInteraccion();
+        };
+
+        // SALTO
         movimiento.Saltar.performed += ctx => { if (!salud.EstaMuerto) motor.Saltar(); };
 
-        // CAMBIO (combate): el disparo ya NO usa 'performed'. Se lee con IsPressed() en Update
-        // para permitir fuego automático al mantener el botón.
+        // APUNTADO Y RECARGA
         inventarioActions.Recargar.performed += ctx => inventario.Recargar();
 
         inventarioActions.Apuntar.performed += ctx => { inventario.SetApuntando(true); playerUI.apagarCrosshair(); };
         inventarioActions.Apuntar.canceled += ctx => { inventario.SetApuntando(false); playerUI.activarCrosshair(); };
 
+        // INVENTARIO
         inventarioActions.Items.performed += ctx =>
         {
             string tecla = ctx.control.name; // "1", "2", "3"

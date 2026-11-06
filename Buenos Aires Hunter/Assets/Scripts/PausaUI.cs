@@ -8,9 +8,6 @@ public class PausaUI : MonoBehaviour
     [Header("UI")]
     [SerializeField] private GameObject panelPausa;
 
-    [Header("Escena")]
-    [SerializeField] private string escenaMenuPrincipal = "MenuPrincipal";
-
     private PlayerInventory jugador;
     private PlayerLook mirar;
     private PlayerMotor motor;
@@ -103,7 +100,7 @@ public class PausaUI : MonoBehaviour
 
         Cursor.visible = visible;
     }
-    public void VolverAlMenu(string escenaMenu)
+    public void VolverAlMenu()
     {
         if (volviendoAlMenu) return;
         volviendoAlMenu = true;
@@ -115,8 +112,8 @@ public class PausaUI : MonoBehaviour
         if (spawnerSupervivencia != null) spawnerSupervivencia.enabled = false;
 
 
-        Debug.Log("[VolverAlMenu] Cargando escena: " + escenaMenu);
-        SceneManager.LoadScene(escenaMenu, LoadSceneMode.Single);
+        Debug.Log("[VolverAlMenu] Cargando escena: " + "MenuPrincipal");
+        SceneManager.LoadScene("MenuPrincipal", LoadSceneMode.Single);
 
         NetworkManager nm = NetworkManager.Singleton;
         if (nm != null) nm.Shutdown();
