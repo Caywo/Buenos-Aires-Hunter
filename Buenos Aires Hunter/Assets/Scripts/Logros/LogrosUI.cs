@@ -54,4 +54,13 @@ public class LogrosUI : MonoBehaviour
         foreach (var ui in porId.Values) if (ui.Desbloqueado) hechos++;
         txtContador.text = hechos + "/" + porId.Count;
     }
+
+    public void OnBotonBorrarLogros()
+    {
+        if (LogrosManager.Instance != null)
+        {
+            LogrosManager.Instance.BorrarTodo();
+        }
+    }
+
 }
