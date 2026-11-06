@@ -946,7 +946,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 3782469612
+  GlobalObjectIdHash: 339785524
   InScenePlacedSourceGlobalObjectIdHash: 0
   m_InScenePlacedDisabledByDefault: 0
   DeferredDespawnTick: 0
@@ -1346,13 +1346,13 @@ MonoBehaviour:
   pasos:
   - {fileID: 8300000, guid: b8404ebe243d10f4699976920b6b2ebd, type: 3}
   distanciaPorPaso: 1.6
-  volumenPasos: 0.5
+  volumenPasos: 0.7
   ataques:
   - {fileID: 8300000, guid: 176be0b717547cf4bb2a6e933db881ea, type: 3}
-  volumenAtaque: 0.8
+  volumenAtaque: 0.9
   muertes:
   - {fileID: 8300000, guid: 6852cb619ff2a7846811683db8916db0, type: 3}
-  volumenMuerte: 0.9
+  volumenMuerte: 0.7
   variacionPitch: {x: 0.92, y: 1.08}
   distanciaMaximaPasos: 30
 --- !u!1 &3565028168079311536
