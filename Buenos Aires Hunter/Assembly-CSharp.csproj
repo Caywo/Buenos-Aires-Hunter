@@ -130,6 +130,7 @@
     <Compile Include="Assets\Scripts\Logros\LogroData.cs" />
     <Compile Include="Assets\Personaje\Input\InputPersonaje.cs" />
     <Compile Include="Assets\Scripts\RangedAttack.cs" />
+    <Compile Include="Assets\Scripts\MusicManager.cs" />
     <Compile Include="Assets\Scripts\IDamageable.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\DropdownSample.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexColorCycler.cs" />

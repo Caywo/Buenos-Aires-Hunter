@@ -9654,8 +9654,9 @@ GameObject:
   m_Component:
   - component: {fileID: 779088883}
   - component: {fileID: 779088882}
+  - component: {fileID: 779088884}
   m_Layer: 0
-  m_Name: MusicaFondo
+  m_Name: MusicManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9673,8 +9674,8 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: -8883697505534561915, guid: 3ae33763f0eb40b41a425201400a888f, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 6402c0d7e596da74f84952328833f3b7, type: 3}
-  m_PlayOnAwake: 1
-  m_Volume: 0.129
+  m_PlayOnAwake: 0
+  m_Volume: 0.39
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -9773,6 +9774,26 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &779088884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 779088881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f20e36cd201f28546acd8111a8c0e846, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MusicManager
+  musicaMenu: {fileID: 8300000, guid: 6402c0d7e596da74f84952328833f3b7, type: 3}
+  musicaExtraccion: {fileID: 8300000, guid: ba4983e0ed923e641bfd5db9b6bddca7, type: 3}
+  musicaSupervivencia: {fileID: 8300000, guid: 0d34dd86a362d3e4697fe5846b17a2a4, type: 3}
+  musicaDuelo: {fileID: 8300000, guid: 87d3ec658a475614fa5bd553a15a2617, type: 3}
+  escenaMenu: MenuPrincipal
+  escenaExtraccion: Extraccion1
+  escenaSupervivencia: Supervivencia
+  escenaDuelo: Duelo1
 --- !u!1 &795561227
 GameObject:
   m_ObjectHideFlags: 0
@@ -14434,6 +14455,10 @@ MonoBehaviour:
     joinCodeDisplay: {fileID: 1889479057}
     estadoDisplay: {fileID: 1533434359}
     crearJugadoresAlCargarEscena: 1
+  escenaMenu: MenuPrincipal
+  escenaExtraccion: Extraccion
+  escenaSupervivencia: Supervivencia
+  escenaDuelo: Duelo
   jugadoresNecesarios: 2
   joinCodeInput: {fileID: 0}
   joinCodeDisplay: {fileID: 0}
