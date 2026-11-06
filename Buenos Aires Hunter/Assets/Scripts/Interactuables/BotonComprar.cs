@@ -17,6 +17,6 @@ public class BotonComprar : MonoBehaviour
         {
             tiendaUI.Comprar(precio, indiceSlot);
         }
-        tiendaUI.CerrarTienda();
+        
     }
 }

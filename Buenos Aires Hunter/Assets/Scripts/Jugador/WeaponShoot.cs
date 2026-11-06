@@ -74,14 +74,38 @@ public class WeaponShoot : MonoBehaviour
             hipFirePosition = weaponInitialPos;
         }
 
+        AsignarAudioSource();
+    }
+
+    private void AsignarAudioSource()
+    {
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
         {
             audioSource = gameObject.AddComponent<AudioSource>();
             audioSource.playOnAwake = false;
         }
-        // Tus disparos suenan 2D; los de otros jugadores suenan en 3D
+
+        // Asignar el grupo del mixer directamente
+        if (Configuracion.Instance != null && Configuracion.Instance.grupoSonidos != null)
+        {
+            audioSource.outputAudioMixerGroup = Configuracion.Instance.grupoSonidos;
+        }
+
         audioSource.spatialBlend = esLocal ? 0f : 1f;
+    }
+
+    private void AsignarGrupoMixer()
+    {
+        // Buscar si el MasterMixer tiene el grupo "Efectos" (o "Sonidos")
+        if (Configuracion.Instance != null && Configuracion.Instance.audioMixer != null)
+        {
+            var grupos = Configuracion.Instance.audioMixer.FindMatchingGroups("Efectos"); // Pon el nombre exacto de tu grupo: "Efectos" o "Sonidos"
+            if (grupos.Length > 0)
+            {
+                audioSource.outputAudioMixerGroup = grupos[0];
+            }
+        }
     }
 
     void Update()
@@ -103,8 +127,17 @@ public class WeaponShoot : MonoBehaviour
         if (conRecoilDeCamara && mouseLook != null)
             mouseLook.AddRecoil(cameraRecoilAmount);
 
-        if (shootSound != null && audioSource != null)
+        if (shootSound != null)
+        {
+            // Re-verificación si se instanció antes que Configuracion
+            if (audioSource == null) AsignarAudioSource();
+            if (audioSource.outputAudioMixerGroup == null && Configuracion.Instance != null)
+            {
+                audioSource.outputAudioMixerGroup = Configuracion.Instance.grupoSonidos;
+            }
+
             audioSource.PlayOneShot(shootSound);
+        }
     }
 
     public void PlayReloadEffects()

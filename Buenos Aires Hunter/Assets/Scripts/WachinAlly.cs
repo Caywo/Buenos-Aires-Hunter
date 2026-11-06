@@ -32,6 +32,14 @@ public class WachinAlly : NetworkBehaviour
     private float tiempoSpawn;
 
     private bool explotando;
+    [Header("Efecto")]
+    [SerializeField] private GameObject prefabExplosion;
+
+    [Header("Sonido")]
+    public AudioClip explosionClip;
+
+    [Range(0f, 1f)]
+    public float volume = 0.5f;
 
     private void Awake()
     {
@@ -164,7 +172,14 @@ public class WachinAlly : NetworkBehaviour
             return;
 
         explotando = true;
-
+        if (explosionClip != null)
+        {
+            AudioSource.PlayClipAtPoint(
+                explosionClip,
+                transform.position,
+                volume
+            );
+        }
         if (agent.isOnNavMesh)
         {
             agent.isStopped = true;
@@ -219,8 +234,15 @@ public class WachinAlly : NetworkBehaviour
                 knockback.Lanzar(direccion);
             }
         }
-
+        ExplosionClientRpc(transform.position);
         Desaparecer();
+    }
+
+    [ClientRpc]
+    private void ExplosionClientRpc(Vector3 posicion)
+    {
+        if (prefabExplosion != null)
+            Instantiate(prefabExplosion, posicion, Quaternion.identity);
     }
 
     private void Desaparecer()

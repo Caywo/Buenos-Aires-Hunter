@@ -23,6 +23,7 @@ public class RangedAttack : NetworkBehaviour
             }
         }
         animator = GetComponentInChildren<Animator>();
+        audioEnemigo = GetComponent<EnemyAudio>();
     }
     [SerializeField] private float distanciaActivacion = 20f;
     [SerializeField] private float tiempoApuntado = 0.7f;
@@ -32,6 +33,7 @@ public class RangedAttack : NetworkBehaviour
     private float proximoDisparo;
     private bool apuntando;
     private Animator animator;
+    private EnemyAudio audioEnemigo;
 
     private static readonly int AttackHash =
         Animator.StringToHash("Attack");
@@ -101,6 +103,11 @@ public class RangedAttack : NetworkBehaviour
                 "y EnemyProjectile."
             );
             return;
+        }
+
+        if (audioEnemigo != null)
+        {
+            audioEnemigo.ReproducirAtaque();
         }
 
         networkObject.Spawn();

@@ -9,78 +9,91 @@ public class EnemyProjectile : NetworkBehaviour
     [SerializeField] private float dano = 15f;
     [SerializeField] private float tiempoMaximoVida = 4f;
 
+    [Header("Detección de impacto")]
+    [Tooltip("Capas que detienen la bola: Jugador y el escenario (Default). NO incluir Enemigo.")]
+    [SerializeField] private LayerMask capasImpacto = ~0;
+    [SerializeField] private float radioImpacto = 0.3f;
+
+    private readonly Collider[] buffer = new Collider[8];
+
     private Vector3 direccion;
     private float tiempoSpawn;
+    private bool inicializado;
     private bool impacto;
 
     public void Inicializar(Vector3 nuevaDireccion)
     {
-        Debug.Log("[BOLA] Inicializar llamado. IsServer = " + IsServer);
-
         if (!IsServer) return;
 
         direccion = nuevaDireccion.normalized;
         tiempoSpawn = Time.time;
-
-        Debug.Log("[BOLA] Inicializada en el servidor. Dirección: " + direccion);
+        inicializado = true;
     }
 
     private void Update()
     {
-        if (Time.frameCount % 120 == 0)
-            Debug.Log("[BOLA] Update ejecutándose. IsServer = " + IsServer);
-
-        if (!IsServer || impacto) return;
-
-        transform.position += direccion * velocidad * Time.deltaTime;
+        if (!IsServer || impacto || !inicializado) return;
 
         if (Time.time >= tiempoSpawn + tiempoMaximoVida)
+        {
             Desaparecer();
+            return;
+        }
+
+        Vector3 inicio = transform.position;
+        float paso = velocidad * Time.deltaTime;
+
+        // 1) ¿Ya está tocando a un jugador? (por ejemplo, un disparo a quemarropa)
+        int cantidad = Physics.OverlapSphereNonAlloc(
+            inicio, radioImpacto, buffer, capasImpacto, QueryTriggerInteraction.Ignore);
+
+        for (int i = 0; i < cantidad; i++)
+        {
+            if (ProcesarImpacto(buffer[i]))
+                return;
+        }
+
+        // 2) Barrido hacia adelante, para que no atraviese nada a alta velocidad.
+        if (Physics.SphereCast(
+            inicio, radioImpacto, direccion, out RaycastHit hit, paso,
+            capasImpacto, QueryTriggerInteraction.Ignore))
+        {
+            if (ProcesarImpacto(hit.collider))
+                return;
+        }
+
+        transform.position = inicio + direccion * paso;
     }
 
-    private void OnTriggerEnter(Collider otro)
+    /// <summary>Devuelve true si la bola impactó y desapareció.</summary>
+    private bool ProcesarImpacto(Collider otro)
     {
-        if (!IsServer || impacto) return;
-
-        Debug.Log("[EnemyProjectile] Choque con: " + otro.name);
-
         // Ignorar otros proyectiles.
         if (otro.GetComponentInParent<EnemyProjectile>() != null)
-            return;
+            return false;
 
         Health vida = otro.GetComponentInParent<Health>();
 
         if (vida != null)
         {
-            Debug.Log(
-                "[EnemyProjectile] Health encontrado. EsJugador: "
-                + vida.EsJugador
-                + ", EstaMuerto: "
-                + vida.EstaMuerto
-            );
-
-            // No dañar enemigos.
+            // Los enemigos no bloquean ni reciben daño de la bola.
             if (!vida.EsJugador)
-            {
-                Debug.Log("[EnemyProjectile] El objetivo no es un jugador.");
-                return;
-            }
+                return false;
 
             if (vida.EstaMuerto)
-                return;
+                return false;
 
             impacto = true;
-
-            Debug.Log("[EnemyProjectile] Aplicando " + dano + " de daño.");
-
+            Debug.Log($"[EnemyProjectile] {dano} de daño a {vida.name}");
             vida.TakeDamage(dano, ReglasCombate.AtacanteNeutral);
             Desaparecer();
-            return;
+            return true;
         }
 
-        // Desaparecer al tocar paredes u otros objetos sólidos.
+        // Paredes, suelo u otros objetos sólidos.
         impacto = true;
         Desaparecer();
+        return true;
     }
 
     private void Desaparecer()

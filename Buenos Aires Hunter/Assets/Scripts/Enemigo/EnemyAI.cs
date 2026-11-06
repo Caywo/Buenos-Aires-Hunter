@@ -39,6 +39,7 @@ public class EnemyAI : NetworkBehaviour
     private Health salud;
     private Transform target;
     private Health targetHealth;
+    private EnemyAudio audioEnemigo;
 
     private TankAttack ataqueTanque;
     private NormalAttack ataqueCuerpoACuerpo;
@@ -68,6 +69,7 @@ public class EnemyAI : NetworkBehaviour
         ataqueDistancia = GetComponent<RangedAttack>();
         knockback = GetComponent<EnemyKnockback>();
         animator = GetComponentInChildren<Animator>();
+        audioEnemigo = GetComponent<EnemyAudio>();
     }
 
     public override void OnNetworkSpawn()
@@ -125,6 +127,9 @@ public class EnemyAI : NetworkBehaviour
 
             animator.SetTrigger(DeathHash);
         }
+
+        if (audioEnemigo != null)
+            audioEnemigo.ReproducirMuerte();
     }
 
     private void Update()
