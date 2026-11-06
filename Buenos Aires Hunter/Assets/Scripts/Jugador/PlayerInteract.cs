@@ -8,6 +8,7 @@ public class PlayerInteract : NetworkBehaviour
     [SerializeField] private LayerMask mask = ~0;
     private PlayerInventory inventario;
     private Interactuable objetivo;
+    private RitualBoss ritual; // NUEVO: mesa ritual que está mirando el jugador
     private PlayerUI playerUI;
     private TiendaUI tiendaUI;
     private EnemySpawnerSupervivencia spawner; // para el modo supervivencia
@@ -30,6 +31,7 @@ public class PlayerInteract : NetworkBehaviour
         if (playerUI == null) return;
 
         objetivo = null;
+        ritual = null; // NUEVO
 
         Ray ray = new Ray(cam.transform.position, cam.transform.forward);
         Debug.DrawRay(ray.origin, ray.direction * distancia);
@@ -39,7 +41,18 @@ public class PlayerInteract : NetworkBehaviour
 
         if (Physics.Raycast(ray, out hitInfo, distancia, mask))
         {
-            objetivo = hitInfo.collider.GetComponentInParent<Interactuable>();
+            // NUEVO: la mesa ritual se revisa primero (no es un Interactuable).
+            ritual = hitInfo.collider.GetComponentInParent<RitualBoss>();
+
+            if (ritual != null)
+            {
+                texto = ritual.TextoInteraccion();
+            }
+            else
+            {
+                objetivo = hitInfo.collider.GetComponentInParent<Interactuable>();
+            }
+
             if (objetivo != null)
             {
                 texto = objetivo.mensaje;
@@ -68,7 +81,18 @@ public class PlayerInteract : NetworkBehaviour
 
     public void Interactuar()
     {
-        if (!IsOwner || objetivo == null) return;
+        if (!IsOwner) return;
+
+        // NUEVO: iniciar el ritual del boss secreto
+        if (ritual != null)
+        {
+            if (ritual.PuedeIniciar)
+                ritual.IntentarIniciar();
+
+            return;
+        }
+
+        if (objetivo == null) return;
 
         if (objetivo is Tienda)
         {

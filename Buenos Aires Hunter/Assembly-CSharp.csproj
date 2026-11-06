@@ -96,9 +96,11 @@
     <Compile Include="Assets\Scripts\Enemigo\EnemyAI.cs" />
     <Compile Include="Assets\Scripts\Billboard.cs" />
     <Compile Include="Assets\Scripts\NetworkManagerPersistente.cs" />
+    <Compile Include="Assets\Scripts\RitualBoss.cs" />
     <Compile Include="Assets\Scripts\SaveData.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextInfoDebugTool.cs" />
     <Compile Include="Assets\Scripts\Jugador\PlayerMotor.cs" />
+    <Compile Include="Assets\Scripts\RitualUI.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeA.cs" />
     <Compile Include="Assets\Escenario2\LoafbrrAssets\Bricktown\script.cs" />
     <Compile Include="Assets\Escenario2\CityTools\script\CriarPredio.cs" />
