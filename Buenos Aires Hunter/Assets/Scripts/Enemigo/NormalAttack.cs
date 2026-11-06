@@ -13,10 +13,12 @@ public class NormalAttack : NetworkBehaviour
     private float tiempoUltimoAtaque = -Mathf.Infinity;
 
     private Animator animator;
+    private EnemyAudio enemyAudio;
 
     private void Awake()
     {
         animator = GetComponentInChildren<Animator>();
+        enemyAudio = GetComponent<EnemyAudio>();
     }
 
     public bool PuedeAtacar()
@@ -43,6 +45,11 @@ public class NormalAttack : NetworkBehaviour
         if (animator != null)
         {
             animator.SetTrigger(triggerAtaque);
+        }
+
+        if (enemyAudio != null)
+        {
+            enemyAudio.ReproducirAtaque();
         }
 
         IDamageable damageable =

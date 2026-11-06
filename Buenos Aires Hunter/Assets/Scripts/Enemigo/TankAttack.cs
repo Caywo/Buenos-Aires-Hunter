@@ -28,6 +28,7 @@ public class TankAttack : NetworkBehaviour
     private CapsuleCollider capsule;
     private Animator animator;
     private Health salud;
+    private EnemyAudio audioEnemigo;
 
     private bool embistiendo;
     private bool preparando;
@@ -54,6 +55,7 @@ public class TankAttack : NetworkBehaviour
         capsule = GetComponent<CapsuleCollider>();
         animator = GetComponentInChildren<Animator>();
         salud = GetComponent<Health>();
+        audioEnemigo = GetComponent<EnemyAudio>();
     }
 
     private Vector3 CentroCuerpo()
@@ -116,6 +118,11 @@ public class TankAttack : NetworkBehaviour
             animator.SetBool("Embestiendo", false);
             animator.ResetTrigger("Embestir");
             animator.SetTrigger("Embestir");
+        }
+
+        if (audioEnemigo != null)
+        {
+            audioEnemigo.ReproducirAtaque();
         }
 
         Debug.Log("TANQUE: preparando embestida");
