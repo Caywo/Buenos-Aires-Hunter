@@ -205,6 +205,7 @@
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF SSD SpaceWarp.shader" />
     <None Include="Assets\Escenario\Silent_Trees\Shader\VertexColorLitSimple.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Masking.shader" />
+    <None Include="Assets\Escenario2\#NVJOB Slender\Readme.txt" />
     <None Include="Assets\Escenario\SkySeries Freebie\Hdri setup.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF Overlay.shader" />
     <None Include="Assets\Escenario\Silent_Trees\README.txt" />
