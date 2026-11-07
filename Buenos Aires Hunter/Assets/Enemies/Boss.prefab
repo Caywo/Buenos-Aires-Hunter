@@ -1707,7 +1707,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   vidaMaxima: 500
   esJugador: 0
-  despawnAlMorir: 1
+  despawnAlMorir: 0
   retrasoDespawn: 2
 --- !u!195 &-6856531939307854365
 NavMeshAgent:

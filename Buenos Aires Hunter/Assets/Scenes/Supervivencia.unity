@@ -38927,7 +38927,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PausaUI
   panelPausa: {fileID: 1807052426}
-  escenaMenuPrincipal: MenuPrincipal
+  panelOpciones: {fileID: 0}
 --- !u!1001 &1225418107
 PrefabInstance:
   m_ObjectHideFlags: 0
