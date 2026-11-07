@@ -23,6 +23,7 @@ public class ControladorUIOpciones : MonoBehaviour
 
     private void OnEnable()
     {
+        InicializarDropdownResolucion();
         SincronizarUI();
     }
 
@@ -100,8 +101,23 @@ public class ControladorUIOpciones : MonoBehaviour
         if (dropdownResolucion != null)
         {
             dropdownResolucion.onValueChanged.RemoveAllListeners();
-            dropdownResolucion.onValueChanged.AddListener(config.SetResolution);
+            dropdownResolucion.onValueChanged.AddListener(OnResolucionCambiada);
         }
+    }
+
+    private void OnResolucionCambiada(int index)
+    {
+        if (Configuracion.Instance == null) return;
+
+        // Evitar aplicar cambios pesados de pantalla si el juego está pausado (evita congelamiento)
+        if (Time.timeScale == 0f)
+        {
+            PlayerPrefs.SetInt("ResolucionIndex", index);
+            PlayerPrefs.Save();
+            return;
+        }
+
+        Configuracion.Instance.SetResolution(index);
     }
 
     // ───────────────────────── Formateo de Textos ─────────────────────────
@@ -132,16 +148,19 @@ public class ControladorUIOpciones : MonoBehaviour
 
     public void OnClicRestablecer()
     {
-        if (Configuracion.Instance != null)
-        {
-            Configuracion.Instance.RestablecerPorDefecto();
-            SincronizarUI();
+        if (Configuracion.Instance == null) return;
 
-            if (dropdownResolucion != null)
-            {
-                dropdownResolucion.value = Configuracion.Instance.ResolucionIndex;
-                dropdownResolucion.RefreshShownValue();
-            }
+        // 1. Restablece valores en PlayerPrefs y AudioMixer
+        Configuracion.Instance.RestablecerPorDefecto();
+
+        // 2. Refresca sliders y etiquetas numéricas
+        SincronizarUI();
+
+        // 3. Sincroniza el Dropdown de Resolución en la UI sin congelar la pantalla
+        if (dropdownResolucion != null)
+        {
+            dropdownResolucion.value = Configuracion.Instance.ResolucionIndex;
+            dropdownResolucion.RefreshShownValue();
         }
     }
 
