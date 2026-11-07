@@ -244,8 +244,18 @@ public class RitualBoss : NetworkBehaviour
 
         Quaternion rotacion = puntoInvocacion != null ? puntoInvocacion.rotation : transform.rotation;
 
-        if (ajustarANavMesh && NavMesh.SamplePosition(posicion, out NavMeshHit hit, 5f, NavMesh.AllAreas))
-            posicion = hit.position;
+        if (ajustarANavMesh)
+        {
+            if (NavMesh.SamplePosition(posicion, out NavMeshHit hit, 5f, NavMesh.AllAreas))
+            {
+                posicion = hit.position;
+                Debug.Log("[Ritual] Boss colocado sobre el NavMesh.");
+            }
+            else
+            {
+                Debug.LogError("[Ritual] No se encontró NavMesh cerca del punto de invocación.");
+            }
+        }
 
         GameObject boss = Instantiate(bossPrefab, posicion, rotacion);
         NetworkObject networkObject = boss.GetComponent<NetworkObject>();

@@ -31844,7 +31844,7 @@ Transform:
   m_GameObject: {fileID: 965760852}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 21.68, y: 0.73901, z: 34.27}
+  m_LocalPosition: {x: 21.68, y: 0.73901, z: 27.88}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -43821,79 +43821,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 475148, guid: b826295956c65444987d7baae67c5858, type: 3}
   m_PrefabInstance: {fileID: 1380096111}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &1380510991
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2108431852518245355, guid: e6e6c4b36fd76cc4499b412e25f4a1fe, type: 3}
-      propertyPath: m_Name
-      value: Boss
-      objectReference: {fileID: 0}
-    - target: {fileID: 2539837313754065509, guid: e6e6c4b36fd76cc4499b412e25f4a1fe, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 23.446949
-      objectReference: {fileID: 0}
-    - target: {fileID: 2539837313754065509, guid: e6e6c4b36fd76cc4499b412e25f4a1fe, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.45000014
-      objectReference: {fileID: 0}
-    - target: {fileID: 2539837313754065509, guid: e6e6c4b36fd76cc4499b412e25f4a1fe, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 32.62055
-      objectReference: {fileID: 0}
-    - target: {fileID: 2539837313754065509, guid: e6e6c4b36fd76cc4499b412e25f4a1fe, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2539837313754065509, guid: e6e6c4b36fd76cc4499b412e25f4a1fe, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2539837313754065509, guid: e6e6c4b36fd76cc4499b412e25f4a1fe, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2539837313754065509, guid: e6e6c4b36fd76cc4499b412e25f4a1fe, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2539837313754065509, guid: e6e6c4b36fd76cc4499b412e25f4a1fe, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2539837313754065509, guid: e6e6c4b36fd76cc4499b412e25f4a1fe, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2539837313754065509, guid: e6e6c4b36fd76cc4499b412e25f4a1fe, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3292594509534574500, guid: e6e6c4b36fd76cc4499b412e25f4a1fe, type: 3}
-      propertyPath: m_InScenePlaced
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3292594509534574500, guid: e6e6c4b36fd76cc4499b412e25f4a1fe, type: 3}
-      propertyPath: GlobalObjectIdHash
-      value: 1163319787
-      objectReference: {fileID: 0}
-    - target: {fileID: 3292594509534574500, guid: e6e6c4b36fd76cc4499b412e25f4a1fe, type: 3}
-      propertyPath: SceneMigrationSynchronization
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3292594509534574500, guid: e6e6c4b36fd76cc4499b412e25f4a1fe, type: 3}
-      propertyPath: InScenePlacedSourceGlobalObjectIdHash
-      value: 1886316296
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: e6e6c4b36fd76cc4499b412e25f4a1fe, type: 3}
 --- !u!1001 &1380809312
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -49655,14 +49582,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RitualBoss
   ShowTopMostFoldoutHeaderGroup: 1
-  sacrificiosNecesarios: 20
+  sacrificiosNecesarios: 5
   soloBajasDeJugadores: 1
   distanciaMaxima: 6
   bossPrefab: {fileID: 2108431852518245355, guid: e6e6c4b36fd76cc4499b412e25f4a1fe, type: 3}
   puntoInvocacion: {fileID: 965760853}
-  retrasoInvocacion: 5
-  duracionMensajeDespertar: 4
-  ajustarANavMesh: 1
+  retrasoInvocacion: 2
+  duracionMensajeDespertar: 0
+  ajustarANavMesh: 0
   efectoRitualActivo: {fileID: 0}
   efectoInvocacion: {fileID: 0}
   duracionEfectoInvocacion: 6
@@ -49670,10 +49597,10 @@ MonoBehaviour:
   musicaBoss: {fileID: 0}
   musicaAmbiente: {fileID: 0}
   mensajeInicio: EL RITUAL HA COMENZADO
-  mensajeDespertar: ALGO HA DESPERTADO
-  nombreBoss: EL DEMONIO DE MORENO
+  mensajeDespertar: 
+  nombreBoss: 
   subtituloBoss: 
-  recompensaAlVencer: 0
+  recompensaAlVencer: 2000
 --- !u!65 &1463166570
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -82774,4 +82701,3 @@ SceneRoots:
   - {fileID: 579235035}
   - {fileID: 1463166566}
   - {fileID: 965760853}
-  - {fileID: 1380510991}

@@ -133,6 +133,7 @@
     <Compile Include="Assets\Personaje\Input\InputPersonaje.cs" />
     <Compile Include="Assets\Scripts\RangedAttack.cs" />
     <Compile Include="Assets\Scripts\IDamageable.cs" />
+    <Compile Include="Assets\Scripts\Enemigo\BossAI.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\DropdownSample.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexColorCycler.cs" />
     <Compile Include="Assets\Scripts\DuelHUD.cs" />
