@@ -8,11 +8,11 @@ public class PlayerInteract : NetworkBehaviour
     [SerializeField] private LayerMask mask = ~0;
     private PlayerInventory inventario;
     private Interactuable objetivo;
-    private RitualBoss ritual; // NUEVO: mesa ritual que está mirando el jugador
     private PlayerUI playerUI;
     private TiendaUI tiendaUI;
     private EnemySpawnerSupervivencia spawner; // para el modo supervivencia
     private PlayerDownState jugadorCaido;
+    private PlayerDownState objetivoReanimacionEnCurso;
     void Start()
     {
         cam = GetComponent<PlayerLook>().cam;
@@ -31,7 +31,7 @@ public class PlayerInteract : NetworkBehaviour
         if (playerUI == null) return;
 
         objetivo = null;
-        ritual = null; // NUEVO
+        jugadorCaido = null;
 
         Ray ray = new Ray(cam.transform.position, cam.transform.forward);
         Debug.DrawRay(ray.origin, ray.direction * distancia);
@@ -41,38 +41,51 @@ public class PlayerInteract : NetworkBehaviour
 
         if (Physics.Raycast(ray, out hitInfo, distancia, mask))
         {
-            // NUEVO: la mesa ritual se revisa primero (no es un Interactuable).
-            ritual = hitInfo.collider.GetComponentInParent<RitualBoss>();
+            objetivo = hitInfo.collider.GetComponentInParent<Interactuable>();
+            jugadorCaido = hitInfo.collider.GetComponentInParent<PlayerDownState>();
 
-            if (ritual != null)
+            // Si estamos apuntando a un jugador caído.
+            if (jugadorCaido != null)
             {
-                texto = ritual.TextoInteraccion();
-            }
-            else
-            {
-                objetivo = hitInfo.collider.GetComponentInParent<Interactuable>();
+                var vidaAjena = jugadorCaido.GetComponent<Health>();
+
+                if (vidaAjena != null && vidaAjena.EstaMuerto)
+                {
+                    if (!inventario.TieneSubeEquipada)
+                    {
+                        texto = "Necesitás equipar la SUBE para revivir";
+                    }
+                    else if (jugadorCaido.IntentandoRevivir)
+                    {
+                        texto = $"Reanimando... {jugadorCaido.TiempoRestante:F1}s";
+                    }
+                    else
+                    {
+                        texto = "Mantené E para revivir $500";
+                    }
+                }
             }
 
-            if (objetivo != null)
+            // Si no estamos apuntando a un jugador caído,
+            // mostramos los mensajes de los objetos interactuables.
+            if (jugadorCaido == null && objetivo != null)
             {
                 texto = objetivo.mensaje;
 
                 if (objetivo is Tienda)
                 {
-                    if (spawner == null) spawner = FindAnyObjectByType<EnemySpawnerSupervivencia>();
+                    if (spawner == null)
+                        spawner = FindAnyObjectByType<EnemySpawnerSupervivencia>();
 
                     if (spawner != null && !spawner.rondaEnPausa.Value)
                     {
                         texto = "La tienda abre en la ronda de descanso";
                     }
-                    if (!inventario.TieneSubeEquipada) texto = "Necesitás la SUBE en mano";
-                }
-                jugadorCaido = hitInfo.collider.GetComponentInParent<PlayerDownState>();
 
-                if (jugadorCaido != null)
-                {
-                    var vidaAjena = jugadorCaido.GetComponent<Health>();
-                    texto = vidaAjena != null && vidaAjena.EstaMuerto ? "Mantené E para revivir" : string.Empty;
+                    if (!inventario.TieneSubeEquipada)
+                    {
+                        texto = "Necesitás la SUBE en mano";
+                    }
                 }
             }
         }
@@ -81,18 +94,7 @@ public class PlayerInteract : NetworkBehaviour
 
     public void Interactuar()
     {
-        if (!IsOwner) return;
-
-        // NUEVO: iniciar el ritual del boss secreto
-        if (ritual != null)
-        {
-            if (ritual.PuedeIniciar)
-                ritual.IntentarIniciar();
-
-            return;
-        }
-
-        if (objetivo == null) return;
+        if (!IsOwner || objetivo == null) return;
 
         if (objetivo is Tienda)
         {
@@ -113,11 +115,8 @@ public class PlayerInteract : NetworkBehaviour
             tiendaUI.AbrirTienda(inventario);
             return;
         }
-        if (jugadorCaido != null)
-        {
-            jugadorCaido.IntentarRevivirRpc(OwnerClientId);
-            return;
-        }
+        if (jugadorCaido != null) return;
+        
 
         IntentarInteractuarServerRpc(objetivo.NetworkObjectId);
     }
@@ -134,5 +133,38 @@ public class PlayerInteract : NetworkBehaviour
                 interactuable.InteractuarConItem(inventario);
             }
         }
+    }
+    public void IniciarInteraccion()
+    {
+        if (!IsOwner) return;
+
+        if (jugadorCaido != null)
+        {
+            if (!inventario.TieneSubeEquipada) return;
+
+            var saludObjetivo = jugadorCaido.GetComponent<Health>();
+
+            if (saludObjetivo != null && saludObjetivo.EstaMuerto)
+            {
+                objetivoReanimacionEnCurso = jugadorCaido;
+                objetivoReanimacionEnCurso.IniciarReanimacion();
+            }
+        }
+    }
+
+    public void TerminarInteraccion()
+    {
+        if (!IsOwner) return;
+
+        // Cancelamos sobre el mismo jugador al que empezamos a reanimar,
+        // aunque hayamos movido la mira.
+        if (objetivoReanimacionEnCurso != null)
+        {
+            objetivoReanimacionEnCurso.CancelarReanimacion();
+            objetivoReanimacionEnCurso = null;
+            return;
+        }
+
+        Interactuar();
     }
 }

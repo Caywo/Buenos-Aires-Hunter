@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -44,14 +45,26 @@ public class Configuracion : MonoBehaviour
         InicializarResoluciones();
     }
 
+    private IEnumerator Start()
+    {
+        // Espera al final del primer frame para garantizar que el AudioMixer esté listo para recibir parámetros
+        yield return new WaitForEndOfFrame();
+        AplicarTodoElAudio();
+    }
+
     public void CargarConfiguracion()
     {
-        SensibilidadX = PlayerPrefs.GetFloat(KEY_SENS_X, 5f);
-        SensibilidadY = PlayerPrefs.GetFloat(KEY_SENS_Y, 5f);
+        SensibilidadX = PlayerPrefs.GetFloat(KEY_SENS_X, 5.5f);
+        SensibilidadY = PlayerPrefs.GetFloat(KEY_SENS_Y, 5.5f);
         VolumenMusica = PlayerPrefs.GetFloat(KEY_VOL_MUSICA, 0.5f);
         VolumenSonidos = PlayerPrefs.GetFloat(KEY_VOL_SONIDOS, 0.5f);
         ResolucionIndex = PlayerPrefs.GetInt(KEY_RES_INDEX, -1);
 
+        AplicarTodoElAudio();
+    }
+
+    public void AplicarTodoElAudio()
+    {
         AplicarAudio("VolumeMusica", VolumenMusica);
         AplicarAudio("VolumeSonidos", VolumenSonidos);
     }
@@ -121,26 +134,23 @@ public class Configuracion : MonoBehaviour
     private void AplicarAudio(string parametroMixer, float valorLinear)
     {
         if (audioMixer == null) return;
-        float dB = Mathf.Log10(Mathf.Clamp(valorLinear, 0.0001f, 1f)) * 20f;
+        float dB = (valorLinear > 0.0001f) ? Mathf.Log10(valorLinear) * 20f : -80f;
         audioMixer.SetFloat(parametroMixer, dB);
     }
 
     public void RestablecerPorDefecto()
     {
-        // 1. Asignar los valores medios predeterminados
         SensibilidadX = 5.5f;
         SensibilidadY = 5.5f;
         VolumenMusica = 0.5f;
         VolumenSonidos = 0.5f;
 
-        // Calcular el índice medio de resoluciones si existen
         if (resolucionesFiltradas != null && resolucionesFiltradas.Count > 0)
         {
             ResolucionIndex = resolucionesFiltradas.Count / 2;
             SetResolution(ResolucionIndex);
         }
 
-        // 2. Sobrescribir en PlayerPrefs
         PlayerPrefs.SetFloat(KEY_SENS_X, SensibilidadX);
         PlayerPrefs.SetFloat(KEY_SENS_Y, SensibilidadY);
         PlayerPrefs.SetFloat(KEY_VOL_MUSICA, VolumenMusica);
@@ -148,9 +158,6 @@ public class Configuracion : MonoBehaviour
         PlayerPrefs.SetInt(KEY_RES_INDEX, ResolucionIndex);
         PlayerPrefs.Save();
 
-        // 3. Aplicar el audio inmediatamente al Mixer
-        AplicarAudio("VolumeMusica", VolumenMusica);
-        AplicarAudio("VolumeSonidos", VolumenSonidos);
+        AplicarTodoElAudio();
     }
-
 }

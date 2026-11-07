@@ -18324,29 +18324,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1457457195504634089, guid: 6149928d454884c45a833b1caf8a5323, type: 3}
       insertIndex: 4
       addedObject: {fileID: 579235038}
-    - targetCorrespondingSourceObject: {fileID: 1457457195504634089, guid: 6149928d454884c45a833b1caf8a5323, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 579235037}
   m_SourcePrefab: {fileID: 100100000, guid: 6149928d454884c45a833b1caf8a5323, type: 3}
 --- !u!1 &579235036 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1457457195504634089, guid: 6149928d454884c45a833b1caf8a5323, type: 3}
   m_PrefabInstance: {fileID: 579235035}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &579235037
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 579235036}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96a2925ce31d0a34e86cd69e9e7ae748, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Horacio
-  ShowTopMostFoldoutHeaderGroup: 1
-  mensaje: Abrir tienda
 --- !u!114 &579235038
 MonoBehaviour:
   m_ObjectHideFlags: 0

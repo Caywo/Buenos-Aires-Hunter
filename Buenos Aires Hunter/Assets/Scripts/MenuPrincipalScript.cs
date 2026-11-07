@@ -5,6 +5,7 @@ using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine.SceneManagement;
 
+
 public class MenuPrincipal : MonoBehaviour
 {
     [System.Serializable]
@@ -30,6 +31,12 @@ public class MenuPrincipal : MonoBehaviour
 
     [Header("Modos de juego")]
     [SerializeField] private ModoDeJuego[] modos;
+
+    [Header("Nombres de escenas")]
+    [SerializeField] private string escenaMenu = "MenuPrincipal";
+    [SerializeField] private string escenaExtraccion = "Extraccion";
+    [SerializeField] private string escenaSupervivencia = "Supervivencia";
+    [SerializeField] private string escenaDuelo = "Duelo";
 
     [Tooltip("Cantidad de jugadores necesarios para arrancar la partida (host incluido).")]
     [SerializeField] private int jugadoresNecesarios = 2;

@@ -5,18 +5,25 @@ using TMPro;
 
 public class ControladorUIOpciones : MonoBehaviour
 {
-    [Header("Referencias UI")]
+    [Header("Referencias UI - Sliders")]
     public TMP_Dropdown dropdownResolucion;
     public Slider sliderSensibilidadX;
     public Slider sliderSensibilidadY;
     public Slider sliderMusica;
     public Slider sliderSonidos;
 
+    [Header("Referencias UI - Textos Numéricos")]
+    public TMP_Text txtValorSensX;
+    public TMP_Text txtValorSensY;
+    public TMP_Text txtValorMusica;
+    public TMP_Text txtValorSonidos;
+
     [Header("Botones")]
-    public Button btnRestablecer; // Referencia al botón UI
+    public Button btnRestablecer;
 
     private void OnEnable()
     {
+        InicializarDropdownResolucion();
         SincronizarUI();
     }
 
@@ -32,25 +39,130 @@ public class ControladorUIOpciones : MonoBehaviour
         }
     }
 
-    public void OnClicRestablecer()
+    public void SincronizarUI()
     {
-        if (Configuracion.Instance != null)
+        if (Configuracion.Instance == null) return;
+
+        var config = Configuracion.Instance;
+
+        // --- SENSIBILIDAD X ---
+        if (sliderSensibilidadX != null)
         {
-            // 1. Restablece los datos de backend en el Singleton
-            Configuracion.Instance.RestablecerPorDefecto();
-            
-            // 2. Refresca la UI con los nuevos valores
-            SincronizarUI();
-            
-            // 3. Ajusta el Dropdown de resolución a la opción media
-            if (dropdownResolucion != null)
-            {
-                dropdownResolucion.value = Configuracion.Instance.ResolucionIndex;
-                dropdownResolucion.RefreshShownValue();
-            }
+            sliderSensibilidadX.onValueChanged.RemoveAllListeners();
+            sliderSensibilidadX.value = config.SensibilidadX;
+            ActualizarTextoSensX(config.SensibilidadX);
+
+            sliderSensibilidadX.onValueChanged.AddListener(v => {
+                config.SetSensibilidadX(v);
+                ActualizarTextoSensX(v);
+            });
+        }
+
+        // --- SENSIBILIDAD Y ---
+        if (sliderSensibilidadY != null)
+        {
+            sliderSensibilidadY.onValueChanged.RemoveAllListeners();
+            sliderSensibilidadY.value = config.SensibilidadY;
+            ActualizarTextoSensY(config.SensibilidadY);
+
+            sliderSensibilidadY.onValueChanged.AddListener(v => {
+                config.SetSensibilidadY(v);
+                ActualizarTextoSensY(v);
+            });
+        }
+
+        // --- MÚSICA (%) ---
+        if (sliderMusica != null)
+        {
+            sliderMusica.onValueChanged.RemoveAllListeners();
+            sliderMusica.value = config.VolumenMusica;
+            ActualizarTextoMusica(config.VolumenMusica);
+
+            sliderMusica.onValueChanged.AddListener(v => {
+                config.SetVolumenMusica(v);
+                ActualizarTextoMusica(v);
+            });
+        }
+
+        // --- SONIDOS (%) ---
+        if (sliderSonidos != null)
+        {
+            sliderSonidos.onValueChanged.RemoveAllListeners();
+            sliderSonidos.value = config.VolumenSonidos;
+            ActualizarTextoSonidos(config.VolumenSonidos);
+
+            sliderSonidos.onValueChanged.AddListener(v => {
+                config.SetVolumenSonidos(v);
+                ActualizarTextoSonidos(v);
+            });
+        }
+
+        // --- RESOLUCIÓN ---
+        if (dropdownResolucion != null)
+        {
+            dropdownResolucion.onValueChanged.RemoveAllListeners();
+            dropdownResolucion.onValueChanged.AddListener(OnResolucionCambiada);
         }
     }
 
+    private void OnResolucionCambiada(int index)
+    {
+        if (Configuracion.Instance == null) return;
+
+        // Evitar aplicar cambios pesados de pantalla si el juego está pausado (evita congelamiento)
+        if (Time.timeScale == 0f)
+        {
+            PlayerPrefs.SetInt("ResolucionIndex", index);
+            PlayerPrefs.Save();
+            return;
+        }
+
+        Configuracion.Instance.SetResolution(index);
+    }
+
+    // ───────────────────────── Formateo de Textos ─────────────────────────
+
+    private void ActualizarTextoSensX(float valor)
+    {
+        if (txtValorSensX != null) 
+            txtValorSensX.text = valor.ToString("F1"); // Muestra 1 decimal (ej: 5.5)
+    }
+
+    private void ActualizarTextoSensY(float valor)
+    {
+        if (txtValorSensY != null) 
+            txtValorSensY.text = valor.ToString("F1"); // Muestra 1 decimal (ej: 5.5)
+    }
+
+    private void ActualizarTextoMusica(float valor)
+    {
+        if (txtValorMusica != null) 
+            txtValorMusica.text = Mathf.RoundToInt(valor * 100f) + "%"; // Muestra porcentaje (ej: 75%)
+    }
+
+    private void ActualizarTextoSonidos(float valor)
+    {
+        if (txtValorSonidos != null) 
+            txtValorSonidos.text = Mathf.RoundToInt(valor * 100f) + "%"; // Muestra porcentaje (ej: 100%)
+    }
+
+    public void OnClicRestablecer()
+    {
+        if (Configuracion.Instance == null) return;
+
+        // 1. Restablece valores en PlayerPrefs y AudioMixer
+        Configuracion.Instance.RestablecerPorDefecto();
+
+        // 2. Refresca sliders y etiquetas numéricas
+        SincronizarUI();
+
+        // 3. Sincroniza el Dropdown de Resolución en la UI sin congelar la pantalla
+        if (dropdownResolucion != null)
+        {
+            dropdownResolucion.value = Configuracion.Instance.ResolucionIndex;
+            dropdownResolucion.RefreshShownValue();
+        }
+    }
 
     private void InicializarDropdownResolucion()
     {
@@ -58,69 +170,22 @@ public class ControladorUIOpciones : MonoBehaviour
 
         dropdownResolucion.ClearOptions();
         var listaResoluciones = Configuracion.Instance.ResolucionesFiltradas;
-        if (listaResoluciones == null) return;
+        if (listaResoluciones == null || listaResoluciones.Count == 0) return;
 
         List<string> opciones = new List<string>();
-        int indiceActual = 0;
-
         for (int i = 0; i < listaResoluciones.Count; i++)
         {
             string opcion = $"{listaResoluciones[i].width}x{listaResoluciones[i].height} {listaResoluciones[i].refreshRateRatio.value:0} Hz";
             opciones.Add(opcion);
-
-            if (listaResoluciones[i].width == Screen.width && listaResoluciones[i].height == Screen.height)
-            {
-                indiceActual = i;
-            }
         }
 
         dropdownResolucion.AddOptions(opciones);
 
         int savedIndex = Configuracion.Instance.ResolucionIndex;
-        int indexAUsar = (savedIndex >= 0 && savedIndex < listaResoluciones.Count) ? savedIndex : indiceActual;
+        int indexMedio = listaResoluciones.Count / 2;
+        int indexAUsar = (savedIndex >= 0 && savedIndex < listaResoluciones.Count) ? savedIndex : indexMedio;
 
         dropdownResolucion.value = indexAUsar;
         dropdownResolucion.RefreshShownValue();
-    }
-
-    public void SincronizarUI()
-    {
-        if (Configuracion.Instance == null) return;
-
-        var config = Configuracion.Instance;
-
-        if (sliderSensibilidadX != null)
-        {
-            sliderSensibilidadX.onValueChanged.RemoveAllListeners();
-            sliderSensibilidadX.value = config.SensibilidadX;
-            sliderSensibilidadX.onValueChanged.AddListener(config.SetSensibilidadX);
-        }
-
-        if (sliderSensibilidadY != null)
-        {
-            sliderSensibilidadY.onValueChanged.RemoveAllListeners();
-            sliderSensibilidadY.value = config.SensibilidadY;
-            sliderSensibilidadY.onValueChanged.AddListener(config.SetSensibilidadY);
-        }
-
-        if (sliderMusica != null)
-        {
-            sliderMusica.onValueChanged.RemoveAllListeners();
-            sliderMusica.value = config.VolumenMusica;
-            sliderMusica.onValueChanged.AddListener(config.SetVolumenMusica);
-        }
-
-        if (sliderSonidos != null)
-        {
-            sliderSonidos.onValueChanged.RemoveAllListeners();
-            sliderSonidos.value = config.VolumenSonidos;
-            sliderSonidos.onValueChanged.AddListener(config.SetVolumenSonidos);
-        }
-
-        if (dropdownResolucion != null)
-        {
-            dropdownResolucion.onValueChanged.RemoveAllListeners();
-            dropdownResolucion.onValueChanged.AddListener(config.SetResolution);
-        }
     }
 }
