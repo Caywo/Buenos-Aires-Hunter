@@ -17,18 +17,22 @@ public class PausaUI : MonoBehaviour
 
     public bool PausaAbierta => pausaAbierta;
 
+
     private void Awake()
     {
+        // Garantizamos que el juego SIEMPRE inicie corriendo y no en pausa
+        Time.timeScale = 1f;
         pausaAbierta = false;
         volviendoAlMenu = false;
     }
 
     private void Start()
     {
-        // Garantizar que la UI arranque cerrada al inicio
+        // Aseguramos que los páneles arranquen apagados
         if (panelPausa != null) panelPausa.SetActive(false);
         if (panelOpciones != null) panelOpciones.SetActive(false);
     }
+
 /*
     private void Update()
     {
@@ -98,12 +102,11 @@ public class PausaUI : MonoBehaviour
     public void CerrarMenuDePausa()
     {
         pausaAbierta = false;
-        Time.timeScale = 1f;
+        Time.timeScale = 1f; // Reanuda la física y el movimiento del jugador
 
         if (panelPausa != null) panelPausa.SetActive(false);
         if (panelOpciones != null) panelOpciones.SetActive(false);
 
-        // Ocultar y bloquear el cursor de nuevo para el gameplay
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
