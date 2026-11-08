@@ -19,41 +19,41 @@ public class PausaUI : MonoBehaviour
 
     private void Awake()
     {
-        if (panelPausa != null) panelPausa.SetActive(false);
-        if (panelOpciones != null) panelOpciones.SetActive(false);
+        pausaAbierta = false;
+        volviendoAlMenu = false;
     }
 
     private void Start()
     {
-        BuscarJugadorLocal();
-        ActualizarCursor(false);
+        // Garantizar que la UI arranque cerrada al inicio
+        if (panelPausa != null) panelPausa.SetActive(false);
+        if (panelOpciones != null) panelOpciones.SetActive(false);
     }
-
+/*
     private void Update()
     {
-        // Permitir probar con ESC o con la tecla P (ideal para probar en Editor)
-        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (volviendoAlMenu) return;
 
-            // 1. Si Opciones está activo, la tecla vuelve a la Pausa
+            // 1. Si Opciones está abierto, volver a Pausa
             if (panelOpciones != null && panelOpciones.activeSelf)
             {
                 VolverDeOpcionesAPausa();
             }
-            // 2. Si la Pausa está abierta, se cierra
-            else if (pausaAbierta)
-            {
-                CerrarMenuDePausa();
-            }
-            // 3. Si la Pausa está cerrada, se abre
-            else
+            // 2. Si la Pausa está CERRADA, abrirla
+            else if (!pausaAbierta)
             {
                 AbrirMenuDePausa();
             }
+            // 3. Si la Pausa está ABIERTA, cerrarla
+            else
+            {
+                CerrarMenuDePausa();
+            }
         }
     }
-
+*/
     private void BuscarJugadorLocal()
     {
         NetworkManager nm = NetworkManager.Singleton;
@@ -73,33 +73,39 @@ public class PausaUI : MonoBehaviour
 
     public void AbrirMenuDePausa()
     {
-        if (pausaAbierta || volviendoAlMenu)
-            return;
-
-        if (jugador == null)
-            BuscarJugadorLocal();
-
         pausaAbierta = true;
+        Time.timeScale = 0f;
 
-        if (panelPausa != null) panelPausa.SetActive(true);
-        if (panelOpciones != null) panelOpciones.SetActive(false);
+        if (panelPausa != null)
+        {
+            panelPausa.SetActive(true);
+            Debug.Log($"[PAUSA] panelPausa activado: {panelPausa.name} ahora está {panelPausa.activeSelf}");
+        }
+        else
+        {
+            Debug.LogError("[PAUSA] ¡ERROR! La referencia 'panelPausa' es NULL en el Inspector.");
+        }
 
-        BloquearControles(true);
-        ActualizarCursor(true);
+        if (panelOpciones != null)
+        {
+            panelOpciones.SetActive(false);
+        }
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     public void CerrarMenuDePausa()
     {
-        if (!pausaAbierta || volviendoAlMenu)
-            return;
-
         pausaAbierta = false;
+        Time.timeScale = 1f;
 
         if (panelPausa != null) panelPausa.SetActive(false);
         if (panelOpciones != null) panelOpciones.SetActive(false);
 
-        BloquearControles(false);
-        ActualizarCursor(false);
+        // Ocultar y bloquear el cursor de nuevo para el gameplay
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     // ───────────────────────── NAVEGACIÓN A OPCIONES ─────────────────────────
@@ -156,4 +162,26 @@ public class PausaUI : MonoBehaviour
 
         volviendoAlMenu = false;
     }
+
+    public void OnTogglePausa()
+    {
+        if (volviendoAlMenu) return;
+
+        // Prioridad 1: Si el menú de Opciones está abierto, ESC vuelve al menú de Pausa
+        if (panelOpciones != null && panelOpciones.activeSelf)
+        {
+            VolverDeOpcionesAPausa();
+        }
+        // Prioridad 2: Si el menú de Pausa está abierto, lo cierra y reanuda el juego
+        else if (pausaAbierta)
+        {
+            CerrarMenuDePausa();
+        }
+        // Prioridad 3: Si el juego está en marcha, abre el menú de Pausa
+        else
+        {
+            AbrirMenuDePausa();
+        }
+    }
+
 }

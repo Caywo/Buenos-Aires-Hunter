@@ -80,13 +80,10 @@ public class InputManager : NetworkBehaviour
                 return;
             }
 
-            // Prioridad 2: abrir o cerrar la pausa.
+            // Prioridad 2: gestionar la pausa y submenús.
             if (pausaUI != null)
             {
-                if (pausaUI.PausaAbierta)
-                    pausaUI.CerrarMenuDePausa();
-                else
-                    pausaUI.AbrirMenuDePausa();
+                pausaUI.OnTogglePausa();
             }
         };
 
