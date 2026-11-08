@@ -1814,7 +1814,7 @@ MonoBehaviour:
   recuperacionEspecial: 0.9
   cooldownEspecial: 7
   probabilidadEspecial: 0.6
-  despawnTrasMuerte: 2
+  despawnTrasMuerte: 6
   parametroCaminar: Caminar
   parametroAtacar: Atacar
   parametroEspecial: AtaqueEspecial
@@ -1886,6 +1886,13 @@ MonoBehaviour:
     TransitionDuration: 0.25
     TriggerNameHash: 1307931173
     TransitionIndex: 0
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 350343929
+    DestinationState: 646380074
+    TransitionDuration: 0.25
+    TriggerNameHash: 1480978544
+    TransitionIndex: 2
   - IsCrossFadeExit: 0
     Layer: 0
     OriginatingState: -1846297975
