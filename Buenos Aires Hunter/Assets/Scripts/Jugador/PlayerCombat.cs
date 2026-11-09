@@ -23,6 +23,9 @@ public class PlayerCombat : NetworkBehaviour
     [SerializeField] private bool respawnAutomatico = true;
     [SerializeField] private float tiempoRespawn = 3f;
 
+    [Header("Efectos de impacto")]
+    [SerializeField] private ParticleSystem particulasSangre;
+
     // Munición por slot del inventario (mismo índice que PlayerInventory.items)
     private readonly NetworkList<int> cargador = new NetworkList<int>();
     private readonly NetworkList<int> reserva = new NetworkList<int>();
@@ -233,6 +236,7 @@ public class PlayerCombat : NetworkBehaviour
             {
                 AplicarDano(objetivo, arma.damage, false);
                 ConfirmarImpactoClientRpc(SoloAlDueno());
+                ReproducirSangreClientRpc(puntoImpacto, normal);
             }
         }
 
@@ -268,6 +272,22 @@ public class PlayerCombat : NetworkBehaviour
 
         if (inventario.ArmaActual != null)
             inventario.ArmaActual.PlayShootEffects(false);
+    }
+
+    [ClientRpc]
+    private void ReproducirSangreClientRpc(Vector3 punto, Vector3 normal)
+    {
+        if (particulasSangre == null) return;
+
+        ParticleSystem particulas = Instantiate(
+            particulasSangre,
+            punto,
+            Quaternion.LookRotation(normal)
+        );
+
+        particulas.Play();
+
+        Destroy(particulas.gameObject, 2f);
     }
 
     [ClientRpc]
@@ -324,6 +344,7 @@ public class PlayerCombat : NetworkBehaviour
             Debug.Log($"[Melee] Impacto en '{hit.collider.name}', daño {melee.damage}");
             AplicarDano(objetivo, melee.damage, true);
             ConfirmarImpactoClientRpc(SoloAlDueno()); // hitmarker
+            ReproducirSangreClientRpc(hit.point, hit.normal);
         }
     }
 

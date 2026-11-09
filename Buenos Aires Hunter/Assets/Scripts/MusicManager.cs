@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -38,6 +37,27 @@ public class MusicManager : MonoBehaviour
         fuente.spatialBlend = 0f;
     }
 
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += AlCargarEscena;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= AlCargarEscena;
+    }
+
+    private void Start()
+    {
+        // Re-aplica la configuración de audio al AudioMixer antes de iniciar la música
+        if (Configuracion.Instance != null)
+        {
+            Configuracion.Instance.AplicarTodoElAudio();
+        }
+
+        ReproducirMenu();
+    }
+
     public void ReproducirMusica(AudioClip musica)
     {
         if (musica == null) return;
@@ -75,32 +95,20 @@ public class MusicManager : MonoBehaviour
         fuente.clip = null;
     }
 
-    private void OnEnable()
-    {
-        SceneManager.sceneLoaded += AlCargarEscena;
-    }
-
-    private void OnDisable()
-    {
-        SceneManager.sceneLoaded -= AlCargarEscena;
-    }
-
-    private void Start()
-    {
-        ReproducirMenu();
-    }
-
     private void AlCargarEscena(Scene escena, LoadSceneMode modo)
     {
+        // Al cambiar de escena se asegura de mantener aplicados los niveles del Mixer
+        if (Configuracion.Instance != null)
+        {
+            Configuracion.Instance.AplicarTodoElAudio();
+        }
+
         if (escena.name == escenaMenu)
             ReproducirMenu();
-
         else if (escena.name == escenaExtraccion)
             ReproducirExtraccion();
-
         else if (escena.name == escenaSupervivencia)
             ReproducirSupervivencia();
-
         else if (escena.name == escenaDuelo)
             ReproducirDuelo();
     }
