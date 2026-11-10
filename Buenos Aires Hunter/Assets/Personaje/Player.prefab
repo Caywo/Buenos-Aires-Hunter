@@ -3287,6 +3287,9 @@ MonoBehaviour:
   ocultarEnDuelo:
   - {fileID: 1556108043915717074}
   - {fileID: 1157278980685131385}
+  damageOverlay: {fileID: 7994535120679579984}
+  alphaMaximo: 0.7
+  duracion: 0.5
 --- !u!114 &389148221887834588
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4412,7 +4415,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1095980501
+  GlobalObjectIdHash: 131308231
   InScenePlacedSourceGlobalObjectIdHash: 0
   m_InScenePlacedDisabledByDefault: 0
   DeferredDespawnTick: 0
@@ -8131,6 +8134,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6709764376814127479, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 7147883222819679696, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -8232,6 +8239,7 @@ PrefabInstance:
     m_RemovedGameObjects:
     - {fileID: 256818846215423624, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
     - {fileID: 4654511465481424168, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
+    - {fileID: 191799607877491949, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 7831238591258256438, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
       insertIndex: 2
@@ -8342,6 +8350,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!114 &7994535120679579984 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2903870059815058086, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}
+  m_PrefabInstance: {fileID: 5097746276558474230}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
 --- !u!1 &8179298844529069142 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3980163701012268960, guid: b174a7f2fa6154d4c8e3c4d7b4e61a13, type: 3}

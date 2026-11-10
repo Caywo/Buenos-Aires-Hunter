@@ -99,7 +99,11 @@ public class MenuPrincipal : MonoBehaviour
 
         NetworkManager.Singleton.StartHost();
 
-        NetworkManager.Singleton.SceneManager.LoadScene(modo.escenaDeJuego, LoadSceneMode.Single);
+        Debug.Log($"[Carga] Solicitando carga de {modo.escenaDeJuego} en t={Time.realtimeSinceStartup:F2}");
+        NetworkManager.Singleton.SceneManager.LoadScene(
+            modo.escenaDeJuego,
+            LoadSceneMode.Single
+        );
     }
 
     public async void CrearPartida()
