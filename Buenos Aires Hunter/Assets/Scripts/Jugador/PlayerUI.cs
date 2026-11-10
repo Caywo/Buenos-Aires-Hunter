@@ -26,8 +26,16 @@ public class PlayerUI : MonoBehaviour
 
     [Header("Modo duelo")]
     [Tooltip("Elementos del HUD que NO aplican al duelo (ej: slots de la SUBE y del Wachin en la hotbar). " +
-             "Solo se ocultan cuando empieza un duelo; en los demás modos no se tocan.")]
+            "Solo se ocultan cuando empieza un duelo; en los demás modos no se tocan.")]
     public GameObject[] ocultarEnDuelo;
+
+    [Header("Pantallas de Finalización")]
+    [SerializeField] private GameObject panelDerrota;
+    [SerializeField] private GameObject panelVictoria;
+
+    [Header("Botones Menu")]
+    [SerializeField] private Button btnVolverMenuDerrota;
+    [SerializeField] private Button btnVolverMenuVictoria;
 
     private PlayerInventory inventarioLocal;
     private PlayerCombat combateLocal;
@@ -38,6 +46,22 @@ public class PlayerUI : MonoBehaviour
     private NetworkObject duenio; // jugador al que pertenece este HUD (el HUD vive dentro del prefab del jugador)
     private bool hudMostrado;
     private float proximaBusquedaSpawner;
+
+    private void Start()
+    {
+        // Vinculamos los botones automáticamente por código
+        if (btnVolverMenuDerrota != null)
+        {
+            btnVolverMenuDerrota.onClick.RemoveAllListeners();
+            btnVolverMenuDerrota.onClick.AddListener(BotonVolverAlMenu);
+        }
+
+        if (btnVolverMenuVictoria != null)
+        {
+            btnVolverMenuVictoria.onClick.RemoveAllListeners();
+            btnVolverMenuVictoria.onClick.AddListener(BotonVolverAlMenu);
+        }
+    }
 
     void Awake()
     {
@@ -123,8 +147,8 @@ public class PlayerUI : MonoBehaviour
         {
             avisoEmitido = true;
             Debug.LogWarning($"[PlayerUI] Al jugador local le falta algún componente. " +
-                             $"PlayerInventory: {inventarioLocal != null}, Health: {saludLocal != null}, " +
-                             $"PlayerCombat: {combateLocal != null}. Revisá el prefab del jugador.");
+                            $"PlayerInventory: {inventarioLocal != null}, Health: {saludLocal != null}, " +
+                            $"PlayerCombat: {combateLocal != null}. Revisá el prefab del jugador.");
         }
     }
 
@@ -232,6 +256,39 @@ public class PlayerUI : MonoBehaviour
     {
         if (crosshair != null) crosshair.SetActive(true);
     }
+
+    public void MostrarPantallaDerrota()
+    {
+        // 1. Asegurar que el HUD o el Canvas padre estén encendidos
+        if (hud != null)
+        {
+            hud.SetActive(true); // DEBE ESTAR EN TRUE PARA QUE SUS HIJOS SE VEAN
+        }
+
+        // 2. Activar el Panel de Derrota
+        if (panelDerrota != null)
+        {
+            panelDerrota.SetActive(true);
+        }
+    }
+
+    public void MostrarPantallaVictoria()
+    {
+        if (panelVictoria != null)
+            panelVictoria.SetActive(true);
+
+        if (hud != null)
+            hud.SetActive(false);
+    }
+
+    public void BotonVolverAlMenu()
+    {
+        if (NetworkManagerPersistente.Instance != null)
+        {
+            NetworkManagerPersistente.Instance.VolverAlMenu("MenuPrincipal");
+        }
+    }
+    
 }
 
 

@@ -8908,7 +8908,13 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: 8dcf1e1a9552d144db500adf60f2b638, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1850837831}
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: 8dcf1e1a9552d144db500adf60f2b638, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1850837832}
   m_SourcePrefab: {fileID: 100100000, guid: 8dcf1e1a9552d144db500adf60f2b638, type: 3}
 --- !u!4 &428282202 stripped
 Transform:
@@ -43583,7 +43589,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PausaUI
   panelPausa: {fileID: 838030099}
-  escenaMenuPrincipal: MenuPrincipal
+  panelOpciones: {fileID: 0}
 --- !u!114 &1796833306
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -43622,6 +43628,10 @@ MonoBehaviour:
   duracionHitMarker: 0.1
   crosshair: {fileID: 0}
   ocultarEnDuelo: []
+  panelDerrota: {fileID: 0}
+  panelVictoria: {fileID: 0}
+  btnVolverMenuDerrota: {fileID: 0}
+  btnVolverMenuVictoria: {fileID: 0}
 --- !u!4 &1796833308
 Transform:
   m_ObjectHideFlags: 0
@@ -45173,6 +45183,55 @@ Transform:
   m_Children: []
   m_Father: {fileID: 483839155}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1850837827 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100000, guid: 8dcf1e1a9552d144db500adf60f2b638, type: 3}
+  m_PrefabInstance: {fileID: 428282201}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1850837831
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1850837827}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
+  GlobalObjectIdHash: 3160953480
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  m_InScenePlacedDisabledByDefault: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  m_InScenePlaced: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
+--- !u!114 &1850837832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1850837827}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99cb18160e7044e41a487b29fd8a0c3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Bondi
+  ShowTopMostFoldoutHeaderGroup: 1
+  mensaje: 
+  precioPasaje: 1000
+  siguienteMapa: 
+  esUltimoMapa: 1
 --- !u!1 &1855281378
 GameObject:
   m_ObjectHideFlags: 0
@@ -49070,7 +49129,7 @@ MonoBehaviour:
   m_Script: {fileID: 365290288, guid: f56d46228aee4734f9114056c53bb57e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectid: 
+  projectid: 179038755923919
   updateInt: 10
   newSplatMapRestoreCode: 0
   toolbarInt: 0

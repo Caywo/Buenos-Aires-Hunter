@@ -124,6 +124,12 @@ public class Bondi : Interactuable
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        Debug.Log("¡MODO EXTRACCIÓN COMPLETADO CON ÉXITO!");
+        // Buscar la UI del jugador local o el gestor de UI
+        PlayerUI ui = FindAnyObjectByType<PlayerUI>();
+        if (ui != null)
+        {
+            // Llamás al método que tengas en tu PlayerUI o PausaUI para mostrar la pantalla de victoria
+            ui.MostrarPantallaVictoria(); 
+        }
     }
 }

@@ -61,8 +61,8 @@ public class NetworkManagerPersistente : MonoBehaviour
         nm.NetworkConfig.PlayerPrefab = alCargarEscena ? null : playerPrefabOriginal;
 
         Debug.Log($"[Spawn] Crear jugadores al cargar la escena: {alCargarEscena}. " +
-                  $"Player Prefab del host: {(nm.NetworkConfig.PlayerPrefab != null ? nm.NetworkConfig.PlayerPrefab.name : "ninguno")}. " +
-                  $"Prefab guardado: {(playerPrefabOriginal != null ? playerPrefabOriginal.name : "NINGUNO")}");
+                $"Player Prefab del host: {(nm.NetworkConfig.PlayerPrefab != null ? nm.NetworkConfig.PlayerPrefab.name : "ninguno")}. " +
+                $"Prefab guardado: {(playerPrefabOriginal != null ? playerPrefabOriginal.name : "NINGUNO")}");
     }
 
     private void Awake()
@@ -166,9 +166,14 @@ public class NetworkManagerPersistente : MonoBehaviour
     {
         NetworkManager nm = NetworkManager.Singleton;
 
-        if (nm != null)
+        if (nm != null && nm.IsListening)
         {
             apagadoIntencional = true;
+
+            // Desuscribir temporalmente eventos para evitar llamadas huérfanas durante el shutdown
+            nm.OnTransportFailure -= AlFallarElTransporte;
+            nm.OnClientStopped -= AlDetenerseCliente;
+
             nm.Shutdown();
 
             while (nm != null && nm.ShutdownInProgress)
@@ -177,7 +182,6 @@ public class NetworkManagerPersistente : MonoBehaviour
             apagadoIntencional = false;
         }
 
-        // Si el modo anterior dejó el Player Prefab en null (duelo), restaurarlo para la próxima partida.
         ConfigurarSpawnDeJugadores(false);
 
         Cursor.lockState = CursorLockMode.None;
