@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Unity.Netcode;
-using UnityEngine.Assertions.Must;
+using System.Collections;
 
 public class PlayerUI : MonoBehaviour
 {
@@ -38,6 +38,13 @@ public class PlayerUI : MonoBehaviour
     private NetworkObject duenio; // jugador al que pertenece este HUD (el HUD vive dentro del prefab del jugador)
     private bool hudMostrado;
     private float proximaBusquedaSpawner;
+
+    [Header("Efecto de daño")]
+    [SerializeField] private Image damageOverlay;
+    [SerializeField] private float alphaMaximo = 0.7f;
+    [SerializeField] private float duracionDanio = 0.5f;
+    private float vidaAnterior;
+    private Coroutine rutinaDanio;
 
     void Awake()
     {
@@ -110,7 +117,16 @@ public class PlayerUI : MonoBehaviour
         }
 
         if (inventarioLocal == null) inventarioLocal = playerObject.GetComponent<PlayerInventory>();
-        if (saludLocal == null) saludLocal = playerObject.GetComponent<Health>();
+        if (saludLocal == null)
+        {
+            saludLocal = playerObject.GetComponent<Health>();
+
+            if (saludLocal != null)
+            {
+                vidaAnterior = saludLocal.VidaActual;
+                saludLocal.OnVidaCambiada += AlCambiarVida;
+            }
+        }
 
         if (combateLocal == null)
         {
@@ -148,6 +164,48 @@ public class PlayerUI : MonoBehaviour
         {
             barraDeVida.fillAmount = saludLocal.VidaMaxima > 0f ? saludLocal.VidaActual / saludLocal.VidaMaxima : 0f;
         }
+    }
+    private void AlCambiarVida(float nuevaVida, float vidaMaxima)
+    {
+        if (nuevaVida < vidaAnterior)
+            MostrarDanio();
+
+        vidaAnterior = nuevaVida;
+    }
+
+    private void MostrarDanio()
+    {
+        if (damageOverlay == null) return;
+
+        if (rutinaDanio != null)
+            StopCoroutine(rutinaDanio);
+
+        rutinaDanio = StartCoroutine(DesvanecerDanio());
+    }
+
+    private IEnumerator DesvanecerDanio()
+    {
+        Color color = damageOverlay.color;
+
+        color.a = alphaMaximo;
+        damageOverlay.color = color;
+
+        float tiempo = 0f;
+
+        while (tiempo < duracionDanio)
+        {
+            tiempo += Time.unscaledDeltaTime;
+
+            color.a = Mathf.Lerp(alphaMaximo, 0f, tiempo / duracionDanio);
+            damageOverlay.color = color;
+
+            yield return null;
+        }
+
+        color.a = 0f;
+        damageOverlay.color = color;
+
+        rutinaDanio = null;
     }
 
     // Munición
@@ -204,6 +262,9 @@ public class PlayerUI : MonoBehaviour
     {
         if (combateLocal != null)
             combateLocal.OnImpactoConfirmado -= MostrarHitMarker;
+
+        if (saludLocal != null)
+            saludLocal.OnVidaCambiada -= AlCambiarVida;
     }
 
     public void ActualizarTexto(string mensajeInteraccion)
