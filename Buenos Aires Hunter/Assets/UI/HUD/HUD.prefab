@@ -4118,7 +4118,6 @@ GameObject:
   - component: {fileID: 9009017250885999699}
   - component: {fileID: 3165655269023423790}
   - component: {fileID: 1269863816763436941}
-  - component: {fileID: 277380948045502063}
   m_Layer: 5
   m_Name: HUD
   m_TagString: Untagged
@@ -4217,39 +4216,3 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &277380948045502063
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8730644940341003968}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6c97bead36298842a0670d185eea8dc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HUDController
-  vidaFill: {fileID: 8496657577369959395}
-  vidaDelay: {fileID: 0}
-  txtVida: {fileID: 0}
-  hitEffect: {fileID: 7682007359454488262}
-  retrasoDelay: 0.4
-  velocidadDelay: 0.6
-  grupoBalas: {fileID: 1087519032890408727}
-  txtBalas: {fileID: 7313917183388466292}
-  cargadorBajo: 3
-  colorNormal: {r: 1, g: 1, b: 1, a: 1}
-  colorBajo: {r: 1, g: 0.8140933, b: 0.19999999, a: 1}
-  txtDinero: {fileID: 2364961789204210435}
-  prefijoDinero: $
-  slots:
-  - {fileID: 6854765276009183733}
-  - {fileID: 3171071190743156559}
-  - {fileID: 2878409733939700173}
-  - {fileID: 4653985910674394727}
-  - {fileID: 6377360698921883537}
-  grupoSupervivencia: {fileID: 7147883222819679696}
-  txtRonda: {fileID: 1675394655969132940}
-  txtContador: {fileID: 4558792235373535985}
-  formatoRonda: RONDA {0}
-  formatoContador: '{0}'

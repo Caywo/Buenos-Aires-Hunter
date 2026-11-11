@@ -61,8 +61,8 @@ public class NetworkManagerPersistente : MonoBehaviour
         nm.NetworkConfig.PlayerPrefab = alCargarEscena ? null : playerPrefabOriginal;
 
         Debug.Log($"[Spawn] Crear jugadores al cargar la escena: {alCargarEscena}. " +
-                  $"Player Prefab del host: {(nm.NetworkConfig.PlayerPrefab != null ? nm.NetworkConfig.PlayerPrefab.name : "ninguno")}. " +
-                  $"Prefab guardado: {(playerPrefabOriginal != null ? playerPrefabOriginal.name : "NINGUNO")}");
+                $"Player Prefab del host: {(nm.NetworkConfig.PlayerPrefab != null ? nm.NetworkConfig.PlayerPrefab.name : "ninguno")}. " +
+                $"Prefab guardado: {(playerPrefabOriginal != null ? playerPrefabOriginal.name : "NINGUNO")}");
     }
 
     private void Awake()
@@ -83,18 +83,16 @@ public class NetworkManagerPersistente : MonoBehaviour
         if (nm != null) playerPrefabOriginal = nm.NetworkConfig.PlayerPrefab;
     }
 
-    private async void Start()
+    private void Start()
     {
         if (Instance != this) return;
 
         if (NetworkManager.Singleton != null)
         {
-            // Relay descarta la allocation (host cerrado, inactividad...) o el host se va.
             NetworkManager.Singleton.OnTransportFailure += AlFallarElTransporte;
             NetworkManager.Singleton.OnClientStopped += AlDetenerseCliente;
         }
 
-        await InitializeServicesAsync();
         SuscribirseACargaDeEscena();
     }
 
@@ -146,15 +144,35 @@ public class NetworkManagerPersistente : MonoBehaviour
         {
             yield return null;
         }
+        var sm = NetworkManager.Singleton.SceneManager;
 
-        NetworkManager.Singleton.SceneManager.OnLoadEventCompleted -= AlCargarEscena;
-        NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += AlCargarEscena;
+        sm.OnLoadEventCompleted -= AlCargarEscena;
+        sm.OnLoadEventCompleted += AlCargarEscena;
+
+        // Logs de tiempos de carga (temporales)
+        sm.OnLoad -= LogCargaEmpieza;
+        sm.OnLoad += LogCargaEmpieza;
+        sm.OnLoadComplete -= LogCargaUnityTermino;
+        sm.OnLoadComplete += LogCargaUnityTermino;
+        sm.OnLoadEventCompleted -= LogCargaNetcodeTermino;
+        sm.OnLoadEventCompleted += LogCargaNetcodeTermino;
     }
 
-    
-    /// Apaga la red, espera a que el apagado termine y recién entonces carga la escena
-    /// con el SceneManager de Unity. Se ejecuta acá porque este objeto persiste entre escenas.
-    
+    private void LogCargaEmpieza(ulong clientId, string escena, LoadSceneMode modo, AsyncOperation op)
+    {
+        Debug.Log($"[Carga] t={Time.realtimeSinceStartup:F2} empieza '{escena}' (cliente {clientId})");
+    }
+
+    private void LogCargaUnityTermino(ulong clientId, string escena, LoadSceneMode modo)
+    {
+        Debug.Log($"[Carga] t={Time.realtimeSinceStartup:F2} Unity terminó '{escena}' (cliente {clientId})");
+    }
+
+    private void LogCargaNetcodeTermino(string escena, LoadSceneMode modo,
+        System.Collections.Generic.List<ulong> completados, System.Collections.Generic.List<ulong> fallidos)
+    {
+        Debug.Log($"[Carga] t={Time.realtimeSinceStartup:F2} Netcode terminó '{escena}'");
+    }
     public void VolverAlMenu(string escenaMenu)
     {
         if (volviendoAlMenu) return; // ya se está yendo: evita cargar el menú dos veces
@@ -166,9 +184,14 @@ public class NetworkManagerPersistente : MonoBehaviour
     {
         NetworkManager nm = NetworkManager.Singleton;
 
-        if (nm != null)
+        if (nm != null && nm.IsListening)
         {
             apagadoIntencional = true;
+
+            // Desuscribir temporalmente eventos para evitar llamadas huérfanas durante el shutdown
+            nm.OnTransportFailure -= AlFallarElTransporte;
+            nm.OnClientStopped -= AlDetenerseCliente;
+
             nm.Shutdown();
 
             while (nm != null && nm.ShutdownInProgress)
@@ -177,7 +200,6 @@ public class NetworkManagerPersistente : MonoBehaviour
             apagadoIntencional = false;
         }
 
-        // Si el modo anterior dejó el Player Prefab en null (duelo), restaurarlo para la próxima partida.
         ConfigurarSpawnDeJugadores(false);
 
         Cursor.lockState = CursorLockMode.None;
@@ -340,8 +362,9 @@ public class NetworkManagerPersistente : MonoBehaviour
         try
         {
             await AsegurarRedApagadaAsync();
-
+            float tInicio = Time.realtimeSinceStartup;
             JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode.Trim());
+            Debug.Log($"[Join] JoinAllocation: {Time.realtimeSinceStartup - tInicio:F2}s");
 
             var transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
 
@@ -356,6 +379,7 @@ public class NetworkManagerPersistente : MonoBehaviour
             SuscribirseACargaDeEscena();
 
             bool started = NetworkManager.Singleton.StartClient();
+            if (started) LogsDeUnion(tInicio);
             if (!started)
             {
                 Debug.LogError("[Relay] StartClient() devolvió false.");
@@ -368,5 +392,26 @@ public class NetworkManagerPersistente : MonoBehaviour
             Debug.LogError($"[Relay] Error uniéndose a la partida (código '{joinCode}'): {e.Message}");
             return false;
         }
+    }
+    private void LogsDeUnion(float tInicio)
+    {
+        var nm = NetworkManager.Singleton;
+
+        void Conectado(ulong id)
+        {
+            if (id != nm.LocalClientId) return;
+            Debug.Log($"[Join] Conectado al host: +{Time.realtimeSinceStartup - tInicio:F2}s");
+            nm.OnClientConnectedCallback -= Conectado;
+        }
+
+        void Sincronizado(ulong id)
+        {
+            if (id != nm.LocalClientId) return;
+            Debug.Log($"[Join] Escena del menú sincronizada: +{Time.realtimeSinceStartup - tInicio:F2}s");
+            nm.SceneManager.OnSynchronizeComplete -= Sincronizado;
+        }
+
+        nm.OnClientConnectedCallback += Conectado;
+        nm.SceneManager.OnSynchronizeComplete += Sincronizado;
     }
 }

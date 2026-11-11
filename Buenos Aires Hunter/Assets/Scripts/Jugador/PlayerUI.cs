@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Unity.Netcode;
-using UnityEngine.Assertions.Must;
+using System.Collections;
 
 public class PlayerUI : MonoBehaviour
 {
@@ -26,8 +26,16 @@ public class PlayerUI : MonoBehaviour
 
     [Header("Modo duelo")]
     [Tooltip("Elementos del HUD que NO aplican al duelo (ej: slots de la SUBE y del Wachin en la hotbar). " +
-             "Solo se ocultan cuando empieza un duelo; en los demás modos no se tocan.")]
+            "Solo se ocultan cuando empieza un duelo; en los demás modos no se tocan.")]
     public GameObject[] ocultarEnDuelo;
+
+    [Header("Pantallas de Finalización")]
+    [SerializeField] private GameObject panelDerrota;
+    [SerializeField] private GameObject panelVictoria;
+
+    [Header("Botones Menu")]
+    [SerializeField] private Button btnVolverMenuDerrota;
+    [SerializeField] private Button btnVolverMenuVictoria;
 
     private PlayerInventory inventarioLocal;
     private PlayerCombat combateLocal;
@@ -38,6 +46,28 @@ public class PlayerUI : MonoBehaviour
     private NetworkObject duenio; // jugador al que pertenece este HUD (el HUD vive dentro del prefab del jugador)
     private bool hudMostrado;
     private float proximaBusquedaSpawner;
+    [Header("Efecto de daño")]
+    [SerializeField] private Image damageOverlay;
+    [SerializeField] private float alphaMaximo = 0.7f;
+    [SerializeField] private float duracionDanio = 0.5f;
+    private float vidaAnterior;
+    private Coroutine rutinaDanio;
+
+    private void Start()
+    {
+        // Vinculamos los botones automáticamente por código
+        if (btnVolverMenuDerrota != null)
+        {
+            btnVolverMenuDerrota.onClick.RemoveAllListeners();
+            btnVolverMenuDerrota.onClick.AddListener(BotonVolverAlMenu);
+        }
+
+        if (btnVolverMenuVictoria != null)
+        {
+            btnVolverMenuVictoria.onClick.RemoveAllListeners();
+            btnVolverMenuVictoria.onClick.AddListener(BotonVolverAlMenu);
+        }
+    }
 
     void Awake()
     {
@@ -110,7 +140,16 @@ public class PlayerUI : MonoBehaviour
         }
 
         if (inventarioLocal == null) inventarioLocal = playerObject.GetComponent<PlayerInventory>();
-        if (saludLocal == null) saludLocal = playerObject.GetComponent<Health>();
+        if (saludLocal == null)
+        {
+            saludLocal = playerObject.GetComponent<Health>();
+
+            if (saludLocal != null)
+            {
+                vidaAnterior = saludLocal.VidaActual;
+                saludLocal.OnVidaCambiada += AlCambiarVida;
+            }
+        }
 
         if (combateLocal == null)
         {
@@ -123,8 +162,8 @@ public class PlayerUI : MonoBehaviour
         {
             avisoEmitido = true;
             Debug.LogWarning($"[PlayerUI] Al jugador local le falta algún componente. " +
-                             $"PlayerInventory: {inventarioLocal != null}, Health: {saludLocal != null}, " +
-                             $"PlayerCombat: {combateLocal != null}. Revisá el prefab del jugador.");
+                            $"PlayerInventory: {inventarioLocal != null}, Health: {saludLocal != null}, " +
+                            $"PlayerCombat: {combateLocal != null}. Revisá el prefab del jugador.");
         }
     }
 
@@ -148,6 +187,48 @@ public class PlayerUI : MonoBehaviour
         {
             barraDeVida.fillAmount = saludLocal.VidaMaxima > 0f ? saludLocal.VidaActual / saludLocal.VidaMaxima : 0f;
         }
+    }
+    private void AlCambiarVida(float nuevaVida, float vidaMaxima)
+    {
+        if (nuevaVida < vidaAnterior)
+            MostrarDanio();
+
+        vidaAnterior = nuevaVida;
+    }
+
+    private void MostrarDanio()
+    {
+        if (damageOverlay == null) return;
+
+        if (rutinaDanio != null)
+            StopCoroutine(rutinaDanio);
+
+        rutinaDanio = StartCoroutine(DesvanecerDanio());
+    }
+
+    private IEnumerator DesvanecerDanio()
+    {
+        Color color = damageOverlay.color;
+
+        color.a = alphaMaximo;
+        damageOverlay.color = color;
+
+        float tiempo = 0f;
+
+        while (tiempo < duracionDanio)
+        {
+            tiempo += Time.unscaledDeltaTime;
+
+            color.a = Mathf.Lerp(alphaMaximo, 0f, tiempo / duracionDanio);
+            damageOverlay.color = color;
+
+            yield return null;
+        }
+
+        color.a = 0f;
+        damageOverlay.color = color;
+
+        rutinaDanio = null;
     }
 
     // Munición
@@ -232,6 +313,39 @@ public class PlayerUI : MonoBehaviour
     {
         if (crosshair != null) crosshair.SetActive(true);
     }
+
+    public void MostrarPantallaDerrota()
+    {
+        // 1. Asegurar que el HUD o el Canvas padre estén encendidos
+        if (hud != null)
+        {
+            hud.SetActive(true); // DEBE ESTAR EN TRUE PARA QUE SUS HIJOS SE VEAN
+        }
+
+        // 2. Activar el Panel de Derrota
+        if (panelDerrota != null)
+        {
+            panelDerrota.SetActive(true);
+        }
+    }
+
+    public void MostrarPantallaVictoria()
+    {
+        if (panelVictoria != null)
+            panelVictoria.SetActive(true);
+
+        if (hud != null)
+            hud.SetActive(false);
+    }
+
+    public void BotonVolverAlMenu()
+    {
+        if (NetworkManagerPersistente.Instance != null)
+        {
+            NetworkManagerPersistente.Instance.VolverAlMenu("MenuPrincipal");
+        }
+    }
+    
 }
 
 
