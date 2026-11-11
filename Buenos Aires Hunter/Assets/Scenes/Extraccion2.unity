@@ -4707,6 +4707,7 @@ MonoBehaviour:
   primeraOleadaTanque: 4
   maxTanquesVivos: 1
   distanciaMinimaJugador: 15
+  distanciaMaximaJugador: 60
   recompensaPorKill: 20
 --- !u!4 &214475137
 Transform:
@@ -8743,13 +8744,68 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: 8dcf1e1a9552d144db500adf60f2b638, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 428282204}
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: 8dcf1e1a9552d144db500adf60f2b638, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 428282205}
   m_SourcePrefab: {fileID: 100100000, guid: 8dcf1e1a9552d144db500adf60f2b638, type: 3}
 --- !u!4 &428282202 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 8dcf1e1a9552d144db500adf60f2b638, type: 3}
   m_PrefabInstance: {fileID: 428282201}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &428282203 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100000, guid: 8dcf1e1a9552d144db500adf60f2b638, type: 3}
+  m_PrefabInstance: {fileID: 428282201}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &428282204
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 428282203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
+  GlobalObjectIdHash: 3656538454
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  m_InScenePlacedDisabledByDefault: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  m_InScenePlaced: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
+--- !u!114 &428282205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 428282203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99cb18160e7044e41a487b29fd8a0c3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Bondi
+  ShowTopMostFoldoutHeaderGroup: 1
+  mensaje: "\xBFTomarse el reverendo palo?"
+  precioPasaje: 8000
+  siguienteMapa: MenuPrincipal
+  esUltimoMapa: 1
 --- !u!1 &428798809
 GameObject:
   m_ObjectHideFlags: 0
