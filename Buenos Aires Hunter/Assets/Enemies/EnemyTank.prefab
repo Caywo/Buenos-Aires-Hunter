@@ -623,14 +623,19 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   pasos:
   - {fileID: 8300000, guid: 2999d9262617cd64f81688073736016f, type: 3}
-  distanciaPorPaso: 1.6
-  volumenPasos: 0.7
+  distanciaPorPaso: 2.84
+  volumenPasos: 1
+  velocidadMaximaPasos: 0
   ataques:
   - {fileID: 8300000, guid: 94b00c1618f8c3f40b026187b5518da9, type: 3}
   volumenAtaque: 0.8
   muertes:
   - {fileID: 8300000, guid: 6852cb619ff2a7846811683db8916db0, type: 3}
   volumenMuerte: 0.7
+  preparacionEspecial: []
+  dash: []
+  fase2: []
+  volumenExtra: 1
   variacionPitch: {x: 0.92, y: 1.08}
   distanciaMaximaPasos: 30
 --- !u!1 &1446459878991317827

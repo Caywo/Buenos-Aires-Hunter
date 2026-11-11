@@ -9790,10 +9790,12 @@ MonoBehaviour:
   musicaExtraccion: {fileID: 8300000, guid: ba4983e0ed923e641bfd5db9b6bddca7, type: 3}
   musicaSupervivencia: {fileID: 8300000, guid: 0d34dd86a362d3e4697fe5846b17a2a4, type: 3}
   musicaDuelo: {fileID: 8300000, guid: 87d3ec658a475614fa5bd553a15a2617, type: 3}
+  musicaTutorial: {fileID: 8300000, guid: f13b81b7c20a2b44fb5f45405947e0b7, type: 3}
   escenaMenu: MenuPrincipal
   escenaExtraccion: Extraccion1
   escenaSupervivencia: Supervivencia
   escenaDuelo: Duelo1
+  escenaTutorial: Tutorial
 --- !u!1 &795561227
 GameObject:
   m_ObjectHideFlags: 0

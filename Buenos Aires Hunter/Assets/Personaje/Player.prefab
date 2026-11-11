@@ -4896,7 +4896,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 244da31ede234fb4fa7a9d2929247632, type: 3}
   punchClip: {fileID: 8300000, guid: 20cead5b2d048364db7c55f3f51bff20, type: 3}
   footstepVolume: 0.257
-  punchVolume: 0.413
+  punchVolume: 1
 --- !u!114 &1070948456886115100
 MonoBehaviour:
   m_ObjectHideFlags: 0

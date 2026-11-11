@@ -11,12 +11,14 @@ public class MusicManager : MonoBehaviour
     [SerializeField] private AudioClip musicaExtraccion;
     [SerializeField] private AudioClip musicaSupervivencia;
     [SerializeField] private AudioClip musicaDuelo;
+    [SerializeField] private AudioClip musicaTutorial;
 
     [Header("Nombres de escenas")]
     [SerializeField] private string escenaMenu = "MenuPrincipal";
     [SerializeField] private string escenaExtraccion = "Extraccion";
     [SerializeField] private string escenaSupervivencia = "Supervivencia";
     [SerializeField] private string escenaDuelo = "Duelo";
+    [SerializeField] private string escenaTutorial = "Tutorial";
 
     private AudioSource fuente;
 
@@ -89,6 +91,11 @@ public class MusicManager : MonoBehaviour
         ReproducirMusica(musicaDuelo);
     }
 
+    public void ReproducirTutorial()
+    {
+        ReproducirMusica(musicaTutorial);
+    }
+
     public void DetenerMusica()
     {
         fuente.Stop();
@@ -111,5 +118,7 @@ public class MusicManager : MonoBehaviour
             ReproducirSupervivencia();
         else if (escena.name == escenaDuelo)
             ReproducirDuelo();
+        else if (escena.name == escenaTutorial)
+            ReproducirTutorial();
     }
 }

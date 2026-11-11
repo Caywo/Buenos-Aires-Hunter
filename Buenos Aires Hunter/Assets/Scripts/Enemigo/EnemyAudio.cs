@@ -1,9 +1,10 @@
 using Unity.Netcode;
 using UnityEngine;
 
-// Va en el prefab de cada enemigo (normal y tanque), junto a su AudioSource.
+// Va en el prefab de cada enemigo (normal, tanque y boss), junto a su AudioSource.
 // - Pasos: se calculan en CADA máquina según cuánto se movió el enemigo (no dependen de la IA).
-// - Ataque y muerte: los dispara el servidor y llegan a todos los clientes por ClientRpc.
+// - Ataque, muerte y sonidos extra: los dispara el servidor y llegan a todos los clientes por ClientRpc.
+// Los sonidos que no se usan se dejan vacíos y simplemente no suenan.
 [RequireComponent(typeof(AudioSource))]
 public class EnemyAudio : NetworkBehaviour
 {
@@ -12,6 +13,8 @@ public class EnemyAudio : NetworkBehaviour
     [Tooltip("Metros que recorre entre un paso y el siguiente. Más grande = pasos más espaciados.")]
     [SerializeField] float distanciaPorPaso = 1.6f;
     [SerializeField, Range(0f, 1f)] float volumenPasos = 0.5f;
+    [Tooltip("Si se mueve más rápido que esto (m/s) no suenan pasos: sirve para dashes y embestidas. 0 = sin límite.")]
+    [SerializeField] float velocidadMaximaPasos = 0f;
 
     [Header("Ataque")]
     [SerializeField] AudioClip[] ataques;
@@ -21,12 +24,22 @@ public class EnemyAudio : NetworkBehaviour
     [SerializeField] AudioClip[] muertes;
     [SerializeField, Range(0f, 1f)] float volumenMuerte = 0.9f;
 
+    [Header("Extra para jefes (opcional)")]
+    [Tooltip("Aviso antes del ataque especial: le da al jugador una pista para esquivar.")]
+    [SerializeField] AudioClip[] preparacionEspecial;
+    [SerializeField] AudioClip[] dash;
+    [Tooltip("Rugido al pasar a la fase 2.")]
+    [SerializeField] AudioClip[] fase2;
+    [SerializeField, Range(0f, 1f)] float volumenExtra = 1f;
+
     [Header("Variación")]
     [SerializeField] Vector2 variacionPitch = new Vector2(0.92f, 1.08f);
 
     [Header("Optimización")]
     [Tooltip("Si la cámara está más lejos que esto, no se reproducen pasos.")]
     [SerializeField] float distanciaMaximaPasos = 30f;
+
+    enum Extra : byte { PreparacionEspecial = 0, Dash = 1, Fase2 = 2 }
 
     AudioSource fuente;
     Vector3 ultimaPosicion;
@@ -72,6 +85,13 @@ public class EnemyAudio : NetworkBehaviour
             return;
         }
 
+        // Movimiento demasiado rápido (dash, embestida, knockback): no es una pisada
+        if (velocidadMaximaPasos > 0f && avance / Mathf.Max(Time.deltaTime, 0.0001f) > velocidadMaximaPasos)
+        {
+            distanciaAcumulada = 0f;
+            return;
+        }
+
         distanciaAcumulada += avance;
 
         if (distanciaAcumulada >= distanciaPorPaso)
@@ -96,7 +116,7 @@ public class EnemyAudio : NetworkBehaviour
                <= distanciaMaximaPasos * distanciaMaximaPasos;
     }
 
-    // ───────────────────────── ATAQUE Y MUERTE (los pide el servidor) ─────────────────────────
+    // ───────────────────────── SONIDOS QUE PIDE EL SERVIDOR ─────────────────────────
 
     // Llamar desde el servidor, en el momento exacto en que el enemigo ataca
     public void ReproducirAtaque()
@@ -112,6 +132,27 @@ public class EnemyAudio : NetworkBehaviour
         MuerteClientRpc();
     }
 
+    // Jefes: aviso antes del ataque especial
+    public void ReproducirPreparacionEspecial()
+    {
+        if (!IsServer || muerto) return;
+        ExtraClientRpc((byte)Extra.PreparacionEspecial);
+    }
+
+    // Jefes: al lanzarse en el dash
+    public void ReproducirDash()
+    {
+        if (!IsServer || muerto) return;
+        ExtraClientRpc((byte)Extra.Dash);
+    }
+
+    // Jefes: rugido al empezar la transición a fase 2
+    public void ReproducirFase2()
+    {
+        if (!IsServer || muerto) return;
+        ExtraClientRpc((byte)Extra.Fase2);
+    }
+
     [ClientRpc]
     void AtaqueClientRpc()
     {
@@ -124,6 +165,22 @@ public class EnemyAudio : NetworkBehaviour
     {
         muerto = true;
         ReproducirDesligado(Elegir(muertes), volumenMuerte);
+    }
+
+    [ClientRpc]
+    void ExtraClientRpc(byte tipo)
+    {
+        if (muerto) return;
+
+        AudioClip[] lista = null;
+        switch ((Extra)tipo)
+        {
+            case Extra.PreparacionEspecial: lista = preparacionEspecial; break;
+            case Extra.Dash: lista = dash; break;
+            case Extra.Fase2: lista = fase2; break;
+        }
+
+        Reproducir(Elegir(lista), volumenExtra);
     }
 
     // ───────────────────────── Utilidades ─────────────────────────
