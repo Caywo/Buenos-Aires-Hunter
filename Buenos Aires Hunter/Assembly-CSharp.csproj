@@ -140,6 +140,7 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexColorCycler.cs" />
     <Compile Include="Assets\Scripts\DuelHUD.cs" />
     <Compile Include="Assets\Scripts\Jugador\Jugador.cs" />
+    <Compile Include="Assets\Scripts\Minijuego\EfectoBoton.cs" />
     <Compile Include="Assets\Scripts\Enemigo\EnemySeparation.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ObjectSpin.cs" />
     <Compile Include="Assets\Scripts\Enemigo\NormalAttack.cs" />
