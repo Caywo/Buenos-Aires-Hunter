@@ -316,17 +316,15 @@ public class PlayerUI : MonoBehaviour
 
     public void MostrarPantallaDerrota()
     {
-        // 1. Asegurar que el HUD o el Canvas padre estén encendidos
-        if (hud != null)
-        {
-            hud.SetActive(true); // DEBE ESTAR EN TRUE PARA QUE SUS HIJOS SE VEAN
-        }
+        Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
 
-        // 2. Activar el Panel de Derrota
+        if (hud != null)
+            hud.SetActive(true);
+
         if (panelDerrota != null)
-        {
             panelDerrota.SetActive(true);
-        }
     }
 
     public void MostrarPantallaVictoria()
@@ -340,6 +338,8 @@ public class PlayerUI : MonoBehaviour
 
     public void BotonVolverAlMenu()
     {
+        Time.timeScale = 1f;
+
         if (NetworkManagerPersistente.Instance != null)
         {
             NetworkManagerPersistente.Instance.VolverAlMenu("MenuPrincipal");

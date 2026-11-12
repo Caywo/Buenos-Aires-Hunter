@@ -40,11 +40,8 @@ public class Health : NetworkBehaviour, IDamageable
     /// <summary>SOLO SERVIDOR. Ideal para que un DuelManager / marcador cuente kills.</summary>
     public static event Action<Health, ulong> OnCualquierMuerte;
 
-    // Agregá esto dentro de Health.cs
-
     private void Start()
     {
-        // Nos suscribimos al evento de cambio de estado de muerte
         OnMuerteCambiada += ManejarMuerteLocal;
     }
 
@@ -56,37 +53,27 @@ public class Health : NetworkBehaviour, IDamageable
 
     private void ManejarMuerteLocal(bool estaMuerto)
     {
-        // Solo actuamos si el objeto que murió es un jugador y realmente falleció
-        if (!estaMuerto || !esJugador) return;
+        if (!esJugador) return;
 
-        // Verificamos si es el jugador local (funciona en Solitario y Multijugador)
         bool esLocal = IsOwner || NetworkManager.Singleton == null || !NetworkManager.Singleton.IsListening;
 
         if (esLocal)
         {
-            PausarYMostrarDerrota();
+            // Inmoviliza al jugador si murió (esperando reanimación) o le devuelve el control si fue revivido
+            BloquearControlesLocalmente(estaMuerto);
         }
     }
-    
-    private void PausarYMostrarDerrota()
+
+    private void BloquearControlesLocalmente(bool bloquear)
     {
-        // 1. Detener el juego y liberar el cursor para poder usar la UI
-        Time.timeScale = 0f;
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        var motor = GetComponent<PlayerMotor>();
+        if (motor != null) motor.inputBloqueado = bloquear;
 
-        // 2. Buscar PlayerUI específicamente en este jugador (busca en la raíz y en todos sus hijos como 'UI')
-        PlayerUI ui = GetComponentInChildren<PlayerUI>(true);
+        var look = GetComponent<PlayerLook>();
+        if (look != null) look.inputBloqueado = bloquear;
 
-        if (ui != null)
-        {
-            ui.MostrarPantallaDerrota();
-            Debug.Log("[Health] Pantalla de derrota activada con éxito en el jugador local.");
-        }
-        else
-        {
-            Debug.LogError("[Health] No se encontró el componente PlayerUI en este GameObject ni en sus hijos.");
-        }
+        var combate = GetComponent<PlayerCombat>();
+        if (combate != null) combate.enabled = !bloquear;
     }
 
     public override void OnNetworkSpawn()

@@ -46,11 +46,12 @@ public class EnemySpawnerSupervivencia : NetworkBehaviour
     public NetworkVariable<bool> rondaEnPausa = new NetworkVariable<bool>(false,
         NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     public NetworkVariable<float> tiempoRestante = new NetworkVariable<float>(0f,
-    NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     private List<NetworkObject> enemigosActuales = new List<NetworkObject>();
     private int tanquesVivos = 0;
     private bool esperandoNuevaRonda = false;
+    private bool derrotaNotificada = false;
     private Coroutine coroutineRonda;
 
     public override void OnNetworkSpawn()
@@ -60,7 +61,7 @@ public class EnemySpawnerSupervivencia : NetworkBehaviour
         if (!IsServer)
             return;
 
-        Health.OnCualquierMuerte += AlMorirEnemigo;
+        Health.OnCualquierMuerte += AlMorirEntidad;
         IniciarNuevaRonda();
     }
 
@@ -69,7 +70,7 @@ public class EnemySpawnerSupervivencia : NetworkBehaviour
         if (!IsServer)
             return;
 
-        Health.OnCualquierMuerte -= AlMorirEnemigo;
+        Health.OnCualquierMuerte -= AlMorirEntidad;
     }
 
     private void Update()
@@ -77,7 +78,7 @@ public class EnemySpawnerSupervivencia : NetworkBehaviour
         if (!IsServer)
             return;
 
-        if (rondaEnPausa.Value || esperandoNuevaRonda)
+        if (rondaEnPausa.Value || esperandoNuevaRonda || derrotaNotificada)
             return;
 
         LimpiarEnemigosActuales();
@@ -92,16 +93,17 @@ public class EnemySpawnerSupervivencia : NetworkBehaviour
     private void ActualizarRonda()
     {
         if (textoRonda == null) return;
-            textoRonda.gameObject.SetActive(true);
-            if (tiempoRestante.Value > 0f)
-            {
-                textoRonda.text = "Próxima ronda en " + Mathf.CeilToInt(tiempoRestante.Value);
-            }
-            else
-            {
-                textoRonda.text = "Ronda " + rondaActual.Value;
-            }
+        textoRonda.gameObject.SetActive(true);
+        if (tiempoRestante.Value > 0f)
+        {
+            textoRonda.text = "Próxima ronda en " + Mathf.CeilToInt(tiempoRestante.Value);
+        }
+        else
+        {
+            textoRonda.text = "Ronda " + rondaActual.Value;
+        }
     }
+
     private void LimpiarEnemigosActuales()
     {
         for (int i = enemigosActuales.Count - 1; i >= 0; i--)
@@ -302,15 +304,62 @@ public class EnemySpawnerSupervivencia : NetworkBehaviour
         IniciarNuevaRonda();
     }
 
-    private void AlMorirEnemigo(Health health, ulong atacanteId)
+    private void AlMorirEntidad(Health health, ulong atacanteId)
     {
         if (!IsServer)
             return;
 
         if (health.EsJugador)
-            return; // el manejo de jugador caído/game over va en otro script, como vimos con PlayerDownState
+        {
+            EvaluarDerrotaEquipo();
+            return;
+        }
 
         DarRecompensaAtacante(atacanteId);
+    }
+
+    private void EvaluarDerrotaEquipo()
+    {
+        if (derrotaNotificada) return;
+
+        bool quedanJugadoresVivos = false;
+
+        foreach (var cliente in NetworkManager.Singleton.ConnectedClientsList)
+        {
+            if (cliente.PlayerObject != null)
+            {
+                var health = cliente.PlayerObject.GetComponent<Health>();
+                if (health != null && !health.EstaMuerto)
+                {
+                    quedanJugadoresVivos = true;
+                    break;
+                }
+            }
+        }
+
+        if (!quedanJugadoresVivos)
+        {
+            derrotaNotificada = true;
+            NotificarDerrotaEquipoClientRpc();
+        }
+    }
+
+    [ClientRpc]
+    private void NotificarDerrotaEquipoClientRpc()
+    {
+        Time.timeScale = 0f;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        var localPlayer = NetworkManager.Singleton.LocalClient?.PlayerObject;
+        if (localPlayer != null)
+        {
+            var ui = localPlayer.GetComponentInChildren<PlayerUI>(true);
+            if (ui != null)
+            {
+                ui.MostrarPantallaDerrota();
+            }
+        }
     }
 
     private void DarRecompensaAtacante(ulong atacanteId)

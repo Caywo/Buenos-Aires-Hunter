@@ -148,6 +148,7 @@
     <Compile Include="Assets\Scripts\Enemigo\EnemyKnockback.cs" />
     <Compile Include="Assets\Scripts\LogrosJugador.cs" />
     <Compile Include="Assets\Personaje\Inventario\ItemData.cs" />
+    <Compile Include="Assets\Scripts\ControladorDerrotaCooperativa.cs" />
     <Compile Include="Assets\Scripts\HUD\SlotUI.cs" />
     <Compile Include="Assets\Scripts\Logros\LogroUI.cs" />
     <Compile Include="Assets\Escenario2\CityTools\script\BuildingCreator.cs" />
