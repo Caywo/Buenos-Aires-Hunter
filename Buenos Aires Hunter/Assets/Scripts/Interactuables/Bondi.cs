@@ -12,11 +12,6 @@ public class Bondi : Interactuable
     private readonly HashSet<ulong> jugadoresQuePagaron = new HashSet<ulong>();
     private bool cambiandoDeEscena = false;
 
-    private void Start()
-    {
-        mensaje = $"Presioná E para subir al bondi (${precioPasaje})";
-    }
-
     public override void InteractuarConItem(PlayerInventory jugador)
     {
         if (!IsServer || cambiandoDeEscena || jugador == null)
@@ -124,11 +119,9 @@ public class Bondi : Interactuable
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        // Buscar la UI del jugador local o el gestor de UI
         PlayerUI ui = FindAnyObjectByType<PlayerUI>();
         if (ui != null)
         {
-            // Llamás al método que tengas en tu PlayerUI o PausaUI para mostrar la pantalla de victoria
             ui.MostrarPantallaVictoria(); 
         }
     }

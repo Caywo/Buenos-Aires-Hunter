@@ -8803,7 +8803,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Bondi
   ShowTopMostFoldoutHeaderGroup: 1
   mensaje: "\xBFTomarse el reverendo palo?"
-  precioPasaje: 8000
+  precioPasaje: 500
   siguienteMapa: MenuPrincipal
   esUltimoMapa: 1
 --- !u!1 &428798809
