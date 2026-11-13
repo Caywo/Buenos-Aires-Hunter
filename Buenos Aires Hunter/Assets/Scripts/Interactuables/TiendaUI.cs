@@ -1,11 +1,16 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TiendaUI : MonoBehaviour
 {
     public GameObject panelTienda;
     private PlayerInventory jugadorActual;
     private MinijuegoPPTUI minijuegoUI;
+
+    [Header("Mini juego")]
+    [Tooltip("El botón 'De una'.")]
+    [SerializeField] private Button botonMinijuego;
 
     // Objetos de la tienda que se ocultaron mientras se juega el mini juego.
     private readonly List<GameObject> ocultosPorMinijuego = new List<GameObject>();
@@ -20,6 +25,7 @@ public class TiendaUI : MonoBehaviour
         MostrarContenidoOcultado();
 
         panelTienda.SetActive(true);
+        ActualizarBotonMinijuego();
 
         jugador.GetComponent<PlayerLook>().inputBloqueado = true;
         jugador.inputBloqueado = true;
@@ -43,6 +49,15 @@ public class TiendaUI : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+    }
+    private void ActualizarBotonMinijuego()
+    {
+        if (botonMinijuego == null || jugadorActual == null)
+            return;
+
+        MinijuegoPiedraPapelTijera juego = jugadorActual.GetComponent<MinijuegoPiedraPapelTijera>();
+
+        botonMinijuego.interactable = juego != null && (juego.PartidasDisponibles > 0 || juego.HayPartidaEnCurso);
     }
 
     /// <summary>Lo llama el botón "De una": oculta la tienda y abre el mini juego.</summary>
