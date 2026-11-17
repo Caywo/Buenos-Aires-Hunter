@@ -414,4 +414,17 @@ public class NetworkManagerPersistente : MonoBehaviour
         nm.OnClientConnectedCallback += Conectado;
         nm.SceneManager.OnSynchronizeComplete += Sincronizado;
     }
+
+    public void CancelarHostEnMenu()
+    {
+        NetworkManager nm = NetworkManager.Singleton;
+        if (nm != null && nm.IsListening)
+        {
+            apagadoIntencional = true;
+            nm.Shutdown();
+            apagadoIntencional = false;
+        }
+        ConfigurarSpawnDeJugadores(false);
+    }
+
 }
