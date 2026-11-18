@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Editor\CrearLogrosDelCatalogo.cs" />
+    <Compile Include="Assets\Editor\ReemplazarMeshColliders.cs" />
     <Compile Include="Assets\TutorialInfo\Editor\ReadmeEditor.cs" />
   </ItemGroup>
   <ItemGroup>
