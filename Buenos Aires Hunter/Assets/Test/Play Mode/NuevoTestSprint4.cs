@@ -38,12 +38,15 @@ public class Sprint4Test
     {
         yield return SceneManager.LoadSceneAsync("Tutorial");
 
-        GameObject spawnEnemy =
-            GameObject.Find("SpawnEnemy");
+        GameObject spawnEnemy1 =
+         GameObject.Find("SpawnEnemy1");
 
-        Assert.IsNotNull(
-            spawnEnemy,
-            "No se encontró SpawnEnemy en el Tutorial."
+        GameObject spawnEnemy2 =
+            GameObject.Find("SpawnEnemy2");
+
+        Assert.IsTrue(
+            spawnEnemy1 != null || spawnEnemy2 != null,
+            "No se encontraron sistemas de generación de enemigos."
         );
     }
 
