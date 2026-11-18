@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.Netcode;
+using UnityEngine.SceneManagement;
 
 public class InputManager : NetworkBehaviour
 {
@@ -31,7 +32,6 @@ public class InputManager : NetworkBehaviour
         if (mirar == null) Debug.LogError("InputManager: no se encontró PlayerMirar.", this);
         if (inventario == null) Debug.LogError("InputManager: no se encontró PlayerInventory.", this);
         if (salud == null) Debug.LogError("InputManager: no se encontró Health.", this);
-
 
         // INTERACTUAR
         inventarioActions.Interactuar.performed += ctx => { if (!salud.EstaMuerto) interactuar.Interactuar(); };
@@ -67,11 +67,13 @@ public class InputManager : NetworkBehaviour
 
         inventarioActions.CerrarUI.performed += ctx =>
         {
+            if (!IsOwner) return;
+
             if (tiendaUI == null)
-                tiendaUI = FindAnyObjectByType<TiendaUI>();
+                tiendaUI = GetComponentInChildren<TiendaUI>(true);
 
             if (pausaUI == null)
-                pausaUI = FindAnyObjectByType<PausaUI>();
+                pausaUI = GetComponentInChildren<PausaUI>(true);
 
             // Prioridad 1: cerrar la tienda si está abierta.
             if (tiendaUI != null && tiendaUI.EstaAbierta)
@@ -86,7 +88,6 @@ public class InputManager : NetworkBehaviour
                 pausaUI.OnTogglePausa();
             }
         };
-
     }
 
     public override void OnNetworkSpawn()
@@ -95,7 +96,8 @@ public class InputManager : NetworkBehaviour
         {
             movimiento.Enable();
             inventarioActions.Enable();
-            Cursor.lockState = CursorLockMode.Locked;
+            SceneManager.sceneLoaded += AlCargarEscena;
+            ActualizarEstadoCursor(SceneManager.GetActiveScene().name);
         }
         else
         {
@@ -107,8 +109,29 @@ public class InputManager : NetworkBehaviour
 
     public override void OnNetworkDespawn()
     {
+        SceneManager.sceneLoaded -= AlCargarEscena;
         movimiento.Disable();
         inventarioActions.Disable();
+    }
+
+    private void AlCargarEscena(Scene escena, LoadSceneMode modo)
+    {
+        if (!IsOwner) return;
+        ActualizarEstadoCursor(escena.name);
+    }
+
+    private void ActualizarEstadoCursor(string nombreEscena)
+    {
+        if (nombreEscena == "MenuPrincipal")
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
     }
 
     // NUEVO (combate): fuego automático. 'pulsacionNueva' distingue armas semiautomáticas.

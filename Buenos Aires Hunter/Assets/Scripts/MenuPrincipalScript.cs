@@ -23,7 +23,8 @@ public class MenuPrincipal : MonoBehaviour
 
         [Tooltip("Texto donde se muestra el estado de espera en el panel de ESTE modo. Si queda vacío se usa 'Estado Display'.")]
         public TMP_Text estadoDisplay;
-
+        public GameObject botonCancelarPartida;
+        
         [Header("Jugadores")]
         [Tooltip("Si está tildado, los jugadores NO se crean en el menú: el modo los crea al terminar de cargar la escena (lo usa el duelo).")]
         public bool crearJugadoresAlCargarEscena;
@@ -99,7 +100,11 @@ public class MenuPrincipal : MonoBehaviour
 
         NetworkManager.Singleton.StartHost();
 
-        NetworkManager.Singleton.SceneManager.LoadScene(modo.escenaDeJuego, LoadSceneMode.Single);
+        Debug.Log($"[Carga] Solicitando carga de {modo.escenaDeJuego} en t={Time.realtimeSinceStartup:F2}");
+        NetworkManager.Singleton.SceneManager.LoadScene(
+            modo.escenaDeJuego,
+            LoadSceneMode.Single
+        );
     }
 
     public async void CrearPartida()
@@ -298,6 +303,9 @@ public class MenuPrincipal : MonoBehaviour
         TMP_Text estado = EstadoDe(modoElegido);
         if (estado != null)
             estado.text = $"Esperando jugador... (1/{jugadoresNecesarios})";
+
+        if (modoElegido != null && modoElegido.botonCancelarPartida != null)
+            modoElegido.botonCancelarPartida.SetActive(true);
     }
 
     private void OnDestroy()
@@ -309,4 +317,35 @@ public class MenuPrincipal : MonoBehaviour
     {
         Application.Quit();
     }
+
+    public void CancelarPartidaCreada()
+    {
+        DejarDeEsperar();
+
+        if (NetworkManagerPersistente.Instance != null)
+        {
+            NetworkManagerPersistente.Instance.CancelarHostEnMenu();
+        }
+        else if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsListening)
+        {
+            NetworkManager.Singleton.Shutdown();
+        }
+
+        if (modoElegido != null)
+        {
+            TMP_Text display = DisplayDe(modoElegido);
+            if (display != null) display.text = string.Empty;
+
+            TMP_Text estado = EstadoDe(modoElegido);
+            if (estado != null) estado.text = "Partida cancelada.";
+
+            if (modoElegido.botonCancelarPartida != null)
+                modoElegido.botonCancelarPartida.SetActive(false);
+        }
+
+        clientesSincronizados.Clear();
+        ultimoJoinCode = string.Empty;
+        modoElegido = null;
+    }
+
 }

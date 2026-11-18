@@ -1,25 +1,28 @@
+using Unity.Netcode;
 using UnityEngine;
 
 public class ZonaCaida : MonoBehaviour
 {
-    public Transform spawnPoint;
-
-    void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         if (!other.CompareTag("Player")) return;
 
-        var cc = other.GetComponent<CharacterController>();
-        if (cc != null) cc.enabled = false; // necesario para poder teletransportar
+        // Obtener la entidad de red del jugador
+        var netObj = other.GetComponentInParent<NetworkObject>();
+        if (netObj == null) return;
 
-        other.transform.SetPositionAndRotation(spawnPoint.position, spawnPoint.rotation);
-
-        if (cc != null) cc.enabled = true;
-
-        var rb = other.GetComponent<Rigidbody>();
-        if (rb != null)
+        // Si estamos en el Modo Duelo, delegamos el respawn al DuelManager
+        if (DuelManager.Instance != null)
         {
-            rb.linearVelocity = Vector3.zero; // en Unity 6; en versiones viejas: rb.velocity
-            rb.angularVelocity = Vector3.zero;
+            DuelManager.Instance.RespawnearJugadorEnCaida(netObj.OwnerClientId);
+            return;
+        }
+
+        // Respaldo (Fallback) para Singleplayer o mapas de prueba sin DuelManager:
+        var combat = other.GetComponentInParent<PlayerCombat>();
+        if (combat != null)
+        {
+            combat.Respawnear();
         }
     }
 }

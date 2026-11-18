@@ -166,6 +166,12 @@ public class PlayerSpawnManager : MonoBehaviour
         }
 
         AplicarDatosGuardadoSiHay(clientId, jugador);
+        // Restaurar controles al spawnear en la nueva escena
+        PlayerMotor motor = jugador.GetComponent<PlayerMotor>();
+        PlayerLook mirar = jugador.GetComponent<PlayerLook>();
+
+        if (motor != null) motor.inputBloqueado = false;
+        if (mirar != null) mirar.inputBloqueado = false;
     }
 
     private void AplicarDatosGuardadoSiHay(

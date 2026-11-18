@@ -83,11 +83,6 @@ public class PausaUI : MonoBehaviour
         if (panelPausa != null)
         {
             panelPausa.SetActive(true);
-            Debug.Log($"[PAUSA] panelPausa activado: {panelPausa.name} ahora está {panelPausa.activeSelf}");
-        }
-        else
-        {
-            Debug.LogError("[PAUSA] ¡ERROR! La referencia 'panelPausa' es NULL en el Inspector.");
         }
 
         if (panelOpciones != null)

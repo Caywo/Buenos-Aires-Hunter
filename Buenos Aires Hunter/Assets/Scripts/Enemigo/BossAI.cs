@@ -92,6 +92,7 @@ public class BossAI : NetworkBehaviour
     private int hashEspecial;
     private int hashFase2;
     private int hashMorir;
+    private EnemyAudio audioBoss;
 
     private void Awake()
     {
@@ -104,6 +105,8 @@ public class BossAI : NetworkBehaviour
         hashEspecial = Animator.StringToHash(parametroEspecial);
         hashFase2 = Animator.StringToHash(parametroFase2);
         hashMorir = Animator.StringToHash(parametroMorir);
+
+        audioBoss = GetComponent<EnemyAudio>();
     }
 
     public override void OnNetworkSpawn()
@@ -249,6 +252,7 @@ public class BossAI : NetworkBehaviour
 
         DetenerAgente();
         animator.SetTrigger(hashFase2);
+        if (audioBoss != null) audioBoss.ReproducirFase2();
 
         yield return new WaitForSeconds(duracionFase2);
 
@@ -271,6 +275,7 @@ public class BossAI : NetworkBehaviour
 
         DetenerAgente();
         animator.SetTrigger(hashAtacar);
+        if (audioBoss != null) audioBoss.ReproducirAtaque();
 
         bool golpeo = false;
 
@@ -335,6 +340,7 @@ public class BossAI : NetworkBehaviour
 
         DetenerAgente();
         animator.SetTrigger(hashEspecial);
+        if (audioBoss != null) audioBoss.ReproducirPreparacionEspecial();
 
         // 1) Preparación: mira al jugador, que tiene tiempo de verlo venir y esquivar.
         for (float t = 0f; t < preparacionEspecial; t += Time.deltaTime)
@@ -347,6 +353,7 @@ public class BossAI : NetworkBehaviour
         }
 
         // 2) Dash en línea recta hacia donde estaba el jugador al terminar la preparación.
+        if (audioBoss != null) audioBoss.ReproducirDash();
         Vector3 direccion = transform.forward;
         direccion.y = 0f;
         direccion.Normalize();
@@ -426,6 +433,7 @@ public class BossAI : NetworkBehaviour
         }
 
         animator.SetTrigger(hashMorir);
+        if (audioBoss != null) audioBoss.ReproducirMuerte();
 
         if (despawnTrasMuerte > 0f)
             StartCoroutine(DespawnTrasEspera());

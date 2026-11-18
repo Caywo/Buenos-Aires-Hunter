@@ -451,4 +451,32 @@ public class DuelManager : NetworkBehaviour
 
         return null;
     }
+
+    /// <summary>
+/// Teletransporta al jugador correspondiente a su punto de spawn de origen según su ClientId.
+/// </summary>
+    public void RespawnearJugadorEnCaida(ulong clientId)
+    {
+        if (!IsServer) return;
+
+        ulong[] ids = { idA.Value, idB.Value };
+        for (int i = 0; i < ids.Length; i++)
+        {
+            if (ids[i] == clientId)
+            {
+                var obj = ObtenerJugador(clientId);
+                if (obj != null)
+                {
+                    var combate = obj.GetComponent<PlayerCombat>();
+                    if (combate != null)
+                    {
+                        Transform punto = puntosDeAparicion[i % puntosDeAparicion.Length];
+                        combate.TeletransportarA(punto.position, Quaternion.Euler(0f, punto.eulerAngles.y, 0f));
+                    }
+                }
+                break;
+            }
+        }
+    }
+
 }

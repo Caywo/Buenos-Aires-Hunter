@@ -29,8 +29,9 @@ public class EnemySpawner : NetworkBehaviour
     [SerializeField] private int primeraOleadaTanque = 4;
     [SerializeField] private int maxTanquesVivos = 1;
 
-    [Header("Distancia de seguridad")]
+    [Header("Distancias mínimas y máximas")]
     [SerializeField] private float distanciaMinimaJugador = 15f;
+    [SerializeField] private float distanciaMaximaJugador = 60f;
     [Header("Recompensa")]
     [SerializeField] private int recompensaPorKill = 100;
 
@@ -208,7 +209,7 @@ public class EnemySpawner : NetworkBehaviour
             if (punto == null)
                 continue;
 
-            if (EstaDemasiadoCercaDeJugador(punto.position))
+            if (DistanciaNoValida(punto.position))
                 continue;
 
             puntosValidos.Add(punto);
@@ -296,7 +297,7 @@ public class EnemySpawner : NetworkBehaviour
     }
 
 
-    private bool EstaDemasiadoCercaDeJugador(Vector3 posicion)
+    private bool DistanciaNoValida(Vector3 posicion)
     {
         if (NetworkManager.Singleton == null)
             return false;
@@ -314,13 +315,12 @@ public class EnemySpawner : NetworkBehaviour
                     cliente.PlayerObject.transform.position
                 );
 
-            if (distancia < distanciaMinimaJugador)
+            if (distancia < distanciaMinimaJugador && distancia > distanciaMaximaJugador)
                 return true;
         }
 
         return false;
     }
-
 
     private void IniciarEsperaNuevaOleada()
     {

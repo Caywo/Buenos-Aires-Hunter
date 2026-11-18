@@ -40,6 +40,42 @@ public class Health : NetworkBehaviour, IDamageable
     /// <summary>SOLO SERVIDOR. Ideal para que un DuelManager / marcador cuente kills.</summary>
     public static event Action<Health, ulong> OnCualquierMuerte;
 
+    private void Start()
+    {
+        OnMuerteCambiada += ManejarMuerteLocal;
+    }
+
+    public override void OnDestroy()
+    {
+        base.OnDestroy();
+        OnMuerteCambiada -= ManejarMuerteLocal;
+    }
+
+    private void ManejarMuerteLocal(bool estaMuerto)
+    {
+        if (!esJugador) return;
+
+        bool esLocal = IsOwner || NetworkManager.Singleton == null || !NetworkManager.Singleton.IsListening;
+
+        if (esLocal)
+        {
+            // Inmoviliza al jugador si murió (esperando reanimación) o le devuelve el control si fue revivido
+            BloquearControlesLocalmente(estaMuerto);
+        }
+    }
+
+    private void BloquearControlesLocalmente(bool bloquear)
+    {
+        var motor = GetComponent<PlayerMotor>();
+        if (motor != null) motor.inputBloqueado = bloquear;
+
+        var look = GetComponent<PlayerLook>();
+        if (look != null) look.inputBloqueado = bloquear;
+
+        var combate = GetComponent<PlayerCombat>();
+        if (combate != null) combate.enabled = !bloquear;
+    }
+
     public override void OnNetworkSpawn()
     {
         if (IsServer)

@@ -8,27 +8,45 @@ public class MinijuegoPPTUI : MonoBehaviour
     [Header("Pantalla")]
     [SerializeField] private GameObject panel;
 
-    [Header("Botones")]
+    [Header("Botones de jugada")]
     [SerializeField] private Button botonPiedra;
     [SerializeField] private Button botonPapel;
     [SerializeField] private Button botonTijera;
     [Tooltip("Cierra el juego y vuelve a la tienda.")]
     [SerializeField] private Button botonCerrar;
 
+    [Header("Apuesta")]
+    [Tooltip("Grupo con los controles de apuesta (se muestra antes de cada partida).")]
+    [SerializeField] private GameObject grupoApuesta;
+    [SerializeField] private TMP_Text textoApuesta;
+    [SerializeField] private Button botonMenos;
+    [SerializeField] private Button botonMas;
+    [SerializeField] private Button botonApostar;
+    [Tooltip("Muestra el saldo y las partidas que quedan.")]
+    [SerializeField] private TMP_Text textoInfo;
+
     [Header("Elecciones (imágenes)")]
-    [Tooltip("Muestra lo que elegiste vos.")]
     [SerializeField] private Image imagenJugador;
-    [Tooltip("Muestra lo que eligió Horacio.")]
     [SerializeField] private Image imagenVendedor;
     [SerializeField] private Sprite spritePiedra;
     [SerializeField] private Sprite spritePapel;
     [SerializeField] private Sprite spriteTijera;
-    [Tooltip("Imagen antes de revelar (puño cerrado o '?'). Opcional.")]
+    [Tooltip("Imagen antes de revelar (el medallón con '?').")]
     [SerializeField] private Sprite spriteOculto;
-    [Tooltip("Espeja la imagen de Horacio para que las manos se miren de frente.")]
     [SerializeField] private bool espejarVendedor = false;
 
+    [Header("Brillo del resultado (opcional)")]
+    [SerializeField] private Image brilloJugador;
+    [SerializeField] private Image brilloVendedor;
+
+    [Header("Puntos de victoria (opcional)")]
+    [SerializeField] private Image[] puntosJugador;
+    [SerializeField] private Image[] puntosVendedor;
+    [SerializeField] private Sprite spritePuntoLleno;
+    [SerializeField] private Sprite spritePuntoVacio;
+
     [Header("Textos")]
+    [Tooltip("Opcional: si usás los puntos de victoria, podés dejarlo vacío.")]
     [SerializeField] private TMP_Text textoPuntaje;
     [SerializeField] private TMP_Text textoMensaje;
     [Tooltip("Nombre de la jugada debajo de cada imagen. Opcional.")]
@@ -36,23 +54,28 @@ public class MinijuegoPPTUI : MonoBehaviour
     [SerializeField] private TMP_Text nombreVendedor;
 
     [Header("Animación")]
-    [Tooltip("Tiempo mínimo que Horacio 'piensa' antes de revelar su jugada.")]
-    [SerializeField] private float duracionSuspenso = 0.9f;
-    [Tooltip("Pausa después de cada ronda antes de poder elegir de nuevo.")]
-    [SerializeField] private float pausaEntreRondas = 1.3f;
-    [SerializeField] private Color colorGana = new Color(0.45f, 1f, 0.45f);
-    [SerializeField] private Color colorPierde = new Color(1f, 0.45f, 0.45f);
-    [SerializeField] private Color colorEmpate = Color.white;
+    [SerializeField] private float duracionSuspenso = 1.2f;
+    [SerializeField] private float pausaEntreRondas = 1.5f;
+    [SerializeField] private Color colorGana = new Color(0.35f, 1f, 0.35f, 0.9f);
+    [SerializeField] private Color colorPierde = new Color(1f, 0.3f, 0.3f, 0.9f);
+    [SerializeField] private Color colorEmpate = new Color(1f, 1f, 1f, 0.6f);
 
     private static readonly string[] Nombres = { "Piedra", "Papel", "Tijera" };
+    private static readonly string[] Cuenta = { "Piedra...", "Papel...", "¡Tijera!" };
 
     private MinijuegoPiedraPapelTijera juego;
     private PlayerInventory jugadorActual;
     private TiendaUI tiendaOrigen;
+
+    private int apuesta;
+    private bool enPartida;
     private bool esperando;
     private bool terminada;
     private float inicioEspera;
+    private float proximoRefresco;
+
     private Coroutine rutinaTemblor;
+    private Coroutine rutinaCuenta;
     private Coroutine rutinaRonda;
 
     public bool EstaAbierta => panel.activeSelf;
@@ -64,6 +87,10 @@ public class MinijuegoPPTUI : MonoBehaviour
         botonTijera.onClick.AddListener(() => Elegir(Jugada.Tijera));
         botonCerrar.onClick.AddListener(Cerrar);
 
+        if (botonMenos != null) botonMenos.onClick.AddListener(() => CambiarApuesta(-1));
+        if (botonMas != null) botonMas.onClick.AddListener(() => CambiarApuesta(1));
+        if (botonApostar != null) botonApostar.onClick.AddListener(Apostar);
+
         if (imagenJugador != null) imagenJugador.preserveAspect = true;
         if (imagenVendedor != null) imagenVendedor.preserveAspect = true;
 
@@ -73,6 +100,21 @@ public class MinijuegoPPTUI : MonoBehaviour
     private void OnDestroy()
     {
         Desuscribir();
+    }
+
+    // Mientras se elige la apuesta, refresca el saldo y las partidas (cambian con las bajas y las oleadas).
+    private void Update()
+    {
+        if (!panel.activeSelf || enPartida || grupoApuesta == null || !grupoApuesta.activeSelf)
+            return;
+
+        if (Time.unscaledTime < proximoRefresco)
+            return;
+
+        proximoRefresco = Time.unscaledTime + 0.25f;
+
+        if (!esperando)
+            ActualizarApuestaUI();
     }
 
     /// <summary>La llama la tienda al apretar el botón "De una".</summary>
@@ -89,6 +131,7 @@ public class MinijuegoPPTUI : MonoBehaviour
             juego = nuevoJuego;
             juego.OnInicio += AlIniciar;
             juego.OnRonda += AlRecibirRonda;
+            juego.OnError += AlRecibirError;
         }
 
         panel.SetActive(true);
@@ -96,12 +139,30 @@ public class MinijuegoPPTUI : MonoBehaviour
 
         DetenerAnimaciones();
         ReiniciarImagenes();
+        ActualizarPuntos(0, 0);
 
-        textoMensaje.text = "Conectando con Horacio...";
-        textoPuntaje.text = string.Empty;
+        if (textoPuntaje != null) textoPuntaje.text = string.Empty;
         PonerBotones(false);
 
-        juego.Iniciar();
+        esperando = false;
+
+        if (juego.HayPartidaEnCurso)
+        {
+            // Había una partida abierta: se retoma sin cobrar de nuevo.
+            textoMensaje.text = "Retomando la partida...";
+            SetBotonesJugada(true);
+            if (grupoApuesta != null) grupoApuesta.SetActive(false);
+            juego.Iniciar(0);
+        }
+        else if (grupoApuesta != null)
+        {
+            MostrarModoApuesta("Elegí cuánto apostar");
+        }
+        else
+        {
+            Debug.LogWarning("[Minijuego] Falta configurar el Grupo Apuesta: se apuesta el mínimo.");
+            juego.Iniciar(juego.ApuestaMinima);
+        }
     }
 
     public void Cerrar()
@@ -141,7 +202,107 @@ public class MinijuegoPPTUI : MonoBehaviour
 
         juego.OnInicio -= AlIniciar;
         juego.OnRonda -= AlRecibirRonda;
+        juego.OnError -= AlRecibirError;
         juego = null;
+    }
+
+    // ───────────────────────── APUESTA ─────────────────────────
+
+    private void MostrarModoApuesta(string mensaje)
+    {
+        enPartida = false;
+        terminada = false;
+        esperando = false;
+
+        SetBotonesJugada(false);
+
+        if (grupoApuesta != null)
+            grupoApuesta.SetActive(true);
+
+        if (apuesta <= 0)
+            apuesta = juego.ApuestaMinima;
+
+        ActualizarApuestaUI();
+
+        if (!string.IsNullOrEmpty(mensaje))
+            textoMensaje.text = mensaje;
+    }
+
+    private void MostrarModoJuego()
+    {
+        if (grupoApuesta != null)
+            grupoApuesta.SetActive(false);
+
+        SetBotonesJugada(true);
+    }
+
+    private void CambiarApuesta(int direccion)
+    {
+        if (juego == null || esperando)
+            return;
+
+        apuesta += direccion * juego.PasoApuesta;
+        ActualizarApuestaUI();
+    }
+
+    private void ActualizarApuestaUI()
+    {
+        if (juego == null || jugadorActual == null)
+            return;
+
+        int saldo = jugadorActual.saldoSube.Value;
+        int paso = juego.PasoApuesta;
+        int minimo = juego.ApuestaMinima;
+
+        // La apuesta máxima permitida es la del juego o lo que alcance el saldo (de a "paso").
+        int maxPorSaldo = minimo + Mathf.Max(0, (saldo - minimo) / paso) * paso;
+        int maxPermitida = Mathf.Min(juego.ApuestaMaxima, maxPorSaldo);
+
+        apuesta = Mathf.Clamp(apuesta, minimo, Mathf.Max(minimo, maxPermitida));
+        apuesta = minimo + ((apuesta - minimo) / paso) * paso;
+
+        bool hayPartidas = juego.PartidasDisponibles > 0;
+        bool alcanzaSaldo = saldo >= minimo;
+
+        if (textoApuesta != null)
+            textoApuesta.text = Plata(apuesta);
+
+        if (botonMenos != null)
+            botonMenos.interactable = apuesta > minimo;
+
+        if (botonMas != null)
+            botonMas.interactable = apuesta + paso <= maxPermitida;
+
+        if (botonApostar != null)
+            botonApostar.interactable = hayPartidas && alcanzaSaldo && apuesta <= saldo;
+
+        if (textoInfo != null)
+        {
+            string aviso = !hayPartidas ? "  (sin partidas por ahora)"
+                         : !alcanzaSaldo ? "  (saldo insuficiente)"
+                         : string.Empty;
+
+            textoInfo.text = $"Saldo: {Plata(saldo)}   |   Partidas: {juego.PartidasDisponibles}{aviso}";
+        }
+    }
+
+    private void Apostar()
+    {
+        if (esperando || juego == null)
+            return;
+
+        esperando = true;
+
+        if (botonApostar != null)
+            botonApostar.interactable = false;
+
+        textoMensaje.text = "Apostando...";
+        juego.Iniciar(apuesta);
+    }
+
+    private static string Plata(int monto)
+    {
+        return monto < 0 ? $"-${-monto}" : $"${monto}";
     }
 
     // ───────────────────────── JUEGO ─────────────────────────
@@ -160,39 +321,53 @@ public class MinijuegoPPTUI : MonoBehaviour
         MostrarEleccion(imagenJugador, nombreJugador, (int)jugada);
         PonerOculto(imagenVendedor, nombreVendedor, "...");
 
-        textoMensaje.text = string.Empty;
-
         if (imagenVendedor != null)
             rutinaTemblor = StartCoroutine(Temblar(imagenVendedor.rectTransform));
+
+        rutinaCuenta = StartCoroutine(CuentaRegresiva());
 
         juego.Jugar(jugada);
     }
 
-    private void AlIniciar(int puntosJugador, int puntosVendedor)
+    private void AlIniciar(int puntosJ, int puntosV, int apuestaServidor)
     {
+        enPartida = true;
         esperando = false;
         terminada = false;
 
         DetenerAnimaciones();
+        MostrarModoJuego();
         ReiniciarImagenes();
+        ActualizarPuntos(puntosJ, puntosV);
 
-        MostrarPuntaje(puntosJugador, puntosVendedor);
+        if (textoInfo != null)
+            textoInfo.text = $"Apuesta: {Plata(apuestaServidor)}";
+
         textoMensaje.text = $"El primero en ganar {juego.VictoriasNecesarias} rondas gana. ¡Elegí!";
         PonerBotones(true);
     }
 
+    private void AlRecibirError(string mensaje)
+    {
+        esperando = false;
+        textoMensaje.text = mensaje;
+
+        if (!enPartida)
+            ActualizarApuestaUI();
+    }
+
     private void AlRecibirRonda(int jugadaJugador, int jugadaVendedor, int resultado,
-                                int puntosJugador, int puntosVendedor, bool termino)
+                                int puntosJ, int puntosV, bool termino, int cambioSaldo)
     {
         if (rutinaRonda != null)
             StopCoroutine(rutinaRonda);
 
         rutinaRonda = StartCoroutine(RevelarRonda(jugadaJugador, jugadaVendedor, resultado,
-                                                  puntosJugador, puntosVendedor, termino));
+                                                  puntosJ, puntosV, termino, cambioSaldo));
     }
 
     private IEnumerator RevelarRonda(int jugadaJugador, int jugadaVendedor, int resultado,
-                                     int puntosJugador, int puntosVendedor, bool termino)
+                                     int puntosJ, int puntosV, bool termino, int cambioSaldo)
     {
         // Suspenso mínimo: Horacio "piensa" un momento aunque la respuesta llegue al instante.
         float restante = duracionSuspenso - (Time.time - inicioEspera);
@@ -202,21 +377,23 @@ public class MinijuegoPPTUI : MonoBehaviour
 
         DetenerTemblor();
 
+        if (rutinaCuenta != null)
+        {
+            StopCoroutine(rutinaCuenta);
+            rutinaCuenta = null;
+        }
+
         // Revelación
         MostrarEleccion(imagenJugador, nombreJugador, jugadaJugador);
         MostrarEleccion(imagenVendedor, nombreVendedor, jugadaVendedor);
 
+        PonerBrillo(brilloJugador, resultado == 1 ? colorGana : resultado == -1 ? colorPierde : colorEmpate);
+        PonerBrillo(brilloVendedor, resultado == -1 ? colorGana : resultado == 1 ? colorPierde : colorEmpate);
+
         if (imagenVendedor != null)
             yield return StartCoroutine(Pop(imagenVendedor.rectTransform));
 
-        // Resultado: verde gana, rojo pierde, blanco empata.
-        if (imagenJugador != null)
-            imagenJugador.color = resultado == 1 ? colorGana : resultado == -1 ? colorPierde : colorEmpate;
-
-        if (imagenVendedor != null)
-            imagenVendedor.color = resultado == -1 ? colorGana : resultado == 1 ? colorPierde : colorEmpate;
-
-        MostrarPuntaje(puntosJugador, puntosVendedor);
+        ActualizarPuntos(puntosJ, puntosV);
 
         if (termino)
         {
@@ -224,17 +401,26 @@ public class MinijuegoPPTUI : MonoBehaviour
             esperando = false;
             PonerBotones(false);
 
-            textoMensaje.text = puntosJugador > puntosVendedor
-                ? "¡Ganaste la partida!"
-                : "Perdiste la partida.";
+            string mensajeFinal = cambioSaldo > 0
+                ? $"¡GANASTE! +${cambioSaldo}"
+                : $"PERDISTE -${-cambioSaldo}";
+
+            textoMensaje.text = mensajeFinal;
+
+            yield return new WaitForSeconds(pausaEntreRondas + 0.5f);
+
+            // Vuelve a la pantalla de apuesta (con el resultado a la vista).
+            ReiniciarImagenes();
+            ActualizarPuntos(0, 0);
+            MostrarModoApuesta(mensajeFinal);
 
             rutinaRonda = null;
             yield break;
         }
 
         textoMensaje.text = resultado == 1 ? "¡Ganaste la ronda!"
-                          : resultado == -1 ? "Perdiste la ronda."
-                          : "Empate, se repite.";
+                          : resultado == -1 ? "Perdiste la ronda"
+                          : "Empate, se repite";
 
         yield return new WaitForSeconds(pausaEntreRondas);
 
@@ -297,11 +483,51 @@ public class MinijuegoPPTUI : MonoBehaviour
     {
         PonerOculto(imagenJugador, nombreJugador, string.Empty);
         PonerOculto(imagenVendedor, nombreVendedor, string.Empty);
+
+        if (brilloJugador != null) brilloJugador.enabled = false;
+        if (brilloVendedor != null) brilloVendedor.enabled = false;
     }
 
-    private void MostrarPuntaje(int jugador, int vendedor)
+    private void PonerBrillo(Image brillo, Color color)
     {
-        textoPuntaje.text = $"Vos {jugador} - {vendedor} Horacio";
+        if (brillo == null)
+            return;
+
+        brillo.enabled = true;
+        brillo.color = color;
+    }
+
+    private void ActualizarPuntos(int puntosJ, int puntosV)
+    {
+        if (textoPuntaje != null)
+            textoPuntaje.text = $"Vos {puntosJ} - {puntosV} Horacio";
+
+        PintarPuntos(puntosJugador, puntosJ);
+        PintarPuntos(puntosVendedor, puntosV);
+    }
+
+    private void PintarPuntos(Image[] fila, int puntos)
+    {
+        if (fila == null)
+            return;
+
+        int maximo = juego != null ? juego.VictoriasNecesarias : fila.Length;
+
+        for (int i = 0; i < fila.Length; i++)
+        {
+            if (fila[i] == null)
+                continue;
+
+            fila[i].gameObject.SetActive(i < maximo);
+            fila[i].sprite = i < puntos ? spritePuntoLleno : spritePuntoVacio;
+        }
+    }
+
+    private void SetBotonesJugada(bool visibles)
+    {
+        botonPiedra.gameObject.SetActive(visibles);
+        botonPapel.gameObject.SetActive(visibles);
+        botonTijera.gameObject.SetActive(visibles);
     }
 
     private void PonerBotones(bool activos)
@@ -320,7 +546,19 @@ public class MinijuegoPPTUI : MonoBehaviour
 
     // ───────────────────────── ANIMACIONES ─────────────────────────
 
-    // El puño "tiembla" mientras Horacio piensa.
+    private IEnumerator CuentaRegresiva()
+    {
+        float paso = duracionSuspenso / Cuenta.Length;
+
+        foreach (string palabra in Cuenta)
+        {
+            textoMensaje.text = palabra;
+            yield return new WaitForSeconds(paso);
+        }
+
+        rutinaCuenta = null;
+    }
+
     private IEnumerator Temblar(RectTransform rt)
     {
         float t = 0f;
@@ -334,7 +572,6 @@ public class MinijuegoPPTUI : MonoBehaviour
         }
     }
 
-    // La imagen aparece creciendo con un pequeño rebote.
     private IEnumerator Pop(RectTransform rt)
     {
         rt.localRotation = Quaternion.identity;
@@ -375,6 +612,12 @@ public class MinijuegoPPTUI : MonoBehaviour
     private void DetenerAnimaciones()
     {
         DetenerTemblor();
+
+        if (rutinaCuenta != null)
+        {
+            StopCoroutine(rutinaCuenta);
+            rutinaCuenta = null;
+        }
 
         if (rutinaRonda != null)
         {
