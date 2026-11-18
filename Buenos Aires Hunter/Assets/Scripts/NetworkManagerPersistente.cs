@@ -91,6 +91,7 @@ public class NetworkManagerPersistente : MonoBehaviour
         {
             NetworkManager.Singleton.OnTransportFailure += AlFallarElTransporte;
             NetworkManager.Singleton.OnClientStopped += AlDetenerseCliente;
+            NetworkManager.Singleton.OnClientDisconnectCallback += AlDesconectarseUnCliente; // <-- AGREGAR
         }
 
         SuscribirseACargaDeEscena();
@@ -104,6 +105,7 @@ public class NetworkManagerPersistente : MonoBehaviour
         {
             NetworkManager.Singleton.OnTransportFailure -= AlFallarElTransporte;
             NetworkManager.Singleton.OnClientStopped -= AlDetenerseCliente;
+            NetworkManager.Singleton.OnClientDisconnectCallback -= AlDesconectarseUnCliente; // <-- AGREGAR
         }
     }
 
@@ -191,6 +193,7 @@ public class NetworkManagerPersistente : MonoBehaviour
             // Desuscribir temporalmente eventos para evitar llamadas huérfanas durante el shutdown
             nm.OnTransportFailure -= AlFallarElTransporte;
             nm.OnClientStopped -= AlDetenerseCliente;
+            nm.OnClientDisconnectCallback -= AlDesconectarseUnCliente; // <-- AGREGAR
 
             nm.Shutdown();
 
@@ -208,6 +211,20 @@ public class NetworkManagerPersistente : MonoBehaviour
         SceneManager.LoadScene(escenaMenu, LoadSceneMode.Single);
 
         yield return null;
+
+        // Volver a suscribir los callbacks para futuras partidas en esta misma sesión
+        if (nm != null)
+        {
+            nm.OnTransportFailure -= AlFallarElTransporte;
+            nm.OnTransportFailure += AlFallarElTransporte;
+
+            nm.OnClientStopped -= AlDetenerseCliente;
+            nm.OnClientStopped += AlDetenerseCliente;
+
+            nm.OnClientDisconnectCallback -= AlDesconectarseUnCliente;
+            nm.OnClientDisconnectCallback += AlDesconectarseUnCliente;
+        }
+
         volviendoAlMenu = false;
     }
 
@@ -234,6 +251,25 @@ public class NetworkManagerPersistente : MonoBehaviour
 
         Debug.LogWarning("[Red] Se perdió la conexión con el host. Volviendo al menú.");
         MensajeParaMenu = "El host abandonó la partida.";
+        VolverAlMenu(escenaMenuPorDefecto);
+    }
+
+    // Host: el cliente invitado abandonó la partida o perdió la conexión en medio del mapa.
+    private void AlDesconectarseUnCliente(ulong clientId)
+    {
+        NetworkManager nm = NetworkManager.Singleton;
+        if (nm == null || !nm.IsHost) return;
+        if (volviendoAlMenu || apagadoIntencional) return;
+
+        // Ignorar si el ID que se desconectó es el propio Host
+        if (clientId == nm.LocalClientId) return;
+
+        // Si estamos esperando en el menú principal, no recargar la escena
+        if (SceneManager.GetActiveScene().name == escenaMenuPorDefecto)
+            return;
+
+        Debug.LogWarning($"[Red] El cliente {clientId} se desconectó. Cerrando sesión y volviendo al menú.");
+        MensajeParaMenu = "El otro jugador abandonó la partida.";
         VolverAlMenu(escenaMenuPorDefecto);
     }
 
@@ -414,4 +450,17 @@ public class NetworkManagerPersistente : MonoBehaviour
         nm.OnClientConnectedCallback += Conectado;
         nm.SceneManager.OnSynchronizeComplete += Sincronizado;
     }
+
+    public void CancelarHostEnMenu()
+    {
+        NetworkManager nm = NetworkManager.Singleton;
+        if (nm != null && nm.IsListening)
+        {
+            apagadoIntencional = true;
+            nm.Shutdown();
+            apagadoIntencional = false;
+        }
+        ConfigurarSpawnDeJugadores(false);
+    }
+
 }

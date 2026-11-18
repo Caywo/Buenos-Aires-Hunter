@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventHandler.cs" />
+    <Compile Include="Assets\Scripts\Logros\NotificacionLogroUI.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\EnvMapAnimator.cs" />
     <Compile Include="Assets\Scripts\Interactuables\Tienda.cs" />
     <Compile Include="Assets\Scripts\Jugador\ExplosionAudio.cs" />
@@ -159,6 +160,7 @@
     <Compile Include="Assets\Scripts\Enemigo\EnemySpawner.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextMeshProFloatingText.cs" />
     <Compile Include="Assets\Scripts\Interactuable.cs" />
+    <Compile Include="Assets\Scripts\HUD\Marcadorobjetivo.cs" />
     <Compile Include="Assets\Scripts\DuelManager.cs" />
     <Compile Include="Assets\Scripts\Enemigo\EnemyAudio.cs" />
     <Compile Include="Assets\Scripts\Jugador\PlayerAudio.cs" />
