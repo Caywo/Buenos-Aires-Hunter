@@ -75,38 +75,6 @@ public class MenuPrincipal : MonoBehaviour
         return (modo != null && modo.estadoDisplay != null) ? modo.estadoDisplay : estadoDisplay;
     }
 
-    public void CargarTutorial()
-    {
-        UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-        transport.SetConnectionData("127.0.0.1", 7777);
-
-        NetworkManagerPersistente.Instance.ConfigurarSpawnDeJugadores(false);
-        NetworkManagerPersistente.Instance.SuscribirseACargaDeEscena();
-
-        NetworkManager.Singleton.StartHost();
-
-        NetworkManager.Singleton.SceneManager.LoadScene("Tutorial", LoadSceneMode.Single);
-    }
-    public void UnJugador()
-    {
-        var modo = ObtenerModoActual();
-        if (modo == null) return;
-
-        UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-        transport.SetConnectionData("127.0.0.1", 7777);
-
-        NetworkManagerPersistente.Instance.ConfigurarSpawnDeJugadores(false);
-        NetworkManagerPersistente.Instance.SuscribirseACargaDeEscena(); // agregado
-
-        NetworkManager.Singleton.StartHost();
-
-        Debug.Log($"[Carga] Solicitando carga de {modo.escenaDeJuego} en t={Time.realtimeSinceStartup:F2}");
-        NetworkManager.Singleton.SceneManager.LoadScene(
-            modo.escenaDeJuego,
-            LoadSceneMode.Single
-        );
-    }
-
     public async void CrearPartida()
     {
         modoElegido = ObtenerModoActual();
@@ -145,24 +113,6 @@ public class MenuPrincipal : MonoBehaviour
     }
 
     // ---------- Continuar partida guardada ----------
-
-    public void ContinuarPartidaUnJugador()
-    {
-        if (!CargarPartida()) return;
-
-        UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-        transport.SetConnectionData("127.0.0.1", 7777);
-
-        NetworkManagerPersistente.Instance.ConfigurarSpawnDeJugadores(false);
-        NetworkManagerPersistente.Instance.SuscribirseACargaDeEscena();
-
-        NetworkManager.Singleton.StartHost();
-
-        NetworkManager.Singleton.SceneManager.LoadScene(
-            modoElegido.escenaDeJuego,
-            LoadSceneMode.Single
-        );
-    }
 
     public async void ContinuarPartidaOnline()
     {
@@ -262,6 +212,8 @@ public class MenuPrincipal : MonoBehaviour
         if (listos >= jugadoresNecesarios && (modoElegido.crearJugadoresAlCargarEscena || TodosTienenJugador()))
         {
             DejarDeEsperar();
+            
+            if (PantallaCarga.Instance != null) PantallaCarga.Instance.Mostrar();
 
             NetworkManager.Singleton.SceneManager.LoadScene(
                 modoElegido.escenaDeJuego,
@@ -348,4 +300,60 @@ public class MenuPrincipal : MonoBehaviour
         modoElegido = null;
     }
 
+    public void CargarTutorial()
+    {
+        if (PantallaCarga.Instance != null) PantallaCarga.Instance.Mostrar();
+
+        UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+        transport.SetConnectionData("127.0.0.1", 7777);
+
+        NetworkManagerPersistente.Instance.ConfigurarSpawnDeJugadores(false);
+
+        NetworkManager.Singleton.StartHost();
+        NetworkManagerPersistente.Instance.SuscribirseACargaDeEscena();
+
+        NetworkManager.Singleton.SceneManager.LoadScene("Tutorial", LoadSceneMode.Single);
+    }
+
+    public void UnJugador()
+    {
+        var modo = ObtenerModoActual();
+        if (modo == null) return;
+
+        if (PantallaCarga.Instance != null) PantallaCarga.Instance.Mostrar();
+
+        UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+        transport.SetConnectionData("127.0.0.1", 7777);
+
+        NetworkManagerPersistente.Instance.ConfigurarSpawnDeJugadores(false);
+
+        NetworkManager.Singleton.StartHost();
+        NetworkManagerPersistente.Instance.SuscribirseACargaDeEscena();
+
+        Debug.Log($"[Carga] Solicitando carga de {modo.escenaDeJuego} en t={Time.realtimeSinceStartup:F2}");
+        NetworkManager.Singleton.SceneManager.LoadScene(
+            modo.escenaDeJuego,
+            LoadSceneMode.Single
+        );
+    }
+
+    public void ContinuarPartidaUnJugador()
+    {
+        if (!CargarPartida()) return;
+
+        if (PantallaCarga.Instance != null) PantallaCarga.Instance.Mostrar();
+
+        UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+        transport.SetConnectionData("127.0.0.1", 7777);
+
+        NetworkManagerPersistente.Instance.ConfigurarSpawnDeJugadores(false);
+
+        NetworkManager.Singleton.StartHost();
+        NetworkManagerPersistente.Instance.SuscribirseACargaDeEscena();
+
+        NetworkManager.Singleton.SceneManager.LoadScene(
+            modoElegido.escenaDeJuego,
+            LoadSceneMode.Single
+        );
+    }
 }
