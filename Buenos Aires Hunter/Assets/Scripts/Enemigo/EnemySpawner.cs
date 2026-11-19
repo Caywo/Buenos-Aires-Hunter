@@ -46,6 +46,8 @@ public class EnemySpawner : NetworkBehaviour
 
     private int tanquesVivos = 0;
 
+    private int LimiteVivos => Mathf.Max(1, Mathf.RoundToInt(maxEnemigosVivos * Dificultad.Perfil.maxEnemigosVivos));
+
     private bool esperandoNuevaOleada = false;
 
     private Coroutine coroutineOleada;
@@ -117,9 +119,9 @@ public class EnemySpawner : NetworkBehaviour
     {
         numeroOleada++;
 
-        enemigosTotalesDeOleada =
-            enemigosPrimeraOleada +
-            ((numeroOleada - 1) * enemigosExtraPorOleada);
+        enemigosTotalesDeOleada = Mathf.RoundToInt(
+    (enemigosPrimeraOleada + ((numeroOleada - 1) * enemigosExtraPorOleada))
+    * Dificultad.Perfil.cantidadEnemigos);
 
         enemigosGeneradosEnOleada = 0;
 
@@ -149,7 +151,7 @@ public class EnemySpawner : NetworkBehaviour
         }
 
         while (
-            enemigosActuales.Count < maxEnemigosVivos &&
+            enemigosActuales.Count < LimiteVivos &&
             enemigosGeneradosEnOleada < enemigosTotalesDeOleada
         )
         {
