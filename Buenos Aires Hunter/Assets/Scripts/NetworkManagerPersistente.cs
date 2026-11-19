@@ -91,6 +91,7 @@ public class NetworkManagerPersistente : MonoBehaviour
         {
             NetworkManager.Singleton.OnTransportFailure += AlFallarElTransporte;
             NetworkManager.Singleton.OnClientStopped += AlDetenerseCliente;
+            NetworkManager.Singleton.OnClientDisconnectCallback += AlDesconectarseUnCliente;
         }
 
         SuscribirseACargaDeEscena();
@@ -104,6 +105,7 @@ public class NetworkManagerPersistente : MonoBehaviour
         {
             NetworkManager.Singleton.OnTransportFailure -= AlFallarElTransporte;
             NetworkManager.Singleton.OnClientStopped -= AlDetenerseCliente;
+            NetworkManager.Singleton.OnClientDisconnectCallback -= AlDesconectarseUnCliente;
         }
     }
 
@@ -118,9 +120,31 @@ public class NetworkManagerPersistente : MonoBehaviour
 
     // ESCENAS 
 
+    private void AlEmpezarCargaDeEscena(ulong clientId, string sceneName, LoadSceneMode mode, AsyncOperation op)
+    {
+        if (NetworkManager.Singleton == null || clientId != NetworkManager.Singleton.LocalClientId)
+            return;
+
+        if (sceneName == escenaMenuPorDefecto)
+        {
+            if (PantallaCarga.Instance != null) PantallaCarga.Instance.Ocultar();
+            return;
+        }
+
+        if (PantallaCarga.Instance != null && !PantallaCarga.Instance.EstaVisible)
+        {
+            PantallaCarga.Instance.Mostrar();
+        }
+    }
+
     private void AlCargarEscena(string sceneName, LoadSceneMode mode,
         System.Collections.Generic.List<ulong> clientsCompleted, System.Collections.Generic.List<ulong> clientsTimedOut)
     {
+        if (PantallaCarga.Instance != null)
+        {
+            PantallaCarga.Instance.Ocultar();
+        }
+
         if (NetworkManager.Singleton.LocalClient == null) return;
 
         var playerObject = NetworkManager.Singleton.LocalClient.PlayerObject;
@@ -145,6 +169,9 @@ public class NetworkManagerPersistente : MonoBehaviour
             yield return null;
         }
         var sm = NetworkManager.Singleton.SceneManager;
+
+        sm.OnLoad -= AlEmpezarCargaDeEscena;
+        sm.OnLoad += AlEmpezarCargaDeEscena;
 
         sm.OnLoadEventCompleted -= AlCargarEscena;
         sm.OnLoadEventCompleted += AlCargarEscena;
@@ -173,6 +200,7 @@ public class NetworkManagerPersistente : MonoBehaviour
     {
         Debug.Log($"[Carga] t={Time.realtimeSinceStartup:F2} Netcode terminó '{escena}'");
     }
+
     public void VolverAlMenu(string escenaMenu)
     {
         if (volviendoAlMenu) return; // ya se está yendo: evita cargar el menú dos veces
@@ -191,6 +219,7 @@ public class NetworkManagerPersistente : MonoBehaviour
             // Desuscribir temporalmente eventos para evitar llamadas huérfanas durante el shutdown
             nm.OnTransportFailure -= AlFallarElTransporte;
             nm.OnClientStopped -= AlDetenerseCliente;
+            nm.OnClientDisconnectCallback -= AlDesconectarseUnCliente;
 
             nm.Shutdown();
 
@@ -205,9 +234,26 @@ public class NetworkManagerPersistente : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
+        if (PantallaCarga.Instance != null)
+            PantallaCarga.Instance.Ocultar();
+
         SceneManager.LoadScene(escenaMenu, LoadSceneMode.Single);
 
         yield return null;
+
+        // Volver a suscribir los callbacks para futuras partidas en esta misma sesión
+        if (nm != null)
+        {
+            nm.OnTransportFailure -= AlFallarElTransporte;
+            nm.OnTransportFailure += AlFallarElTransporte;
+
+            nm.OnClientStopped -= AlDetenerseCliente;
+            nm.OnClientStopped += AlDetenerseCliente;
+
+            nm.OnClientDisconnectCallback -= AlDesconectarseUnCliente;
+            nm.OnClientDisconnectCallback += AlDesconectarseUnCliente;
+        }
+
         volviendoAlMenu = false;
     }
 
@@ -234,6 +280,25 @@ public class NetworkManagerPersistente : MonoBehaviour
 
         Debug.LogWarning("[Red] Se perdió la conexión con el host. Volviendo al menú.");
         MensajeParaMenu = "El host abandonó la partida.";
+        VolverAlMenu(escenaMenuPorDefecto);
+    }
+
+    // Host: el cliente invitado abandonó la partida o perdió la conexión en medio del mapa.
+    private void AlDesconectarseUnCliente(ulong clientId)
+    {
+        NetworkManager nm = NetworkManager.Singleton;
+        if (nm == null || !nm.IsHost) return;
+        if (volviendoAlMenu || apagadoIntencional) return;
+
+        // Ignorar si el ID que se desconectó es el propio Host
+        if (clientId == nm.LocalClientId) return;
+
+        // Si estamos esperando en el menú principal, no recargar la escena
+        if (SceneManager.GetActiveScene().name == escenaMenuPorDefecto)
+            return;
+
+        Debug.LogWarning($"[Red] El cliente {clientId} se desconectó. Cerrando sesión y volviendo al menú.");
+        MensajeParaMenu = "El otro jugador abandonó la partida.";
         VolverAlMenu(escenaMenuPorDefecto);
     }
 
@@ -321,14 +386,14 @@ public class NetworkManagerPersistente : MonoBehaviour
             // Detectar rápido que un cliente se fue.
             transport.DisconnectTimeoutMS = disconnectTimeoutMs;
 
-            SuscribirseACargaDeEscena();
-
             bool started = NetworkManager.Singleton.StartHost();
             if (!started)
             {
                 Debug.LogError("[Relay] StartHost() devolvió false.");
                 return null;
             }
+
+            SuscribirseACargaDeEscena();
 
             Debug.Log($"[Relay] Host iniciado. Join code: {joinCode}");
             return joinCode;
@@ -376,10 +441,12 @@ public class NetworkManagerPersistente : MonoBehaviour
             transport.MaxConnectAttempts = maxConnectAttempts;
             transport.ConnectTimeoutMS = 1000;
 
-            SuscribirseACargaDeEscena();
-
             bool started = NetworkManager.Singleton.StartClient();
-            if (started) LogsDeUnion(tInicio);
+            if (started)
+            {
+                SuscribirseACargaDeEscena();
+                LogsDeUnion(tInicio);
+            }
             if (!started)
             {
                 Debug.LogError("[Relay] StartClient() devolvió false.");
@@ -393,6 +460,7 @@ public class NetworkManagerPersistente : MonoBehaviour
             return false;
         }
     }
+
     private void LogsDeUnion(float tInicio)
     {
         var nm = NetworkManager.Singleton;
@@ -426,5 +494,4 @@ public class NetworkManagerPersistente : MonoBehaviour
         }
         ConfigurarSpawnDeJugadores(false);
     }
-
 }

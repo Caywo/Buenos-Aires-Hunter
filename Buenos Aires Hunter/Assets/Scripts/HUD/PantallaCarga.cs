@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 // Va en la raíz del prefab "PantallaCarga" (Canvas + CanvasGroup).
 // Solo PRESENTA la pantalla: el dev decide cuándo llamar a Mostrar() y Ocultar().
@@ -49,6 +50,24 @@ public class PantallaCarga : MonoBehaviour
 
         puntos = 0;
         ActualizarTexto();
+    }
+
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += AlTerminarCargaDeEscenaUnity;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= AlTerminarCargaDeEscenaUnity;
+    }
+
+    private void AlTerminarCargaDeEscenaUnity(Scene escena, LoadSceneMode modo)
+    {
+        if (EstaVisible)
+        {
+            Ocultar();
+        }
     }
 
     void OnDestroy()
