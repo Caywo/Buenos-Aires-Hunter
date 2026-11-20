@@ -73,6 +73,7 @@
     <Compile Include="Assets\Scripts\WachinAlly.cs" />
     <Compile Include="Assets\Scripts\Minijuego\MinijuegoPPTUI.cs" />
     <Compile Include="Assets\Scripts\Jugador\PlayerFootstepController.cs" />
+    <Compile Include="Assets\Scripts\Dificultad.cs" />
     <Compile Include="Assets\Escenario2\LoafbrrAssets\Bricktown\materials\BrickBuildingColorChange.cs" />
     <Compile Include="Assets\Scripts\Enemigo\TankAttack.cs" />
     <Compile Include="Assets\TutorialInfo\Readme.cs" />
@@ -110,6 +111,7 @@
     <Compile Include="Assets\Scripts\Jugador\PlayerDownState.cs" />
     <Compile Include="Assets\Scripts\LogrosManager.cs" />
     <Compile Include="Assets\Scripts\HUD\InfoPanelHover.cs" />
+    <Compile Include="Assets\Scripts\ConfigDificultad.cs" />
     <Compile Include="Assets\Scripts\Enemigo\EnemySpawnerSupervivencia.cs" />
     <Compile Include="Assets\Scripts\MenuPrincipalScript.cs" />
     <Compile Include="Assets\Scripts\Jugador\InputManager.cs" />
@@ -162,6 +164,7 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextMeshProFloatingText.cs" />
     <Compile Include="Assets\Scripts\Interactuable.cs" />
     <Compile Include="Assets\Scripts\HUD\Marcadorobjetivo.cs" />
+    <Compile Include="Assets\Scripts\SelectorDificultadUI.cs" />
     <Compile Include="Assets\Scripts\DuelManager.cs" />
     <Compile Include="Assets\Scripts\Enemigo\EnemyAudio.cs" />
     <Compile Include="Assets\Scripts\Jugador\PlayerAudio.cs" />
