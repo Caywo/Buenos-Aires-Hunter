@@ -78,7 +78,20 @@ public class PausaUI : MonoBehaviour
     public void AbrirMenuDePausa()
     {
         pausaAbierta = true;
-        Time.timeScale = 0f;
+
+        if (jugador == null || mirar == null || motor == null)
+        {
+            BuscarJugadorLocal();
+        }
+
+        // Bloquea movimiento, cámara y disparo localmente (funciona tanto con timeScale 0 como 1)
+        BloquearControles(true);
+
+        // Solo congelar el tiempo en Singleplayer
+        if (!EsMultijugador())
+        {
+            Time.timeScale = 0f;
+        }
 
         if (panelPausa != null)
         {
@@ -90,20 +103,27 @@ public class PausaUI : MonoBehaviour
             panelOpciones.SetActive(false);
         }
 
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        ActualizarCursor(true);
     }
 
     public void CerrarMenuDePausa()
     {
         pausaAbierta = false;
-        Time.timeScale = 1f; // Reanuda la física y el movimiento del jugador
+
+        // Restauramos timeScale siempre por seguridad (por si un compañero se desconectó mientras estabas en pausa)
+        Time.timeScale = 1f;
+
+        if (jugador == null || mirar == null || motor == null)
+        {
+            BuscarJugadorLocal();
+        }
+
+        BloquearControles(false);
 
         if (panelPausa != null) panelPausa.SetActive(false);
         if (panelOpciones != null) panelOpciones.SetActive(false);
 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        ActualizarCursor(false);
     }
 
     // ───────────────────────── NAVEGACIÓN A OPCIONES ─────────────────────────
@@ -146,17 +166,25 @@ public class PausaUI : MonoBehaviour
         if (volviendoAlMenu) return;
         volviendoAlMenu = true;
 
+        Time.timeScale = 1f;
+        pausaAbierta = false;
+
         var spawner = FindAnyObjectByType<EnemySpawner>();
         if (spawner != null) spawner.enabled = false;
 
         var spawnerSupervivencia = FindAnyObjectByType<EnemySpawnerSupervivencia>();
         if (spawnerSupervivencia != null) spawnerSupervivencia.enabled = false;
 
-        Debug.Log("[VolverAlMenu] Cargando escena: MenuPrincipal");
-        SceneManager.LoadScene("MenuPrincipal", LoadSceneMode.Single);
-
-        NetworkManager nm = NetworkManager.Singleton;
-        if (nm != null) nm.Shutdown();
+        if (NetworkManagerPersistente.Instance != null)
+        {
+            NetworkManagerPersistente.Instance.VolverAlMenu("MenuPrincipal");
+        }
+        else
+        {
+            SceneManager.LoadScene("MenuPrincipal", LoadSceneMode.Single);
+            NetworkManager nm = NetworkManager.Singleton;
+            if (nm != null) nm.Shutdown();
+        }
 
         volviendoAlMenu = false;
     }
@@ -180,6 +208,16 @@ public class PausaUI : MonoBehaviour
         {
             AbrirMenuDePausa();
         }
+    }
+
+    private bool EsMultijugador()
+    {
+        NetworkManager nm = NetworkManager.Singleton;
+        if (nm == null || !nm.IsListening) return false;
+
+        // Si es cliente puro (invitado), siempre es multijugador.
+        // Si es host, es multijugador si hay más de 1 cliente conectado.
+        return !nm.IsHost || nm.ConnectedClientsList.Count > 1;
     }
 
 }

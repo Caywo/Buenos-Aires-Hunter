@@ -5969,7 +5969,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MeleeAttack
   rango: 2
   radio: 0.5
-  damage: 100
+  damage: 35
   fireRate: 0.6
   hitMask:
     serializedVersion: 2
