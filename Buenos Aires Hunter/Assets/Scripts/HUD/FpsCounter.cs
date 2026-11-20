@@ -10,7 +10,7 @@ public class FpsCounter : MonoBehaviour
 
     private float acumulado;
     private int frames;
-    private bool visible = true;
+    private bool visible = false;
 
     void Update()
     {
