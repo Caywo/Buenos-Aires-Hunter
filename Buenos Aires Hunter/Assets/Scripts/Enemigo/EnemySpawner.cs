@@ -317,7 +317,7 @@ public class EnemySpawner : NetworkBehaviour
                     cliente.PlayerObject.transform.position
                 );
 
-            if (distancia < distanciaMinimaJugador && distancia > distanciaMaximaJugador)
+            if (distancia < distanciaMinimaJugador || distancia > distanciaMaximaJugador)
                 return true;
         }
 
