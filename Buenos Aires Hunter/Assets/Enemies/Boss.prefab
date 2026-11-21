@@ -1707,7 +1707,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
   ShowTopMostFoldoutHeaderGroup: 1
-  vidaMaxima: 500
+  vidaMaxima: 1500
   esJugador: 0
   despawnAlMorir: 0
   retrasoDespawn: 2

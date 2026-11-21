@@ -19,10 +19,12 @@ public class Health : NetworkBehaviour, IDamageable
     [SerializeField] private float retrasoDespawn = 0.5f;
 
     private readonly NetworkVariable<float> vidaActual = new NetworkVariable<float>(100f);
+    // Vida máxima real: la del prefab, multiplicada por la dificultad en los enemigos.
+    private readonly NetworkVariable<float> vidaMaximaEfectiva = new NetworkVariable<float>(0f);
     private readonly NetworkVariable<bool> muerto = new NetworkVariable<bool>(false);
 
     public float VidaActual => vidaActual.Value;
-    public float VidaMaxima => vidaMaxima;
+    public float VidaMaxima => vidaMaximaEfectiva.Value > 0f ? vidaMaximaEfectiva.Value : vidaMaxima;
     public bool EstaMuerto => muerto.Value;
 
     /// <summary>True si este Health pertenece a un jugador (sirve para distinguir jugadores de enemigos).</summary>
@@ -80,8 +82,18 @@ public class Health : NetworkBehaviour, IDamageable
     {
         if (IsServer)
         {
-            vidaActual.Value = vidaMaxima;
+            float maxima = vidaMaxima;
+
+            // La dificultad escala la vida de los enemigos (no la de los jugadores).
+            if (!esJugador)
+                maxima *= Dificultad.Perfil.vidaEnemigos;
+
+            vidaMaximaEfectiva.Value = maxima;
+            vidaActual.Value = maxima;
             muerto.Value = false;
+
+            if (!esJugador)
+                Dificultad.AplicarAEnemigo(gameObject);
         }
 
         vidaActual.OnValueChanged += AlCambiarVida;
@@ -94,7 +106,7 @@ public class Health : NetworkBehaviour, IDamageable
         muerto.OnValueChanged -= AlCambiarMuerte;
     }
 
-    private void AlCambiarVida(float anterior, float nueva) => OnVidaCambiada?.Invoke(nueva, vidaMaxima);
+    private void AlCambiarVida(float anterior, float nueva) => OnVidaCambiada?.Invoke(nueva, VidaMaxima);
     private void AlCambiarMuerte(bool anterior, bool nueva) => OnMuerteCambiada?.Invoke(nueva);
 
     public void TakeDamage(float dano, ulong atacanteId)
@@ -106,23 +118,36 @@ public class Health : NetworkBehaviour, IDamageable
         if (esJugador && atacanteId != ReglasCombate.AtacanteNeutral && !ReglasCombate.PvPActivo)
             return;
 
+        // Dificultad: el daño que los enemigos hacen a los jugadores se escala.
+        if (esJugador && EsDanoDeEnemigo(atacanteId))
+            dano *= Dificultad.Perfil.danoEnemigos;
+
         vidaActual.Value = Mathf.Max(0f, vidaActual.Value - dano);
-        Debug.Log($"[Health] {name} recibió {dano} de daño (atacante {atacanteId}). Vida: {vidaActual.Value}/{vidaMaxima}");
+        Debug.Log($"[Health] {name} recibió {dano} de daño (atacante {atacanteId}). Vida: {vidaActual.Value}/{VidaMaxima}");
 
         if (vidaActual.Value <= 0f)
             Morir(atacanteId);
     }
 
+    // Daño que NO viene de otro jugador: el atacante neutral o cualquier enemigo.
+    private bool EsDanoDeEnemigo(ulong atacanteId)
+    {
+        if (atacanteId == ReglasCombate.AtacanteNeutral)
+            return true;
+
+        return NetworkManager == null || !NetworkManager.ConnectedClients.ContainsKey(atacanteId);
+    }
+
     public void Curar(float cantidad)
     {
         if (!IsServer || muerto.Value || cantidad <= 0f) return;
-        vidaActual.Value = Mathf.Min(vidaMaxima, vidaActual.Value + cantidad);
+        vidaActual.Value = Mathf.Min(VidaMaxima, vidaActual.Value + cantidad);
     }
 
     public void Revivir()
     {
         if (!IsServer) return;
-        vidaActual.Value = vidaMaxima;
+        vidaActual.Value = VidaMaxima;
         muerto.Value = false;
     }
 

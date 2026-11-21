@@ -123,7 +123,9 @@ public class EnemySpawnerSupervivencia : NetworkBehaviour
     {
         rondaActual.Value++;
 
-        int cantidadTotal = enemigosPrimeraRonda + ((rondaActual.Value - 1) * enemigosExtraPorRonda);
+        int cantidadTotal = Mathf.RoundToInt(
+     (enemigosPrimeraRonda + ((rondaActual.Value - 1) * enemigosExtraPorRonda))
+     * Dificultad.Perfil.cantidadEnemigos);
 
         tanquesVivos = 0;
 

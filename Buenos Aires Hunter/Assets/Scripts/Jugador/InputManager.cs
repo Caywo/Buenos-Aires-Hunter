@@ -34,10 +34,15 @@ public class InputManager : NetworkBehaviour
         if (salud == null) Debug.LogError("InputManager: no se encontró Health.", this);
 
         // INTERACTUAR
-        inventarioActions.Interactuar.performed += ctx => { if (!salud.EstaMuerto) interactuar.Interactuar(); };
+        inventarioActions.Interactuar.performed += ctx =>
+        {
+            if (!salud.EstaMuerto && !EstaEnPausa())
+                interactuar.Interactuar();
+        };
+
         inventarioActions.Interactuar.started += ctx =>
         {
-            if (!salud.EstaMuerto)
+            if (!salud.EstaMuerto && !EstaEnPausa())
                 interactuar.IniciarInteraccion();
         };
 
@@ -47,17 +52,38 @@ public class InputManager : NetworkBehaviour
         };
 
         // SALTO
-        movimiento.Saltar.performed += ctx => { if (!salud.EstaMuerto) motor.Saltar(); };
+        movimiento.Saltar.performed += ctx =>
+        {
+            if (!salud.EstaMuerto && !EstaEnPausa())
+                motor.Saltar();
+        };
 
         // APUNTADO Y RECARGA
-        inventarioActions.Recargar.performed += ctx => inventario.Recargar();
+        inventarioActions.Recargar.performed += ctx =>
+        {
+            if (!EstaEnPausa())
+                inventario.Recargar();
+        };
 
-        inventarioActions.Apuntar.performed += ctx => { inventario.SetApuntando(true); playerUI.apagarCrosshair(); };
-        inventarioActions.Apuntar.canceled += ctx => { inventario.SetApuntando(false); playerUI.activarCrosshair(); };
+        inventarioActions.Apuntar.performed += ctx =>
+        {
+            if (EstaEnPausa()) return;
+            inventario.SetApuntando(true);
+            playerUI.apagarCrosshair();
+        };
+
+        inventarioActions.Apuntar.canceled += ctx =>
+        {
+            inventario.SetApuntando(false);
+            if (!EstaEnPausa())
+                playerUI.activarCrosshair();
+        };
 
         // INVENTARIO
         inventarioActions.Items.performed += ctx =>
         {
+            if (EstaEnPausa()) return;
+
             string tecla = ctx.control.name; // "1", "2", "3"
             if (int.TryParse(tecla, out int numero))
             {
@@ -158,4 +184,13 @@ public class InputManager : NetworkBehaviour
         if (!IsOwner || salud.EstaMuerto) return;
         mirar.ProcessMirar(movimiento.Mirar.ReadValue<Vector2>());
     }
+
+    private bool EstaEnPausa()
+    {
+        if (pausaUI == null)
+            pausaUI = GetComponentInChildren<PausaUI>(true);
+
+        return pausaUI != null && pausaUI.PausaAbierta;
+    }
+
 }
