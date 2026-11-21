@@ -6009,6 +6009,7 @@ MonoBehaviour:
   respawnAutomatico: 0
   tiempoRespawn: 3
   particulasSangre: {fileID: 5254550273892336374, guid: b9632289ffe5f704b936aad20b704ee4, type: 3}
+  playerAudio: {fileID: 5194580247049085147}
 --- !u!114 &1635410163639202192
 MonoBehaviour:
   m_ObjectHideFlags: 0
