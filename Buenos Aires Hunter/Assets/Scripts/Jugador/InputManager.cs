@@ -36,6 +36,7 @@ public class InputManager : NetworkBehaviour
         // INTERACTUAR
         inventarioActions.Interactuar.performed += ctx =>
         {
+            Debug.Log($"[InputManager] Tecla E detectada. IsOwner={IsOwner}, EstaMuerto={salud.EstaMuerto}, EstaEnPausa={EstaEnPausa()}");
             if (!salud.EstaMuerto && !EstaEnPausa())
                 interactuar.Interactuar();
         };

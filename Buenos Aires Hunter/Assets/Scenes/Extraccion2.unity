@@ -5223,7 +5223,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
   GlobalObjectIdHash: 2206358699
   InScenePlacedSourceGlobalObjectIdHash: 0
-  m_InScenePlacedDisabledByDefault: 1
+  m_InScenePlacedDisabledByDefault: 0
   DeferredDespawnTick: 0
   Ownership: 1
   AlwaysReplicateAsRoot: 0
@@ -10228,7 +10228,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 2032522679}
+    m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 100000, guid: 8dcf1e1a9552d144db500adf60f2b638, type: 3}
       propertyPath: m_Name
@@ -10236,7 +10236,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: 8dcf1e1a9552d144db500adf60f2b638, type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 2147483647
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 8dcf1e1a9552d144db500adf60f2b638, type: 3}
       propertyPath: m_LocalScale.x
@@ -10252,15 +10252,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 8dcf1e1a9552d144db500adf60f2b638, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 12.095579
+      value: 105.81259
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 8dcf1e1a9552d144db500adf60f2b638, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 21.25
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 8dcf1e1a9552d144db500adf60f2b638, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 3.5493698
+      value: -112.172005
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 8dcf1e1a9552d144db500adf60f2b638, type: 3}
       propertyPath: m_LocalRotation.w
@@ -10290,6 +10290,30 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6500000, guid: 8dcf1e1a9552d144db500adf60f2b638, type: 3}
+      propertyPath: m_Size.x
+      value: 0.16
+      objectReference: {fileID: 0}
+    - target: {fileID: 6500000, guid: 8dcf1e1a9552d144db500adf60f2b638, type: 3}
+      propertyPath: m_Size.y
+      value: 0.18
+      objectReference: {fileID: 0}
+    - target: {fileID: 6500000, guid: 8dcf1e1a9552d144db500adf60f2b638, type: 3}
+      propertyPath: m_Size.z
+      value: 0.65
+      objectReference: {fileID: 0}
+    - target: {fileID: 6500000, guid: 8dcf1e1a9552d144db500adf60f2b638, type: 3}
+      propertyPath: m_Center.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6500000, guid: 8dcf1e1a9552d144db500adf60f2b638, type: 3}
+      propertyPath: m_Center.y
+      value: 0.08
+      objectReference: {fileID: 0}
+    - target: {fileID: 6500000, guid: 8dcf1e1a9552d144db500adf60f2b638, type: 3}
+      propertyPath: m_Center.z
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -10301,11 +10325,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 428282205}
   m_SourcePrefab: {fileID: 100100000, guid: 8dcf1e1a9552d144db500adf60f2b638, type: 3}
---- !u!4 &428282202 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 400000, guid: 8dcf1e1a9552d144db500adf60f2b638, type: 3}
-  m_PrefabInstance: {fileID: 428282201}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &428282203 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100000, guid: 8dcf1e1a9552d144db500adf60f2b638, type: 3}
@@ -10352,7 +10371,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Bondi
   ShowTopMostFoldoutHeaderGroup: 1
   mensaje: "\xBFTomarse el reverendo palo?"
-  precioPasaje: 500
+  precioPasaje: 100
   siguienteMapa: MenuPrincipal
   esUltimoMapa: 1
 --- !u!1 &428798809
@@ -52587,7 +52606,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 428282202}
   - {fileID: 1764333557}
   - {fileID: 1667184241}
   - {fileID: 491558308}
@@ -68443,3 +68461,4 @@ SceneRoots:
   - {fileID: 214475137}
   - {fileID: 1011029113}
   - {fileID: 1052626248}
+  - {fileID: 428282201}
