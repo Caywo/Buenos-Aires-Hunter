@@ -14,6 +14,8 @@ public class Bondi : Interactuable
 
     public override void InteractuarConItem(PlayerInventory jugador)
     {
+        Debug.Log($"[Bondi] InteractuarConItem llamado. IsServer={IsServer}, IsSpawned={IsSpawned}, esUltimoMapa={esUltimoMapa}, jugador={(jugador != null ? jugador.name : "NULL")}");
+
         if (!IsServer || cambiandoDeEscena || jugador == null)
             return;
 
@@ -24,14 +26,22 @@ public class Bondi : Interactuable
 
         if (!jugador.PagarConSube(precioPasaje))
         {
-            Debug.Log($"[Bondi] El cliente {clientId} no tiene suficiente saldo en la SUBE.");
+            Debug.LogWarning($"[Bondi] Cliente {clientId} no pudo pagar. Saldo={jugador.saldoSube.Value}, IndiceActivo={jugador.IndiceActivo}, IndiceSube={jugador.indiceSube}");
+
+            ClientRpcParams errorParams = new ClientRpcParams
+            {
+                Send = new ClientRpcSendParams
+                {
+                    TargetClientIds = new ulong[] { clientId }
+                }
+            };
+            AvisarErrorPagoClientRpc($"Necesitás la SUBE en mano con al menos ${precioPasaje}", errorParams);
             return;
         }
 
         jugadoresQuePagaron.Add(clientId);
         Debug.Log($"[Bondi] Jugador {clientId} pagó el pasaje. Registrados: {jugadoresQuePagaron.Count}");
 
-        // Crear los parámetros de envío dirigidos únicamente al cliente que pagó
         ClientRpcParams rpcParams = new ClientRpcParams
         {
             Send = new ClientRpcSendParams
@@ -85,6 +95,7 @@ public class Bondi : Interactuable
         }
         else
         {
+            Debug.Log("[Bondi] Es último mapa -> Llamando a MostrarVictoriaFinalClientRpc()");
             MostrarVictoriaFinalClientRpc();
         }
     }
@@ -97,7 +108,7 @@ public class Bondi : Interactuable
         {
             var motor = localPlayer.GetComponent<PlayerMotor>();
             var mirar = localPlayer.GetComponent<PlayerLook>();
-            var UI = localPlayer.GetComponentInChildren<PlayerUI>();
+            var UI = localPlayer.GetComponentInChildren<PlayerUI>(true);
 
             if (motor != null) motor.inputBloqueado = true;
             if (mirar != null) mirar.inputBloqueado = true;
@@ -113,16 +124,35 @@ public class Bondi : Interactuable
     }
 
     [ClientRpc]
+    private void AvisarErrorPagoClientRpc(string mensajeError, ClientRpcParams clientRpcParams = default)
+    {
+        var localPlayer = NetworkManager.Singleton.LocalClient?.PlayerObject;
+        var ui = localPlayer?.GetComponentInChildren<PlayerUI>(true);
+        if (ui != null)
+        {
+            ui.ActualizarTexto(mensajeError);
+        }
+    }
+
+    [ClientRpc]
     private void MostrarVictoriaFinalClientRpc()
     {
+        Debug.Log("[Bondi] MostrarVictoriaFinalClientRpc ejecutado en cliente.");
         Time.timeScale = 0f;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        PlayerUI ui = FindAnyObjectByType<PlayerUI>();
+        var localPlayer = NetworkManager.Singleton.LocalClient?.PlayerObject;
+        var ui = localPlayer != null ? localPlayer.GetComponentInChildren<PlayerUI>(true) : FindAnyObjectByType<PlayerUI>();
+
         if (ui != null)
         {
-            ui.MostrarPantallaVictoria(); 
+            Debug.Log("[Bondi] Llamando a ui.MostrarPantallaVictoria()");
+            ui.MostrarPantallaVictoria();
+        }
+        else
+        {
+            Debug.LogError("[Bondi] No se encontró PlayerUI para mostrar la pantalla de victoria.");
         }
     }
 }

@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using Unity.Netcode;
 
@@ -39,76 +38,62 @@ public class PlayerInteract : NetworkBehaviour
         if (tiendaUI == null)
             tiendaUI = FindAnyObjectByType<TiendaUI>();
 
+        if (cam == null)
+        {
+            PlayerLook playerLook = GetComponent<PlayerLook>();
+            if (playerLook != null && playerLook.cam != null)
+                cam = playerLook.cam;
+            else
+                cam = GetComponentInChildren<Camera>();
+        }
+
         if (playerUI == null || cam == null) return;
 
-        objetivo = null;
-        ritual = null;
-        jugadorCaido = null;
+        BuscarObjetivoActual();
 
         string texto = string.Empty;
 
-        Ray ray = new Ray(cam.transform.position, cam.transform.forward);
-        Debug.DrawRay(ray.origin, ray.direction * distancia);
-
-        if (Physics.Raycast(ray, out RaycastHit hitInfo, distancia, mask))
+        if (ritual != null)
         {
-            // Primero comprobamos si estamos mirando la mesa ritual.
-            ritual = hitInfo.collider.GetComponentInParent<RitualBoss>();
+            texto = ritual.TextoInteraccion();
+        }
+        else if (jugadorCaido != null)
+        {
+            Health vidaAjena = jugadorCaido.GetComponent<Health>();
 
-            if (ritual != null)
+            if (vidaAjena != null && vidaAjena.EstaMuerto)
             {
-                texto = ritual.TextoInteraccion();
-            }
-            else
-            {
-                // Comprobamos si estamos mirando un jugador caído.
-                jugadorCaido = hitInfo.collider.GetComponentInParent<PlayerDownState>();
-
-                if (jugadorCaido != null)
+                if (inventario == null || !inventario.TieneSubeEquipada)
                 {
-                    Health vidaAjena = jugadorCaido.GetComponent<Health>();
-
-                    if (vidaAjena != null && vidaAjena.EstaMuerto)
-                    {
-                        if (inventario == null || !inventario.TieneSubeEquipada)
-                        {
-                            texto = "Necesitás equipar la SUBE para revivir";
-                        }
-                        else if (jugadorCaido.IntentandoRevivir)
-                        {
-                            texto = $"Reanimando... {jugadorCaido.TiempoRestante:F1}s";
-                        }
-                        else
-                        {
-                            texto = "Mantené E para revivir $500";
-                        }
-                    }
+                    texto = "Necesitás equipar la SUBE para revivir";
+                }
+                else if (jugadorCaido.IntentandoRevivir)
+                {
+                    texto = $"Reanimando... {jugadorCaido.TiempoRestante:F1}s";
                 }
                 else
                 {
-                    // Si no es un jugador caído, buscamos un objeto interactuable.
-                    objetivo = hitInfo.collider.GetComponentInParent<Interactuable>();
+                    texto = "Mantené E para revivir $500";
+                }
+            }
+        }
+        else if (objetivo != null)
+        {
+            texto = objetivo.mensaje;
 
-                    if (objetivo != null)
-                    {
-                        texto = objetivo.mensaje;
+            if (objetivo is Tienda)
+            {
+                if (spawner == null)
+                    spawner = FindAnyObjectByType<EnemySpawnerSupervivencia>();
 
-                        if (objetivo is Tienda)
-                        {
-                            if (spawner == null)
-                                spawner = FindAnyObjectByType<EnemySpawnerSupervivencia>();
+                if (spawner != null && !spawner.rondaEnPausa.Value)
+                {
+                    texto = "La tienda abre en la ronda de descanso";
+                }
 
-                            if (spawner != null && !spawner.rondaEnPausa.Value)
-                            {
-                                texto = "La tienda abre en la ronda de descanso";
-                            }
-
-                            if (inventario == null || !inventario.TieneSubeEquipada)
-                            {
-                                texto = "Necesitás la SUBE en mano";
-                            }
-                        }
-                    }
+                if (inventario == null || !inventario.TieneSubeEquipada)
+                {
+                    texto = "Necesitás la SUBE en mano";
                 }
             }
         }
@@ -118,7 +103,13 @@ public class PlayerInteract : NetworkBehaviour
 
     public void Interactuar()
     {
+        Debug.Log($"[PlayerInteract] Entró a Interactuar(). IsOwner={IsOwner}, IsSpawned={IsSpawned}, cam={(cam != null ? cam.name : "NULL")}");
+
         if (!IsOwner) return;
+
+        BuscarObjetivoActual();
+
+        Debug.Log($"[PlayerInteract] Post-Raycast: objetivo={(objetivo != null ? objetivo.name : "NULL")}, NetId={(objetivo != null ? objetivo.NetworkObjectId : 0)}");
 
         // Interacción con la mesa ritual.
         if (ritual != null)
@@ -165,8 +156,12 @@ public class PlayerInteract : NetworkBehaviour
     [ServerRpc]
     private void IntentarInteractuarServerRpc(ulong objetoId)
     {
-        if (NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(
-            objetoId, out NetworkObject netObj))
+        bool encontrado = NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(
+            objetoId, out NetworkObject netObj);
+
+        Debug.Log($"[PlayerInteract ServerRpc] Buscando objetoId={objetoId} -> Encontrado={encontrado}");
+
+        if (encontrado)
         {
             Interactuable interactuable =
                 netObj.GetComponentInChildren<Interactuable>();
@@ -214,4 +209,56 @@ public class PlayerInteract : NetworkBehaviour
         // Si no estábamos reanimando, realizamos la interacción normal.
         Interactuar();
     }
+
+    private void BuscarObjetivoActual()
+    {
+        objetivo = null;
+        ritual = null;
+        jugadorCaido = null;
+
+        if (cam == null)
+        {
+            cam = GetComponentInChildren<Camera>();
+            if (cam == null) cam = Camera.main;
+        }
+
+        if (cam == null) return;
+
+        Ray ray = new Ray(cam.transform.position, cam.transform.forward);
+        Debug.DrawRay(ray.origin, ray.direction * distancia);
+
+        if (Physics.Raycast(ray, out RaycastHit hitInfo, distancia, mask))
+        {
+            ritual = hitInfo.collider.GetComponentInParent<RitualBoss>();
+            if (ritual != null) return;
+
+            jugadorCaido = hitInfo.collider.GetComponentInParent<PlayerDownState>();
+            if (jugadorCaido != null) return;
+
+            objetivo = hitInfo.collider.GetComponentInParent<Interactuable>();
+            if (objetivo != null) return;
+        }
+
+        // Respaldo: si el rayo fino no tocó el collider (por ejemplo en modelos grandes como el colectivo),
+        // buscamos el Interactuable más cercano frente al jugador.
+        Collider[] cercanos = Physics.OverlapSphere(cam.transform.position + cam.transform.forward * (distancia * 0.5f), distancia);
+        float menorDist = float.MaxValue;
+
+        foreach (var col in cercanos)
+        {
+            if (col.transform.IsChildOf(transform)) continue;
+
+            Interactuable candidato = col.GetComponentInParent<Interactuable>();
+            if (candidato != null && !candidato.transform.IsChildOf(transform))
+            {
+                float d = Vector3.Distance(cam.transform.position, col.ClosestPoint(cam.transform.position));
+                if (d <= distancia && d < menorDist)
+                {
+                    menorDist = d;
+                    objetivo = candidato;
+                }
+            }
+        }
+    }
+
 }
