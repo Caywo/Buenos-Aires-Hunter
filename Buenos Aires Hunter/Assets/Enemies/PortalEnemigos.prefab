@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7553383305284382232
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 987057584812863864}
+  - component: {fileID: 4256792075044140802}
+  m_Layer: 0
+  m_Name: PortalEnemigos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &987057584812863864
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7553383305284382232}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -4.986059, y: 3, z: 6.80612}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4256792075044140802
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7553383305284382232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4017ba50ea0fdba4db3cf2e148f64881, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PortalEffect
+  radius: 2.5
+  ovalScale: {x: 1, y: 1}
+  ringThickness: 0.2
+  orbitalSpeed: 1
+  colorA: {r: 0.8207547, g: 0, b: 0.008123004, a: 1}
+  colorB: {r: 1, g: 0.6396222, b: 0, a: 1}
+  ringMaxParticles: 1886
+  ringEmissionRate: 409.2
+  ringLifetime: {x: 1.5, y: 2.5}
+  ringStartSize: {x: 0.21, y: 0.52}
+  trailLength: 1
+  opaqueFill: 1
+  fillColor: {r: 0.1, g: 0.02, b: 0.02, a: 1}
+  fillOffsetZ: 0.2
+  mistAlpha: 0.5
+  mistMaxParticles: 170
+  mistEmissionRate: 35
+  mistLifetime: {x: 2.5, y: 3.5}
+  mistStartSize: {x: 2, y: 3.5}
+  mistRotationSpeed: 0.81
+  mistRadiusMultiplier: 0.8
+  particleMaterial: {fileID: 2100000, guid: 753befabf7fddce4d87b4c6914918519, type: 2}
+  fillMaterial: {fileID: 0}
+  spawnSound: {fileID: 8300000, guid: 67e5cad26e1fbdd4c860bdc4c1e7f7cd, type: 3}
+  spawnVolume: 1
