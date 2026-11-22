@@ -886,8 +886,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 212145452}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.033311438, y: 0.020910686, z: 0.00019350194, w: 0.9992262}
-  m_LocalPosition: {x: 144.96292, y: 1.970702, z: 37.256287}
+  m_LocalRotation: {x: -0.0000000057080642, y: -0.0000000055332086, z: -3.0811395e-12, w: 1}
+  m_LocalPosition: {x: 51.760002, y: 2, z: 332.61182}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6108,7 +6108,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Aunque arrancar tantas cabezas fue algo divertido, capaz deber\xEDa volver para una segunda ronda alg\xFAn d\xEDa..."
+  m_text: "Capaz en una de esas me voy a Punta del Este, qu\xE9 se yo. Igual me queda mucho trabajo por hacer."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
   m_sharedMaterial: {fileID: 2147374, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
@@ -7443,7 +7443,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Despu\xE9s de matar tantos demonios voy a necesitar tiempo para descansar."
+  m_text: "Otra noche m\xE1s en el laburo..."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
   m_sharedMaterial: {fileID: 2147374, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
@@ -26065,7 +26065,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Creo que voy a pedir vacaciones e irme a Punta del Este un par de semanas.
+  m_text: "La posta podr\xEDa tomarme unas vacaciones."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
   m_sharedMaterial: {fileID: 2147374, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
@@ -27117,7 +27117,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Necesito pensarlo... con un vaso de fernet en la mano.
+  m_text: "Lo pensar\xE9 con un buen fernet en la mano."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
   m_sharedMaterial: {fileID: 2147374, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
