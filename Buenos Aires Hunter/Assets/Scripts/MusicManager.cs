@@ -9,6 +9,7 @@ public class MusicManager : MonoBehaviour
     [Header("Pistas")]
     [SerializeField] private AudioClip musicaMenu;
     [SerializeField] private AudioClip musicaExtraccion;
+    [SerializeField] private AudioClip musicaExtraccion2;
     [SerializeField] private AudioClip musicaSupervivencia;
     [SerializeField] private AudioClip musicaDuelo;
     [SerializeField] private AudioClip musicaTutorial;
@@ -16,6 +17,7 @@ public class MusicManager : MonoBehaviour
     [Header("Nombres de escenas")]
     [SerializeField] private string escenaMenu = "MenuPrincipal";
     [SerializeField] private string escenaExtraccion = "Extraccion";
+    [SerializeField] private string escenaExtraccion2 = "Extraccion2";
     [SerializeField] private string escenaSupervivencia = "Supervivencia";
     [SerializeField] private string escenaDuelo = "Duelo";
     [SerializeField] private string escenaTutorial = "Tutorial";
@@ -57,7 +59,7 @@ public class MusicManager : MonoBehaviour
             Configuracion.Instance.AplicarTodoElAudio();
         }
 
-        ReproducirMenu();
+        AlCargarEscena(SceneManager.GetActiveScene(), LoadSceneMode.Single);
     }
 
     public void ReproducirMusica(AudioClip musica)
@@ -79,6 +81,11 @@ public class MusicManager : MonoBehaviour
     public void ReproducirExtraccion()
     {
         ReproducirMusica(musicaExtraccion);
+    }
+
+    public void ReproducirExtraccion2()
+    {
+        ReproducirMusica(musicaExtraccion2);
     }
 
     public void ReproducirSupervivencia()
@@ -114,6 +121,8 @@ public class MusicManager : MonoBehaviour
             ReproducirMenu();
         else if (escena.name == escenaExtraccion)
             ReproducirExtraccion();
+        else if (escena.name == escenaExtraccion2)
+            ReproducirExtraccion2();
         else if (escena.name == escenaSupervivencia)
             ReproducirSupervivencia();
         else if (escena.name == escenaDuelo)
