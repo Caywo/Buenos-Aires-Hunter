@@ -7,10 +7,26 @@ public class PlayerLook : MonoBehaviour
     public float sensibilidadX = 5f;
     public float sensibilidadY = 5f;
 
+    [Header("Ajuste de Escala")]
+    [Tooltip("Multiplica el valor del slider para que haya una diferencia marcada entre el mínimo y el máximo.")]
+    [SerializeField] private float multiplicadorBase = 3.5f;
+
     [Header("Recoil")]
     public float recoilReturnSpeed = 6f;
     private float recoilX = 0f;
     public bool inputBloqueado = false;
+
+    private void OnEnable()
+    {
+        if (Configuracion.Instance != null)
+            Configuracion.Instance.OnSensibilidadCambiada += ActualizarSensibilidad;
+    }
+
+    private void OnDisable()
+    {
+        if (Configuracion.Instance != null)
+            Configuracion.Instance.OnSensibilidadCambiada -= ActualizarSensibilidad;
+    }
 
     private void Start()
     {
@@ -38,7 +54,7 @@ public class PlayerLook : MonoBehaviour
         float mouseX = input.x;
         float mouseY = input.y;
 
-        rotacionX -= (mouseY * Time.deltaTime) * sensibilidadY;
+        rotacionX -= (mouseY * Time.deltaTime) * (sensibilidadY * multiplicadorBase);
         rotacionX = Mathf.Clamp(rotacionX, -80f, 80f);
 
         // El recoil vuelve suavemente a 0
@@ -47,7 +63,7 @@ public class PlayerLook : MonoBehaviour
         // Rotación final = input del jugador + offset de recoil
         cam.transform.localRotation = Quaternion.Euler(rotacionX + recoilX, 0, 0);
 
-        transform.Rotate(Vector3.up * (mouseX * Time.deltaTime) * sensibilidadX);
+        transform.Rotate(Vector3.up * (mouseX * Time.deltaTime) * (sensibilidadX * multiplicadorBase));
     }
 
     void Awake()
@@ -59,7 +75,7 @@ public class PlayerLook : MonoBehaviour
     // Método público para que WeaponShoot pida recoil
     public void AddRecoil(float cantidad)
     {
-        rotacionX -= cantidad; 
+        rotacionX -= cantidad;
         rotacionX = Mathf.Clamp(rotacionX, -80f, 80f);
     }
 }

@@ -27,7 +27,7 @@ public class Configuracion : MonoBehaviour
     public float VolumenMusica { get; private set; }
     public float VolumenSonidos { get; private set; }
     public int ResolucionIndex { get; private set; }
-
+    public event System.Action OnSensibilidadCambiada;
     public List<Resolution> ResolucionesFiltradas => resolucionesFiltradas;
 
     private void Awake()
@@ -54,8 +54,8 @@ public class Configuracion : MonoBehaviour
 
     public void CargarConfiguracion()
     {
-        SensibilidadX = PlayerPrefs.GetFloat(KEY_SENS_X, 5.5f);
-        SensibilidadY = PlayerPrefs.GetFloat(KEY_SENS_Y, 5.5f);
+        SensibilidadX = PlayerPrefs.GetFloat(KEY_SENS_X, 15f);
+        SensibilidadY = PlayerPrefs.GetFloat(KEY_SENS_Y, 15f);
         VolumenMusica = PlayerPrefs.GetFloat(KEY_VOL_MUSICA, 0.5f);
         VolumenSonidos = PlayerPrefs.GetFloat(KEY_VOL_SONIDOS, 0.5f);
         ResolucionIndex = PlayerPrefs.GetInt(KEY_RES_INDEX, -1);
@@ -106,6 +106,7 @@ public class Configuracion : MonoBehaviour
         SensibilidadX = valor;
         PlayerPrefs.SetFloat(KEY_SENS_X, valor);
         PlayerPrefs.Save();
+        OnSensibilidadCambiada?.Invoke(); 
     }
 
     public void SetSensibilidadY(float valor)
@@ -113,6 +114,7 @@ public class Configuracion : MonoBehaviour
         SensibilidadY = valor;
         PlayerPrefs.SetFloat(KEY_SENS_Y, valor);
         PlayerPrefs.Save();
+        OnSensibilidadCambiada?.Invoke(); 
     }
 
     public void SetVolumenMusica(float valor)
@@ -140,8 +142,8 @@ public class Configuracion : MonoBehaviour
 
     public void RestablecerPorDefecto()
     {
-        SensibilidadX = 5.5f;
-        SensibilidadY = 5.5f;
+        SensibilidadX = 15f;
+        SensibilidadY = 15f;
         VolumenMusica = 0.5f;
         VolumenSonidos = 0.5f;
 
@@ -157,6 +159,7 @@ public class Configuracion : MonoBehaviour
         PlayerPrefs.SetFloat(KEY_VOL_SONIDOS, VolumenSonidos);
         PlayerPrefs.SetInt(KEY_RES_INDEX, ResolucionIndex);
         PlayerPrefs.Save();
+        OnSensibilidadCambiada?.Invoke();
 
         AplicarTodoElAudio();
     }

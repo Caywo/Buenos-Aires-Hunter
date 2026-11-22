@@ -5903,6 +5903,7 @@ MonoBehaviour:
   cam: {fileID: 0}
   sensibilidadX: 2
   sensibilidadY: 2
+  multiplicadorBase: 1
   recoilReturnSpeed: 6
   inputBloqueado: 0
 --- !u!114 &4829926995818636796
@@ -11537,6 +11538,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3161054849483068249, guid: 30d9b53d408f62546a85a5cb8153b84f, type: 3}
+      propertyPath: m_MaxValue
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 4429271599737824290, guid: 30d9b53d408f62546a85a5cb8153b84f, type: 3}
       propertyPath: m_UiScaleMode
       value: 1
@@ -11560,6 +11565,10 @@ PrefabInstance:
     - target: {fileID: 6640520668225572030, guid: 30d9b53d408f62546a85a5cb8153b84f, type: 3}
       propertyPath: m_OverrideSorting
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7180915943768175745, guid: 30d9b53d408f62546a85a5cb8153b84f, type: 3}
+      propertyPath: m_MaxValue
+      value: 100
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
