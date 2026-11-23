@@ -12418,7 +12418,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   mensaje: "\xBFTomarse el reverendo palo?"
   precioPasaje: 100
-  siguienteMapa: MenuPrincipal
+  siguienteMapa: CinematicaFinal
   esUltimoMapa: 1
 --- !u!1 &428798809
 GameObject:

@@ -33,12 +33,6 @@ public class MenuPrincipal : MonoBehaviour
     [Header("Modos de juego")]
     [SerializeField] private ModoDeJuego[] modos;
 
-    [Header("Nombres de escenas")]
-    [SerializeField] private string escenaMenu = "MenuPrincipal";
-    [SerializeField] private string escenaExtraccion = "Extraccion";
-    [SerializeField] private string escenaSupervivencia = "Supervivencia";
-    [SerializeField] private string escenaDuelo = "Duelo";
-
     [Tooltip("Cantidad de jugadores necesarios para arrancar la partida (host incluido).")]
     [SerializeField] private int jugadoresNecesarios = 2;
 
@@ -46,6 +40,12 @@ public class MenuPrincipal : MonoBehaviour
     [SerializeField] private TMP_InputField joinCodeInput;
     [SerializeField] private TMP_Text joinCodeDisplay;
     [SerializeField] private TMP_Text estadoDisplay;
+
+    private void Start()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
 
     private ModoDeJuego ObtenerModoActual(bool avisar = true)
     {
@@ -325,7 +325,8 @@ public class MenuPrincipal : MonoBehaviour
         UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
         transport.SetConnectionData("127.0.0.1", 7777);
 
-        NetworkManagerPersistente.Instance.ConfigurarSpawnDeJugadores(false);
+        NetworkManagerPersistente.Instance.ConfigurarSpawnDeJugadores(
+        modo.crearJugadoresAlCargarEscena);
 
         NetworkManager.Singleton.StartHost();
         NetworkManagerPersistente.Instance.SuscribirseACargaDeEscena();

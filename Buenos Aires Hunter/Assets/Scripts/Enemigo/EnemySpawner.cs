@@ -246,7 +246,7 @@ public class EnemySpawner : NetworkBehaviour
             return false;
         }
 
-        networkObject.Spawn();
+        networkObject.Spawn(true);
 
         enemigosActuales.Add(networkObject);
 

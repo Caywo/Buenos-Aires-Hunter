@@ -5128,9 +5128,9 @@ GameObject:
   m_Component:
   - component: {fileID: 269138477}
   - component: {fileID: 269138476}
-  - component: {fileID: 269138475}
   - component: {fileID: 269138474}
   - component: {fileID: 269138473}
+  - component: {fileID: 269138478}
   m_Layer: 0
   m_Name: MainCamera
   m_TagString: Untagged
@@ -5214,14 +5214,6 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
---- !u!81 &269138475
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 269138472}
-  m_Enabled: 1
 --- !u!20 &269138476
 Camera:
   m_ObjectHideFlags: 0
@@ -5288,6 +5280,14 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!81 &269138478
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 269138472}
+  m_Enabled: 1
 --- !u!1 &269141078
 GameObject:
   m_ObjectHideFlags: 0
@@ -12756,6 +12756,52 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!1 &475337993
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 475337995}
+  - component: {fileID: 475337994}
+  m_Layer: 0
+  m_Name: CinematicManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &475337994
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 475337993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 417820030e44d224c89e68c92d54bd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CinematicManager
+  director: {fileID: 1160639046}
+  escenaSiguiente: Extraccion1
+--- !u!4 &475337995
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 475337993}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 267.43695, y: 30.28686, z: 411.78592}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &482839769
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16380,7 +16426,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Por desgracia hace 211 d\xEDas que las noches de Buenos Aires son distintas. "
+  m_text: "Hace 211 d\xEDas que las noches de Buenos Aires no volvieron a ser lo mismo. "
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
   m_sharedMaterial: {fileID: 2164040, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
@@ -16407,7 +16453,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 72
+  m_fontSize: 71.1
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -21795,7 +21841,7 @@ MonoBehaviour:
   m_Script: {fileID: 365290288, guid: f56d46228aee4734f9114056c53bb57e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectid: 
+  projectid: 179038755923919
   updateInt: 10
   newSplatMapRestoreCode: 0
   toolbarInt: 0
@@ -25471,22 +25517,34 @@ MonoBehaviour:
   m_GameObject: {fileID: 1144277500}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec73c1b8d6a1e9a4a8dfce53b2a474fe, type: 3}
+  m_Script: {fileID: 11500000, guid: 4017ba50ea0fdba4db3cf2e148f64881, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PortalEffect
   radius: 1.5
-  ovalScale: {x: 1, y: 1}
-  ringThickness: 0.08
+  ovalScale: {x: 1, y: 1.6}
+  ringThickness: 0.2
   orbitalSpeed: 0.5
-  colorA: {r: 1, g: 0.65038824, b: 0, a: 1}
-  colorB: {r: 1, g: 0, b: 0, a: 1}
-  trailLength: 0.562
+  colorA: {r: 1, g: 0.25760013, b: 0, a: 1}
+  colorB: {r: 0.5188679, g: 0.23081098, b: 0, a: 1}
+  ringMaxParticles: 1500
+  ringEmissionRate: 300
+  ringLifetime: {x: 1.5, y: 2.5}
+  ringStartSize: {x: 0.12, y: 0.25}
+  trailLength: 0.35
   opaqueFill: 1
-  fillColor: {r: 0.23584908, g: 0.027812388, b: 0.027812388, a: 1}
+  fillColor: {r: 0.1, g: 0.02, b: 0.02, a: 1}
   fillOffsetZ: 0.05
   mistAlpha: 0.35
-  particleMaterial: {fileID: 2100000, guid: 7649f5f9ef21583468a4385986094d37, type: 2}
+  mistMaxParticles: 150
+  mistEmissionRate: 25
+  mistLifetime: {x: 2.5, y: 3.5}
+  mistStartSize: {x: 1.2, y: 2.2}
+  mistRotationSpeed: 0.3
+  mistRadiusMultiplier: 0.8
+  particleMaterial: {fileID: 0}
   fillMaterial: {fileID: 0}
+  spawnSound: {fileID: 0}
+  spawnVolume: 1
 --- !u!4 &1144277502
 Transform:
   m_ObjectHideFlags: 0
@@ -42233,3 +42291,4 @@ SceneRoots:
   - {fileID: 2047631134}
   - {fileID: 1599654221}
   - {fileID: 2059911522}
+  - {fileID: 475337995}

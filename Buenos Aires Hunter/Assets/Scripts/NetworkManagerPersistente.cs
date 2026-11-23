@@ -137,26 +137,87 @@ public class NetworkManagerPersistente : MonoBehaviour
         }
     }
 
-    private void AlCargarEscena(string sceneName, LoadSceneMode mode,
-        System.Collections.Generic.List<ulong> clientsCompleted, System.Collections.Generic.List<ulong> clientsTimedOut)
+    private void AlCargarEscena(
+        string sceneName,
+        LoadSceneMode mode,
+        System.Collections.Generic.List<ulong> clientsCompleted,
+        System.Collections.Generic.List<ulong> clientsTimedOut)
     {
+        NetworkManager nm = NetworkManager.Singleton;
+        if (nm == null) return;
+
         if (PantallaCarga.Instance != null)
-        {
             PantallaCarga.Instance.Ocultar();
+
+        // La cinemática final elimina los jugadores.
+        if (sceneName == "CinematicaFinal" && nm.IsServer)
+        {
+            DespawnearJugadores();
+            return;
         }
 
-        if (NetworkManager.Singleton.LocalClient == null) return;
+        // Los jugadores de Extracción se crean al terminar de cargar Extraccion1.
+        if (sceneName == "Extraccion1" && nm.IsServer)
+            CrearJugadores();
 
-        var playerObject = NetworkManager.Singleton.LocalClient.PlayerObject;
+        if (nm.LocalClient == null) return;
+
+        var playerObject = nm.LocalClient.PlayerObject;
         if (playerObject == null) return;
 
         var playerUI = playerObject.GetComponentInChildren<PlayerUI>(true);
+
         if (playerUI != null && playerUI.hud != null)
-        {
             playerUI.hud.SetActive(true);
+    }
+    private void CrearJugadores()
+    {
+        NetworkManager nm = NetworkManager.Singleton;
+
+        if (nm == null || !nm.IsServer) return;
+
+        if (playerPrefabOriginal == null)
+        {
+            Debug.LogError("[Spawn] No se encontró el prefab original del jugador.");
+            return;
+        }
+
+        foreach (var cliente in nm.ConnectedClientsList)
+        {
+            // Evitar crear un segundo jugador para el mismo cliente.
+            if (cliente.PlayerObject != null)
+                continue;
+
+            GameObject jugador = Instantiate(playerPrefabOriginal);
+
+            NetworkObject networkObject = jugador.GetComponent<NetworkObject>();
+
+            if (networkObject == null)
+            {
+                Debug.LogError("[Spawn] El prefab del jugador no tiene NetworkObject.");
+                Destroy(jugador);
+                continue;
+            }
+
+            networkObject.SpawnAsPlayerObject(cliente.ClientId, false);
+
+            Debug.Log($"[Spawn] Jugador creado para el cliente {cliente.ClientId}.");
         }
     }
+    private void DespawnearJugadores()
+    {
+        NetworkManager nm = NetworkManager.Singleton;
+        if (nm == null || !nm.IsServer) return;
 
+        foreach (var cliente in nm.ConnectedClientsList)
+        {
+            if (cliente.PlayerObject == null) continue;
+
+            cliente.PlayerObject.Despawn(true);
+        }
+
+        Debug.Log("[Spawn] Jugadores eliminados para la cinemática final.");
+    }
     public void SuscribirseACargaDeEscena()
     {
         StartCoroutine(SuscribirseACargaDeEscenaCuandoEsteListo());

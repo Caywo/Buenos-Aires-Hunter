@@ -6,7 +6,7 @@ using UnityEngine;
 /// El portal queda en el plano XY. Se ve también en el editor sin Play.
 /// </summary>
 [ExecuteAlways]
-public class PortalEffect : MonoBehaviour
+public class CrearPortal : MonoBehaviour
 {
     [Header("Forma")]
     public float radius = 1.5f;

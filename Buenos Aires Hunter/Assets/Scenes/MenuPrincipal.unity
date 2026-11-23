@@ -16254,12 +16254,12 @@ MonoBehaviour:
   modos:
   - nombre: Extraccion
     panel: {fileID: 555094878}
-    escenaDeJuego: Extraccion1
+    escenaDeJuego: CinematicaInicial
     joinCodeInput: {fileID: 1949036976}
     joinCodeDisplay: {fileID: 434375910}
     estadoDisplay: {fileID: 1154116382}
     botonCancelarPartida: {fileID: 1752438303}
-    crearJugadoresAlCargarEscena: 0
+    crearJugadoresAlCargarEscena: 1
   - nombre: Supervivencia
     panel: {fileID: 244630603}
     escenaDeJuego: Supervivencia
@@ -16276,10 +16276,6 @@ MonoBehaviour:
     estadoDisplay: {fileID: 1533434359}
     botonCancelarPartida: {fileID: 615033071}
     crearJugadoresAlCargarEscena: 1
-  escenaMenu: MenuPrincipal
-  escenaExtraccion: Extraccion
-  escenaSupervivencia: Supervivencia
-  escenaDuelo: Duelo
   jugadoresNecesarios: 2
   joinCodeInput: {fileID: 0}
   joinCodeDisplay: {fileID: 0}

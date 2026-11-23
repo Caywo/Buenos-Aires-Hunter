@@ -83,21 +83,17 @@ public class Bondi : Interactuable
     {
         LogrosJugador.NotificarExtraccionATodos();
 
-        if (!esUltimoMapa)
+        if (!esUltimoMapa && SaveManager.Instance != null)
         {
-            if (SaveManager.Instance != null)
-                SaveManager.Instance.GuardarPartida(siguienteMapa);
+            SaveManager.Instance.GuardarPartida(siguienteMapa);
+        }
 
-            NetworkManager.Singleton.SceneManager.LoadScene(
-                siguienteMapa,
-                LoadSceneMode.Single
-            );
-        }
-        else
-        {
-            Debug.Log("[Bondi] Es último mapa -> Llamando a MostrarVictoriaFinalClientRpc()");
-            MostrarVictoriaFinalClientRpc();
-        }
+        Debug.Log($"[Bondi] Cargando escena: {siguienteMapa} | Último mapa: {esUltimoMapa}");
+
+        NetworkManager.Singleton.SceneManager.LoadScene(
+            siguienteMapa,
+            LoadSceneMode.Single
+        );
     }
 
     [ClientRpc]
