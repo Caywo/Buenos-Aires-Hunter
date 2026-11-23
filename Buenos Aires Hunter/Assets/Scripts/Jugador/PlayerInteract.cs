@@ -241,7 +241,9 @@ public class PlayerInteract : NetworkBehaviour
 
         // Respaldo: si el rayo fino no tocó el collider (por ejemplo en modelos grandes como el colectivo),
         // buscamos el Interactuable más cercano frente al jugador.
-        Collider[] cercanos = Physics.OverlapSphere(cam.transform.position + cam.transform.forward * (distancia * 0.5f), distancia);
+        Collider[] cercanos = Physics.OverlapSphere(
+    cam.transform.position + cam.transform.forward * (distancia * 0.5f),
+    distancia, mask, QueryTriggerInteraction.Collide);
         float menorDist = float.MaxValue;
 
         foreach (var col in cercanos)
