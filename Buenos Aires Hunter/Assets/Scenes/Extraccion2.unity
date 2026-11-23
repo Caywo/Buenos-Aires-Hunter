@@ -5271,9 +5271,9 @@ MonoBehaviour:
   - {fileID: 1847904088}
   - {fileID: 198529345}
   - {fileID: 469663123}
-  enemigosPrimeraOleada: 20
+  enemigosPrimeraOleada: 5
   enemigosExtraPorOleada: 2
-  tiempoEntreOleadas: 15
+  tiempoEntreOleadas: 5
   maxEnemigosVivos: 30
   primeraOleadaTanque: 4
   maxTanquesVivos: 1

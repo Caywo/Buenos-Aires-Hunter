@@ -67,6 +67,8 @@ public class PlayerCombat : NetworkBehaviour
 
     /// <summary>Se dispara en el dueño cuando el servidor confirma que su bala impactó algo dañable (hitmarker).</summary>
     public event Action OnImpactoConfirmado;
+    /// <summary>Se dispara en el dueño cada vez que dispara (para animar el cuerpo y los brazos).</summary>
+    public event Action OnDisparoLocal;
 
     void Awake()
     {
@@ -196,6 +198,7 @@ public class PlayerCombat : NetworkBehaviour
 
         // Predicción local: feedback inmediato sin esperar al servidor
         arma.PlayShootEffects(true);
+        OnDisparoLocal?.Invoke();
 
         Transform c = cam.transform;
         DispararServerRpc(c.position, c.forward);

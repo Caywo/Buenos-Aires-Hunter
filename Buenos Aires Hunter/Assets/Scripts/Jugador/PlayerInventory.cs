@@ -8,6 +8,21 @@ public class PlayerInventory : NetworkBehaviour
     {
         public ItemData item;
     }
+    [System.Serializable]
+    public class AjusteEnMano
+    {
+        public Vector3 posicion;
+        public Vector3 rotacion;
+        public float escala = 1f;
+    }
+
+    [Header("Armas en la mano (cuerpo y brazos en primera persona)")]
+    [Tooltip("Mano derecha del cuerpo que ven los demás jugadores (mixamorig:RightHand).")]
+    public Transform manoDerecha;
+    [Tooltip("Mano derecha de los brazos en primera persona (solo la usa el dueño).")]
+    public Transform manoDerechaPrimeraPersona;
+    [Tooltip("Un ajuste por slot del inventario, en el mismo orden (0 = pistola, 1 = SUBE...).")]
+    public AjusteEnMano[] ajustesEnMano;
 
     public ItemSlot[] items;
     public Transform weaponHolder;
@@ -199,7 +214,23 @@ public class PlayerInventory : NetworkBehaviour
             var data = items[indice].item;
             if (data != null && data.prefabEnMano != null)
             {
-                instanciaActual = Instantiate(data.prefabEnMano, weaponHolder);
+                Transform mano = IsOwner ? manoDerechaPrimeraPersona : manoDerecha;
+                bool enMano = mano != null;
+
+                instanciaActual = Instantiate(data.prefabEnMano, enMano ? mano : weaponHolder);
+
+                if (enMano)
+                {
+                    int slot = indiceActivo.Value;
+                    AjusteEnMano ajuste = (ajustesEnMano != null && slot >= 0 && slot < ajustesEnMano.Length)
+                        ? ajustesEnMano[slot] : null;
+
+                    Vector3 escalaOriginal = data.prefabEnMano.transform.localScale;
+
+                    instanciaActual.transform.localPosition = ajuste != null ? ajuste.posicion : Vector3.zero;
+                    instanciaActual.transform.localRotation = Quaternion.Euler(ajuste != null ? ajuste.rotacion : Vector3.zero);
+                    instanciaActual.transform.localScale = escalaOriginal * (ajuste != null ? ajuste.escala : 1f);
+                }
                 weaponActual = instanciaActual.GetComponent<WeaponShoot>();
 
                 if (weaponActual != null)
