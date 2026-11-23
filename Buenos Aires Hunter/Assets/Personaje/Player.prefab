@@ -5923,17 +5923,17 @@ MonoBehaviour:
   manoDerecha: {fileID: 8134166999424984324}
   manoDerechaPrimeraPersona: {fileID: 2955663683250856368}
   ajustesEnMano:
+  - posicion: {x: -0.07120978, y: 0.1427599, z: 0.029544458}
+    rotacion: {x: 83.06356, y: 83.45474, z: 179.99979}
+    escala: 1
   - posicion: {x: 0, y: 0, z: 0}
     rotacion: {x: 0, y: 0, z: 0}
     escala: 0
-  - posicion: {x: 0, y: 0, z: 0}
-    rotacion: {x: 0, y: 0, z: 0}
-    escala: 0
-  - posicion: {x: 0, y: 0, z: 0}
-    rotacion: {x: 0, y: 0, z: 0}
-    escala: 0
-  - posicion: {x: 0, y: 0, z: 0}
-    rotacion: {x: 0, y: 0, z: 0}
+  - posicion: {x: 0.043, y: 0.158, z: 0.2}
+    rotacion: {x: 53.485893, y: 73.821915, z: 150.7892}
+    escala: 1
+  - posicion: {x: -0.05307164, y: 0.16577658, z: 0.121865034}
+    rotacion: {x: 83.66597, y: 91.51087, z: 180.4677}
     escala: 0
   - posicion: {x: 0, y: 0, z: 0}
     rotacion: {x: 0, y: 0, z: 0}
