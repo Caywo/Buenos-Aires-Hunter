@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -66,7 +68,100 @@ public class CrearPortal : MonoBehaviour
     [Header("Audio")]
     public AudioClip spawnSound;
     [Range(0f, 1f)] public float spawnVolume = 1f;
+    private bool cerrando = false;
 
+    public void CerrarDespues(float tiempo)
+    {
+        if (!cerrando)
+            StartCoroutine(CerrarRutina(tiempo));
+    }
+
+    private IEnumerator CerrarRutina(float tiempo)
+    {
+        cerrando = true;
+
+        yield return new WaitForSeconds(tiempo);
+
+        ParticleSystem[] particulas =
+            GetComponentsInChildren<ParticleSystem>(true);
+
+        // Detener la emisión del anillo.
+        foreach (ParticleSystem particula in particulas)
+        {
+            particula.Stop(
+                true,
+                ParticleSystemStopBehavior.StopEmitting
+            );
+        }
+
+        // Obtener los renderers del relleno, excluyendo los de partículas.
+        Renderer[] renderers = GetComponentsInChildren<Renderer>(true);
+
+        List<Material[]> materiales = new List<Material[]>();
+        List<Color[]> coloresOriginales = new List<Color[]>();
+
+        foreach (Renderer renderer in renderers)
+        {
+            if (renderer is ParticleSystemRenderer)
+                continue;
+
+            Material[] mats = renderer.materials;
+            Color[] colores = new Color[mats.Length];
+
+            for (int i = 0; i < mats.Length; i++)
+                colores[i] = mats[i].color;
+
+            materiales.Add(mats);
+            coloresOriginales.Add(colores);
+        }
+
+        // Desvanecer el relleno.
+        float duracionCierre = 3f;
+        float tiempoTranscurrido = 0f;
+
+        while (tiempoTranscurrido < duracionCierre)
+        {
+            tiempoTranscurrido += Time.deltaTime;
+
+            float t = Mathf.Clamp01(tiempoTranscurrido / duracionCierre);
+
+            for (int i = 0; i < materiales.Count; i++)
+            {
+                for (int j = 0; j < materiales[i].Length; j++)
+                {
+                    Color color = coloresOriginales[i][j];
+                    color.a = Mathf.Lerp(coloresOriginales[i][j].a, 0f, t);
+
+                    materiales[i][j].color = color;
+                }
+            }
+
+            yield return null;
+        }
+
+        // Esperar a que terminen las partículas restantes.
+        bool quedanParticulas;
+
+        do
+        {
+            quedanParticulas = false;
+
+            foreach (ParticleSystem particula in particulas)
+            {
+                if (particula != null && particula.IsAlive(true))
+                {
+                    quedanParticulas = true;
+                    break;
+                }
+            }
+
+            if (quedanParticulas)
+                yield return null;
+
+        } while (quedanParticulas);
+
+        Destroy(gameObject);
+    }
     void PlaySpawnSound()
     {
         // PlayClipAtPoint crea un GameObject temporal llamado "One Shot Audio".
@@ -137,7 +232,20 @@ public class CrearPortal : MonoBehaviour
         mf.sharedMesh = fillMesh;
 
         var mr = go.AddComponent<MeshRenderer>();
-        mr.sharedMaterial = fillMaterial != null ? fillMaterial : GetAutoFillMaterial();
+
+        Material material = fillMaterial != null
+            ? new Material(fillMaterial)
+            : GetAutoFillMaterial();
+
+        mr.material = material;
+
+        string propiedadColor = material.HasProperty("_BaseColor")
+            ? "_BaseColor" : "_Color";
+
+        Color color = material.GetColor(propiedadColor);
+        color.a = 1f;
+        material.SetColor(propiedadColor, color);
+
         mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         mr.receiveShadows = false;
     }

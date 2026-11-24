@@ -34,7 +34,16 @@ public class EnemySpawner : NetworkBehaviour
     [SerializeField] private float distanciaMaximaJugador = 60f;
     [Header("Recompensa")]
     [SerializeField] private int recompensaPorKill = 100;
-
+    [Header("Portal de aparición")]
+    [SerializeField] private GameObject portalPrefab;
+    [Tooltip("Segundos entre que se abre el portal y sale el enemigo.")]
+    [SerializeField] private float retrasoSpawn = 1f;
+    [Tooltip("Segundos que sigue abierto el portal después de que sale el enemigo.")]
+    [SerializeField] private float portalAbiertoExtra = 1.5f;
+    [Tooltip("El portal está centrado en su pivote: hay que subirlo para que apoye en el piso.")]
+    [SerializeField] private Vector3 offsetPortal = new Vector3(0f, 2.4f, 0f);
+    private int spawnsPendientes = 0;
+    private int tanquesPendientes = 0;
     private List<NetworkObject> enemigosActuales =
         new List<NetworkObject>();
 
@@ -92,7 +101,7 @@ public class EnemySpawner : NetworkBehaviour
 
         // Ya se generaron todos los enemigos de esta oleada.
         // Esperamos a que mueran todos.
-        if (enemigosActuales.Count == 0)
+        if (enemigosActuales.Count == 0 && spawnsPendientes == 0)
         {
             IniciarEsperaNuevaOleada();
         }
@@ -151,7 +160,7 @@ public class EnemySpawner : NetworkBehaviour
         }
 
         while (
-            enemigosActuales.Count < LimiteVivos &&
+            enemigosActuales.Count + spawnsPendientes < LimiteVivos &&
             enemigosGeneradosEnOleada < enemigosTotalesDeOleada
         )
         {
@@ -227,55 +236,66 @@ public class EnemySpawner : NetworkBehaviour
                 Random.Range(0, puntosValidos.Count)
             ];
 
-        GameObject enemy = Instantiate(
-            prefab,
-            puntoSpawn.position,
-            puntoSpawn.rotation
-        );
-
-        NetworkObject networkObject =
-            enemy.GetComponent<NetworkObject>();
-
-        if (networkObject == null)
+        if (prefab.GetComponent<NetworkObject>() == null)
         {
-            Debug.LogError(
-                "EnemySpawner: el prefab no tiene NetworkObject."
-            );
-
-            Destroy(enemy);
+            Debug.LogError("EnemySpawner: el prefab no tiene NetworkObject.");
             return false;
         }
 
-        networkObject.Spawn(true);
-
-        enemigosActuales.Add(networkObject);
-
         enemigosGeneradosEnOleada++;
-
-        if (esTanque)
-            tanquesVivos++;
-
-        Debug.Log(
-            "Spawn enemigo. Oleada: " +
-            numeroOleada +
-            " | Generados: " +
-            enemigosGeneradosEnOleada +
-            "/" +
-            enemigosTotalesDeOleada +
-            " | Vivos: " +
-            enemigosActuales.Count
-        );
+        StartCoroutine(SpawnConPortal(prefab, puntoSpawn, esTanque));
 
         return true;
     }
 
+    private IEnumerator SpawnConPortal(GameObject prefab, Transform punto, bool esTanque)
+    {
+        spawnsPendientes++;
+        if (esTanque) tanquesPendientes++;
 
+        Vector3 posicion = punto.position;
+        Quaternion rotacion = punto.rotation;
+
+        if (portalPrefab != null)
+            MostrarPortalClientRpc(posicion, rotacion, retrasoSpawn + portalAbiertoExtra);
+
+        if (retrasoSpawn > 0f)
+            yield return new WaitForSeconds(retrasoSpawn);
+
+        spawnsPendientes--;
+        if (esTanque) tanquesPendientes--;
+
+        // Si mientras tanto se apagó el spawner o la red (por ejemplo al volver al menú), no spawnear
+        if (!enabled || !IsServer || !IsSpawned)
+            yield break;
+
+        GameObject enemy = Instantiate(prefab, posicion, rotacion);
+        NetworkObject networkObject = enemy.GetComponent<NetworkObject>();
+        networkObject.Spawn(true);
+        enemigosActuales.Add(networkObject);
+
+        Debug.Log("Spawn enemigo. Oleada: " + numeroOleada +
+                  " | Generados: " + enemigosGeneradosEnOleada + "/" + enemigosTotalesDeOleada +
+                  " | Vivos: " + enemigosActuales.Count);
+    }
+
+    [ClientRpc]
+    private void MostrarPortalClientRpc(Vector3 posicion, Quaternion rotacion, float duracion)
+    {
+        GameObject portal = Instantiate(
+            portalPrefab,
+            posicion + rotacion * offsetPortal,
+            rotacion
+        );
+
+        portal.GetComponent<CrearPortal>().CerrarDespues(duracion);
+    }
     private bool PuedeGenerarTanque()
     {
         if (tankPrefab == null)
             return false;
 
-        if (tanquesVivos >= maxTanquesVivos)
+        if (tanquesVivos + tanquesPendientes >= maxTanquesVivos)
             return false;
 
         return true;
