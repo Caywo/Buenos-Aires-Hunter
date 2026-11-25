@@ -267,7 +267,7 @@ MonoBehaviour:
   weaponKickBack: 0.05
   weaponReturnSpeed: 8
   cameraRecoilAmount: 2
-  automatico: 1
+  automatico: 0
   fireRate: 0.15
   range: 100
   damage: 20

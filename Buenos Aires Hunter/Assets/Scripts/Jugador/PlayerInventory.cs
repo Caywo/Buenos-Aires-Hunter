@@ -42,6 +42,7 @@ public class PlayerInventory : NetworkBehaviour
     private MeleeAttack melee;
     public bool inputBloqueado = false;
     public GameObject[] slots;
+    public GameObject modeloVisual;
 
     void Awake()
     {
@@ -55,6 +56,8 @@ public class PlayerInventory : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        if (IsOwner)
+            modeloVisual.SetActive(false);
         if (weaponHolder != null) posBaseHolder = weaponHolder.localPosition;
         if (camaraJugador != null) fovBase = camaraJugador.fieldOfView;
 
