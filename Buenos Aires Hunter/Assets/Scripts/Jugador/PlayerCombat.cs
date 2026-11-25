@@ -59,6 +59,8 @@ public class PlayerCombat : NetworkBehaviour
     /// </summary>
     public bool CombateHabilitado { get; set; } = true;
 
+    public PlayerAudio playerAudio;
+
     /// <summary>SOLO SERVIDOR. El modo duelo lo apaga: las rondas las controla el DuelManager.</summary>
     public void ConfigurarRespawnAutomatico(bool valor)
     {
@@ -294,6 +296,7 @@ public class PlayerCombat : NetworkBehaviour
     private void ConfirmarImpactoClientRpc(ClientRpcParams rpcParams = default)
     {
         OnImpactoConfirmado?.Invoke();
+        playerAudio.PlayPunch();
     }
 
     /// <summary>

@@ -22,7 +22,6 @@ public class PlayerMotor : MonoBehaviour
             input = Vector2.zero;
         }
         isGrounded = controller.isGrounded;
-
         Vector3 direccionMovimiento = Vector3.zero;
         direccionMovimiento.x = input.x;
         direccionMovimiento.z = input.y;

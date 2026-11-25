@@ -329,11 +329,15 @@ public class PlayerUI : MonoBehaviour
 
     public void MostrarPantallaVictoria()
     {
-        if (panelVictoria != null)
-            panelVictoria.SetActive(true);
+        Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
 
         if (hud != null)
-            hud.SetActive(false);
+            hud.SetActive(true);
+
+        if (panelVictoria != null)
+            panelVictoria.SetActive(true);
     }
 
     public void BotonVolverAlMenu()

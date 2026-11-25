@@ -10771,11 +10771,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MusicManager
   musicaMenu: {fileID: 8300000, guid: 6402c0d7e596da74f84952328833f3b7, type: 3}
   musicaExtraccion: {fileID: 8300000, guid: ba4983e0ed923e641bfd5db9b6bddca7, type: 3}
+  musicaExtraccion2: {fileID: 8300000, guid: ba4983e0ed923e641bfd5db9b6bddca7, type: 3}
   musicaSupervivencia: {fileID: 8300000, guid: 0d34dd86a362d3e4697fe5846b17a2a4, type: 3}
   musicaDuelo: {fileID: 8300000, guid: 87d3ec658a475614fa5bd553a15a2617, type: 3}
   musicaTutorial: {fileID: 8300000, guid: f13b81b7c20a2b44fb5f45405947e0b7, type: 3}
   escenaMenu: MenuPrincipal
   escenaExtraccion: Extraccion1
+  escenaExtraccion2: Extraccion2
   escenaSupervivencia: Supervivencia
   escenaDuelo: Duelo1
   escenaTutorial: Tutorial
@@ -16252,12 +16254,12 @@ MonoBehaviour:
   modos:
   - nombre: Extraccion
     panel: {fileID: 555094878}
-    escenaDeJuego: Extraccion1
+    escenaDeJuego: CinematicaInicial
     joinCodeInput: {fileID: 1949036976}
     joinCodeDisplay: {fileID: 434375910}
     estadoDisplay: {fileID: 1154116382}
     botonCancelarPartida: {fileID: 1752438303}
-    crearJugadoresAlCargarEscena: 0
+    crearJugadoresAlCargarEscena: 1
   - nombre: Supervivencia
     panel: {fileID: 244630603}
     escenaDeJuego: Supervivencia
@@ -16274,10 +16276,6 @@ MonoBehaviour:
     estadoDisplay: {fileID: 1533434359}
     botonCancelarPartida: {fileID: 615033071}
     crearJugadoresAlCargarEscena: 1
-  escenaMenu: MenuPrincipal
-  escenaExtraccion: Extraccion
-  escenaSupervivencia: Supervivencia
-  escenaDuelo: Duelo
   jugadoresNecesarios: 2
   joinCodeInput: {fileID: 0}
   joinCodeDisplay: {fileID: 0}
@@ -30957,6 +30955,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3161054849483068249, guid: 30d9b53d408f62546a85a5cb8153b84f, type: 3}
+      propertyPath: m_MaxValue
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 4825203150367459702, guid: 30d9b53d408f62546a85a5cb8153b84f, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -30972,6 +30974,10 @@ PrefabInstance:
     - target: {fileID: 5471300118671141882, guid: 30d9b53d408f62546a85a5cb8153b84f, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7180915943768175745, guid: 30d9b53d408f62546a85a5cb8153b84f, type: 3}
+      propertyPath: m_MaxValue
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 7972612187990230445, guid: 30d9b53d408f62546a85a5cb8153b84f, type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
