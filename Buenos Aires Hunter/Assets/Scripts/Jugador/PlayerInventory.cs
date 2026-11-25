@@ -36,6 +36,19 @@ public class PlayerInventory : NetworkBehaviour
     public bool TieneSubeEquipada => indiceActivo.Value == indiceSube;
 
     public int IndiceActivo => indiceActivo.Value;
+    private PlayerAvisos avisos;
+
+    private void Avisar(string texto)
+    {
+        if (avisos != null)
+            avisos.EnviarAviso(texto);
+    }
+
+    /// <summary>SOLO SERVIDOR. Le explica al jugador por qué no se pudo pagar.</summary>
+    public void AvisarFalloDePago()
+    {
+        Avisar(TieneSubeEquipada ? TextosAviso.SaldoInsuficiente : TextosAviso.SubeNoEquipada);
+    }
     public WeaponShoot ArmaActual => weaponActual;
 
     public event System.Action<WeaponShoot> OnArmaCambiada;
@@ -50,7 +63,9 @@ public class PlayerInventory : NetworkBehaviour
         salud = GetComponent<Health>();
         camaraJugador = GetComponentInChildren<Camera>(true);
         melee = GetComponent<MeleeAttack>();
+        avisos = GetComponent<PlayerAvisos>();
         melee.Init(camaraJugador);
+
     }
 
     public override void OnNetworkSpawn()
@@ -321,7 +336,11 @@ public class PlayerInventory : NetworkBehaviour
         if (indiceSlot < 0 || indiceSlot >= items.Length) return;
         if (items[indiceSlot].item == null) return;
 
-        if (!PagarConSube(precio)) return;
+        if (!PagarConSube(precio))
+        {
+            AvisarFalloDePago();
+            return;
+        }
         var logros = GetComponent<LogrosJugador>();
         if (logros != null) logros.Notificar(EventoLogro.Compra, precio);
         

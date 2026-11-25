@@ -35,7 +35,7 @@ public class Bondi : Interactuable
                     TargetClientIds = new ulong[] { clientId }
                 }
             };
-            AvisarErrorPagoClientRpc($"Necesitás la SUBE en mano con al menos ${precioPasaje}", errorParams);
+            AvisarErrorPagoClientRpc(errorParams);
             return;
         }
 
@@ -120,14 +120,9 @@ public class Bondi : Interactuable
     }
 
     [ClientRpc]
-    private void AvisarErrorPagoClientRpc(string mensajeError, ClientRpcParams clientRpcParams = default)
+    private void AvisarErrorPagoClientRpc(ClientRpcParams clientRpcParams = default)
     {
-        var localPlayer = NetworkManager.Singleton.LocalClient?.PlayerObject;
-        var ui = localPlayer?.GetComponentInChildren<PlayerUI>(true);
-        if (ui != null)
-        {
-            ui.ActualizarTexto(mensajeError);
-        }
+        PlayerAvisos.Local?.MostrarLocal(TextosAviso.PagoBondiFallido);
     }
 
     [ClientRpc]
