@@ -156,7 +156,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tienda
   ShowTopMostFoldoutHeaderGroup: 1
-  mensaje: Abrir tienda
+  mensaje: 'E: Abrir tienda'
 --- !u!114 &-4300520007008053472
 MonoBehaviour:
   m_ObjectHideFlags: 0

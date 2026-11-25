@@ -6967,7 +6967,11 @@ MonoBehaviour:
   maxTanquesVivos: 1
   distanciaMinimaJugador: 15
   distanciaMaximaJugador: 60
-  recompensaPorKill: 20
+  recompensaPorKill: 100
+  portalPrefab: {fileID: 0}
+  retrasoSpawn: 1
+  portalAbiertoExtra: 1.5
+  offsetPortal: {x: 0, y: 2.4, z: 0}
 --- !u!4 &214475137
 Transform:
   m_ObjectHideFlags: 0
@@ -12241,8 +12245,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bondi
   ShowTopMostFoldoutHeaderGroup: 1
-  mensaje: "\xBFTomarse el reverendo palo?"
-  precioPasaje: 100
+  mensaje: "\xBFTomarse el reverendo palo?\\n5000$"
+  precioPasaje: 5000
   siguienteMapa: CinematicaFinal
   esUltimoMapa: 1
 --- !u!1 &428798809
@@ -19267,7 +19271,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4324462679323709330, guid: 77ed4ac12c9f19e4b8a920d835398513, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.5284691
+      value: -2
       objectReference: {fileID: 0}
     - target: {fileID: 4324462679323709330, guid: 77ed4ac12c9f19e4b8a920d835398513, type: 3}
       propertyPath: m_LocalPosition.y
@@ -19275,7 +19279,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4324462679323709330, guid: 77ed4ac12c9f19e4b8a920d835398513, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -251.89523
+      value: -252.03
       objectReference: {fileID: 0}
     - target: {fileID: 4324462679323709330, guid: 77ed4ac12c9f19e4b8a920d835398513, type: 3}
       propertyPath: m_LocalRotation.w
@@ -25959,6 +25963,79 @@ Transform:
   - {fileID: 629888981}
   m_Father: {fileID: 1429871623}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!1001 &934106628
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8590099745289384205, guid: 6149928d454884c45a833b1caf8a5323, type: 3}
+      propertyPath: m_InScenePlaced
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8590099745289384205, guid: 6149928d454884c45a833b1caf8a5323, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 913409020
+      objectReference: {fileID: 0}
+    - target: {fileID: -8590099745289384205, guid: 6149928d454884c45a833b1caf8a5323, type: 3}
+      propertyPath: SceneMigrationSynchronization
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8590099745289384205, guid: 6149928d454884c45a833b1caf8a5323, type: 3}
+      propertyPath: InScenePlacedSourceGlobalObjectIdHash
+      value: 3007006850
+      objectReference: {fileID: 0}
+    - target: {fileID: 1457457195504634089, guid: 6149928d454884c45a833b1caf8a5323, type: 3}
+      propertyPath: m_Name
+      value: Horacio
+      objectReference: {fileID: 0}
+    - target: {fileID: 3436693931710582653, guid: 6149928d454884c45a833b1caf8a5323, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 6.88
+      objectReference: {fileID: 0}
+    - target: {fileID: 3436693931710582653, guid: 6149928d454884c45a833b1caf8a5323, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -9.559878
+      objectReference: {fileID: 0}
+    - target: {fileID: 3436693931710582653, guid: 6149928d454884c45a833b1caf8a5323, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -252.556
+      objectReference: {fileID: 0}
+    - target: {fileID: 3436693931710582653, guid: 6149928d454884c45a833b1caf8a5323, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.6941612
+      objectReference: {fileID: 0}
+    - target: {fileID: 3436693931710582653, guid: 6149928d454884c45a833b1caf8a5323, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3436693931710582653, guid: 6149928d454884c45a833b1caf8a5323, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.71981966
+      objectReference: {fileID: 0}
+    - target: {fileID: 3436693931710582653, guid: 6149928d454884c45a833b1caf8a5323, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3436693931710582653, guid: 6149928d454884c45a833b1caf8a5323, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3436693931710582653, guid: 6149928d454884c45a833b1caf8a5323, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 267.921
+      objectReference: {fileID: 0}
+    - target: {fileID: 3436693931710582653, guid: 6149928d454884c45a833b1caf8a5323, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 6149928d454884c45a833b1caf8a5323, type: 3}
 --- !u!4 &937120831 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2623031473983968399, guid: c0d3d780790fa3e48a956029d7a6ef40, type: 3}
@@ -75016,3 +75093,4 @@ SceneRoots:
   - {fileID: 1741746216}
   - {fileID: 579003004}
   - {fileID: 1993430763}
+  - {fileID: 934106628}

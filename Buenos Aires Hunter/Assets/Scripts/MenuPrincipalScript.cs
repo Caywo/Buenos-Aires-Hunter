@@ -40,6 +40,8 @@ public class MenuPrincipal : MonoBehaviour
     [SerializeField] private TMP_InputField joinCodeInput;
     [SerializeField] private TMP_Text joinCodeDisplay;
     [SerializeField] private TMP_Text estadoDisplay;
+    [Header("Avisos")]
+    [SerializeField] private CartelAvisoUI cartelAviso;
 
     private void Start()
     {
@@ -80,12 +82,15 @@ public class MenuPrincipal : MonoBehaviour
         modoElegido = ObtenerModoActual();
         if (modoElegido == null) return;
 
+        SaveManager.Instance?.BorrarPartida();
+
         NetworkManagerPersistente.Instance.ConfigurarSpawnDeJugadores(modoElegido.crearJugadoresAlCargarEscena);
 
         string joinCode = await NetworkManagerPersistente.Instance.StartHostWithRelayAsync();
         if (string.IsNullOrEmpty(joinCode))
         {
             Debug.LogError("No se pudo crear la partida.");
+            cartelAviso.Mostrar("No se pudo crear la partida");
             return;
         }
 
@@ -100,6 +105,7 @@ public class MenuPrincipal : MonoBehaviour
 
         if (input == null || string.IsNullOrWhiteSpace(input.text))
         {
+            cartelAviso.Mostrar("Ingresá un código antes de unirte");
             Debug.LogError("Ingresá un join code antes de unirte.");
             return;
         }
@@ -108,6 +114,7 @@ public class MenuPrincipal : MonoBehaviour
 
         if (!conectado)
         {
+            cartelAviso.Mostrar("No se pudo unir a la partida. Revisá el código");
             Debug.LogError("No se pudo unir a la partida. Revisá el código.");
         }
     }
@@ -116,7 +123,12 @@ public class MenuPrincipal : MonoBehaviour
 
     public async void ContinuarPartidaOnline()
     {
-        if (!CargarPartida()) return;
+        if (!CargarPartida())
+        {
+            cartelAviso.Mostrar("No hay partida guardada");
+            return;
+        }
+
 
         NetworkManagerPersistente.Instance.ConfigurarSpawnDeJugadores(false);
 
@@ -124,6 +136,7 @@ public class MenuPrincipal : MonoBehaviour
         if (string.IsNullOrEmpty(joinCode))
         {
             Debug.LogError("No se pudo crear la partida.");
+            cartelAviso.Mostrar("No se pudo crear la partida");
             return;
         }
 
@@ -137,6 +150,7 @@ public class MenuPrincipal : MonoBehaviour
         if (SaveManager.Instance == null || !SaveManager.Instance.HayPartidaGuardada())
         {
             Debug.LogError("No hay partida guardada.");
+            cartelAviso.Mostrar("No hay partida guardada");
             return false;
         }
 
@@ -319,6 +333,8 @@ public class MenuPrincipal : MonoBehaviour
     {
         var modo = ObtenerModoActual();
         if (modo == null) return;
+
+        SaveManager.Instance?.BorrarPartida();
 
         if (PantallaCarga.Instance != null) PantallaCarga.Instance.Mostrar();
 

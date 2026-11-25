@@ -33,6 +33,19 @@ public class EnemySpawnerSupervivencia : NetworkBehaviour
 
     [Header("Distancia de seguridad")]
     [SerializeField] private float distanciaMinimaJugador = 15f;
+    [Header("Portal de aparición")]
+    [SerializeField] private GameObject portalPrefab;
+    [Tooltip("Segundos entre que se abre el portal y sale el enemigo.")]
+    [SerializeField] private float retrasoSpawn = 1f;
+    [Tooltip("Cada enemigo espera un tiempo extra aleatorio entre 0 y este valor, para que no salgan todos juntos.")]
+    [SerializeField] private float dispersionSpawn = 2f;
+    [Tooltip("Segundos que sigue abierto el portal después de que sale el enemigo.")]
+    [SerializeField] private float portalAbiertoExtra = 1.5f;
+    [Tooltip("El portal está centrado en su pivote: se sube para que apoye en el piso.")]
+    [SerializeField] private Vector3 offsetPortal = new Vector3(0f, 2.4f, 0f);
+
+    private int spawnsPendientes = 0;
+    private readonly Dictionary<Transform, float> portalAbiertoHasta = new Dictionary<Transform, float>();
 
     [Header("Recompensa")]
     [SerializeField] private int recompensaPorKill = 100;
@@ -83,7 +96,7 @@ public class EnemySpawnerSupervivencia : NetworkBehaviour
 
         LimpiarEnemigosActuales();
 
-        if (enemigosActuales.Count == 0)
+        if (enemigosActuales.Count == 0 && spawnsPendientes == 0)
         {
             IniciarEsperaNuevaRonda();
         }
@@ -214,22 +227,73 @@ public class EnemySpawnerSupervivencia : NetworkBehaviour
 
         Transform puntoSpawn = puntosValidos[Random.Range(0, puntosValidos.Count)];
 
-        GameObject enemy = Instantiate(prefab, puntoSpawn.position, puntoSpawn.rotation);
-        NetworkObject networkObject = enemy.GetComponent<NetworkObject>();
-
-        if (networkObject == null)
+        if (prefab.GetComponent<NetworkObject>() == null)
         {
             Debug.LogError("EnemySpawnerSupervivencia: el prefab no tiene NetworkObject.");
-            Destroy(enemy);
             return false;
         }
 
-        networkObject.Spawn();
-        enemigosActuales.Add(networkObject);
-
+        StartCoroutine(SpawnConPortal(prefab, puntoSpawn));
         return true;
     }
+    private IEnumerator SpawnConPortal(GameObject prefab, Transform punto)
+    {
+        spawnsPendientes++;
 
+        Vector3 posicion = punto.position;
+        Quaternion rotacion = punto.rotation;
+
+        // Cada enemigo sale con un retraso distinto para que no aparezcan todos de golpe
+        float dispersion = Random.Range(0f, dispersionSpawn);
+        if (dispersion > 0f) yield return new WaitForSeconds(dispersion);
+
+        if (portalPrefab != null && PuedeSeguirSpawneando())
+        {
+            // Un solo portal por punto: se reutiliza si seguirá abierto cuando el enemigo salga
+            bool yaAbierto = portalAbiertoHasta.TryGetValue(punto, out float hasta)
+                             && hasta > Time.time + retrasoSpawn;
+            if (!yaAbierto)
+            {
+                float duracion = retrasoSpawn + portalAbiertoExtra;
+                MostrarPortalClientRpc(posicion, rotacion, duracion);
+                portalAbiertoHasta[punto] = Time.time + duracion;
+            }
+        }
+
+        if (retrasoSpawn > 0f) yield return new WaitForSeconds(retrasoSpawn);
+
+        spawnsPendientes--;
+
+        // Si mientras tanto terminó la partida o se apagó la red, no spawnear
+        if (!PuedeSeguirSpawneando()) yield break;
+
+        GameObject enemy = Instantiate(prefab, posicion, rotacion);
+        NetworkObject networkObject = enemy.GetComponent<NetworkObject>();
+        networkObject.Spawn();
+        enemigosActuales.Add(networkObject);
+    }
+
+    private bool PuedeSeguirSpawneando()
+    {
+        return IsServer && IsSpawned && !derrotaNotificada;
+    }
+
+    [ClientRpc]
+    private void MostrarPortalClientRpc(Vector3 posicion, Quaternion rotacion, float duracion)
+    {
+        GameObject portal = Instantiate(
+            portalPrefab,
+            posicion + rotacion * offsetPortal,
+            rotacion
+        );
+
+        CrearPortal crearPortal = portal.GetComponent<CrearPortal>();
+
+        if (crearPortal != null)
+            crearPortal.CerrarDespues(duracion);
+        else
+            Destroy(portal, duracion);
+    }
     private void ActualizarCantidadTanques()
     {
         int cantidad = 0;

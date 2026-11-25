@@ -30,6 +30,7 @@ public class PlayerInventory : NetworkBehaviour
     private float fovBase;
 
     public int indiceSube = -1;
+    [SerializeField] private int saldoInicial = -100;
     public NetworkVariable<int> saldoSube = new NetworkVariable<int>(-1200,
     NetworkVariableReadPermission.Everyone,
     NetworkVariableWritePermission.Server);
@@ -78,6 +79,7 @@ public class PlayerInventory : NetworkBehaviour
 
         if (IsServer)
         {
+            saldoSube.Value = saldoInicial;
             cantidades.Clear();
 
             for (int i = 0; i < items.Length; i++)
