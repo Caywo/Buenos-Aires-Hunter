@@ -274,8 +274,8 @@ MonoBehaviour:
   hitMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  magazineSize: 30
-  reserveAmmo: 90
+  magazineSize: 17
+  reserveAmmo: 17
   reloadTime: 1.8
   aimPoint: {fileID: 5190227550732621536}
   aimSpeed: 10

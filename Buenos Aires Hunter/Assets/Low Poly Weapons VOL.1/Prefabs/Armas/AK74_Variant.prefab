@@ -128,7 +128,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   magazineSize: 30
-  reserveAmmo: 90
+  reserveAmmo: 30
   reloadTime: 2
   aimPoint: {fileID: 4659516080112646689}
   aimSpeed: 10

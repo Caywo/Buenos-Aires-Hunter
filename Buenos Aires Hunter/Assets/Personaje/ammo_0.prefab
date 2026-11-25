@@ -137,9 +137,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MunicionPickup
   ShowTopMostFoldoutHeaderGroup: 1
   mensaje: "E: agarrar munici\xF3n"
-  municionPistola: 30
+  municionPistola: 17
   municionEscopeta: 12
-  municionRifle: 45
+  municionRifle: 30
 --- !u!114 &8244002434130068412
 MonoBehaviour:
   m_ObjectHideFlags: 0
