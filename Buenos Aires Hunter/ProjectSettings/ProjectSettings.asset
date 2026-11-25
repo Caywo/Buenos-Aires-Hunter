@@ -936,11 +936,11 @@ PlayerSettings:
   activeInputHandler: 2
   windowsGamepadBackendHint: 0
   enableDirectStorage: 0
-  cloudProjectId: 7cf791cd-3319-444e-8e3f-3fc27837a265
+  cloudProjectId: fb0b4126-c733-4cf0-9a86-89d53ee84876
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: Buenos Aires Hunter (1)
-  organizationId: luchobeta02
+  projectName: Buenos Aires Hunter
+  organizationId: conurbano-studios
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
