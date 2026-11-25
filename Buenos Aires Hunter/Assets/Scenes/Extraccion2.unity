@@ -12245,8 +12245,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bondi
   ShowTopMostFoldoutHeaderGroup: 1
-  mensaje: "\xBFTomarse el reverendo palo?\\n5000$"
-  precioPasaje: 5000
+  mensaje: "\xBFTomarse el reverendo palo?\\n6000$"
+  precioPasaje: 600
   siguienteMapa: CinematicaFinal
   esUltimoMapa: 1
 --- !u!1 &428798809

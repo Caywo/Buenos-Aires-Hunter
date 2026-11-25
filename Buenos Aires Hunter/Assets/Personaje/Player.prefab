@@ -5677,7 +5677,7 @@ MonoBehaviour:
   - item: {fileID: 11400000, guid: 1dcd99d8aff12ad46b3a6110390da5d5, type: 2}
   weaponHolder: {fileID: 3627730883311634322}
   indiceSube: 1
-  saldoInicial: -1200
+  saldoInicial: -200
   saldoSube:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0
@@ -11065,7 +11065,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1238390377247458087, guid: aa23251e81f27cc439b4f4b8361ecb63, type: 3}
       propertyPath: precio
-      value: 1200
+      value: 120
       objectReference: {fileID: 0}
     - target: {fileID: 1238390377247458087, guid: aa23251e81f27cc439b4f4b8361ecb63, type: 3}
       propertyPath: tiendaUI
@@ -11108,6 +11108,10 @@ PrefabInstance:
       value: -330
       objectReference: {fileID: 0}
     - target: {fileID: 1510482725063178113, guid: aa23251e81f27cc439b4f4b8361ecb63, type: 3}
+      propertyPath: precio
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 1510482725063178113, guid: aa23251e81f27cc439b4f4b8361ecb63, type: 3}
       propertyPath: tiendaUI
       value: 
       objectReference: {fileID: 389148221887834588}
@@ -11132,6 +11136,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2886891507622583318, guid: aa23251e81f27cc439b4f4b8361ecb63, type: 3}
+      propertyPath: precio
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 2886891507622583318, guid: aa23251e81f27cc439b4f4b8361ecb63, type: 3}
       propertyPath: tiendaUI
       value: 
       objectReference: {fileID: 389148221887834588}
@@ -11149,12 +11157,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3443916576783551431, guid: aa23251e81f27cc439b4f4b8361ecb63, type: 3}
       propertyPath: precio
-      value: 100
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 3443916576783551431, guid: aa23251e81f27cc439b4f4b8361ecb63, type: 3}
       propertyPath: tiendaUI
       value: 
       objectReference: {fileID: 389148221887834588}
+    - target: {fileID: 3610797973474377406, guid: aa23251e81f27cc439b4f4b8361ecb63, type: 3}
+      propertyPath: precio
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 3610797973474377406, guid: aa23251e81f27cc439b4f4b8361ecb63, type: 3}
       propertyPath: tiendaUI
       value: 
