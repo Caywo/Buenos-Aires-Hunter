@@ -45,4 +45,4 @@ En los modos **Extracción** y **Supervivencia**, la amenaza principal son disti
 - **Género:** First-Person Shooter (FPS) / Boomer Shooter
 - **Motor gráfico:** Unity
 - **Plataforma:** PC
-- **Modos de juego:** Un jugador (Extracción, Supervivencia) y multijugador online (Duelo 1v1)
+- **Modos de juego:** Un jugador o 2-player coop (Extracción, Supervivencia) y 1v1 PvP (Duelo)
